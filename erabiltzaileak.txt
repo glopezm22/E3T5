@@ -1,2 +1,0 @@
-erabiltzailea;pasahitza;mota
-admin;admin;Saltzailea

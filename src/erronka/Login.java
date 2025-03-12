@@ -1,6 +1,5 @@
 package erronka;
 
-import java.io.*;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
@@ -9,6 +8,7 @@ import java.sql.Statement;
 
 import javax.swing.*;
 import java.awt.*;
+import java.time.LocalDate;
 
 /**
  * Login pantaila bistaratu eta erabiltzailea autentifikatzeko metodoa.
@@ -17,10 +17,18 @@ import java.awt.*;
  */
 public class Login {
 
-    public static final String erabiltzaileakFitxategi = "erabiltzaileak.txt";
-    public static final int MAX_SAIAKERAK = 3; // Saiakera maximoa ezartzen da
-
-    public static void main(String[] args) {
+    public static final int MAX_SAIAKERAK = 3;
+    public static int id = 0;
+    public static String izena = null;
+    public static String abizena = null;
+    public static String helbidea = null;
+    public static String emaila = null;
+    public static String telefonoa = null;
+    public static LocalDate kontratazioData = null;
+    public static int idnagusi = 0;
+    
+    @SuppressWarnings("unused")
+	public static void main(String[] args) {
     	
 		// Frame-a sortu eta parametroak ezarri.
         JFrame frame = new JFrame("GameStop | Saioa hasi");
@@ -53,26 +61,33 @@ public class Login {
 
         // Logeatzearen botoiaren akzioa
         botoia.addActionListener(e -> {
-            String erabiltzaileaText = erabiltzailea.getText().trim().toLowerCase(); // Erabiltzailearen espazioak ezabatu eta letra txikitan jarri
-            String pasahitzaText = new String(pasahitza.getPassword()).trim(); // Pasahitzaren espazioak ezabatu
+            try {
+                String erabiltzaileaText = erabiltzailea.getText().trim().toLowerCase();
+                String pasahitzaText = new String(pasahitza.getPassword()).trim();
 
-            String mota = loginSistema(erabiltzaileaText, pasahitzaText); // Metodora deitzen du, honek erabiltzaile mota bueltatzen du
-            if (mota != null) {
-                mezua.setText("Sarbidea daukazu. Mota: " + mota);
-                if (mota.equals("Saltzailea")) {
-                    MenuSaltzaile.main(null); // Saltzailearen menua irekitzen du
-                    frame.dispose();
-                } else if (mota.equals("Bezeroa")) {
-                    MenuBezero.main(null); // Bezeroaren menua irekitzen du
-                }
-            } else {
-                saiakerak[0]++;
-                if (saiakerak[0] >= MAX_SAIAKERAK) {
-                    JOptionPane.showMessageDialog(frame, "Saiakera kopurua gainditu duzu. Programa itxiko da.", "Errorea", JOptionPane.ERROR_MESSAGE);
-                    System.exit(0); // Saiakera kopurua gainditzen denean programa ixten da.
+                String mota = loginSistema(erabiltzaileaText, pasahitzaText);
+                if (mota != null) {
+                    mezua.setText("Sarbidea daukazu. Mota: " + mota);
+                    logeatutakoProfila(id);
+                    if (mota.equals("S")) {
+                        MenuSaltzaile.main(null);
+                        frame.dispose();
+                    } else if (mota.equals("B")) {
+                        MenuBezero.main(null);
+                        frame.dispose();
+                    }
                 } else {
-                    mezua.setText("Errorea logeatzeko orduan. Saiakera " + saiakerak[0] + "/" + MAX_SAIAKERAK);
+                    saiakerak[0]++;
+                    if (saiakerak[0] >= MAX_SAIAKERAK) {
+                        JOptionPane.showMessageDialog(frame, "Saiakera kopurua gainditu duzu. Programa itxiko da.", "Errorea", JOptionPane.ERROR_MESSAGE);
+                        System.exit(0);
+                    } else {
+                        mezua.setText("Errorea logeatzeko orduan. Saiakera " + saiakerak[0] + "/" + MAX_SAIAKERAK);
+                    }
                 }
+            } catch (Exception ex) {
+                JOptionPane.showMessageDialog(frame, "Errorea gertatu da: " + ex.getMessage(), "Errorea", JOptionPane.ERROR_MESSAGE);
+                ex.printStackTrace();
             }
         });
 
@@ -89,21 +104,23 @@ public class Login {
     // Erabiltzailea eta pasahitza egiaztatzeko metodoa.
     public static String loginSistema(String erabiltzailea, String pasahitza) {
         try {
+        	// Konexioa ezartzen da.
 			Connection con = DriverManager.getConnection(DB.url, DB.erabiltzailea, DB.pasahitza);
 			Statement statement = con.createStatement();
-			String kontsultaLogin = "SELECT * FROM ERABILTZAILEAK";
+			
+			// Kontsulta ezartzen da, non erabiltzaileak bilatuko diren.
+			String kontsultaLogin = "SELECT * FROM ERABILTZAILEAK WHERE ERABILTZAILEA = '" + erabiltzailea + "' AND PASAHITZA = '" + pasahitza + "'";
 			ResultSet resultSet = statement.executeQuery(kontsultaLogin);
 
 			while (resultSet.next()) {
-			    int id = resultSet.getInt("ID");
+				id = resultSet.getInt("ID");
 			    String erabiltzaileadb = resultSet.getString("ERABILTZAILEA");
                 String pasahitzadb = resultSet.getString("PASAHITZA");
-                boolean motadb = resultSet.getBoolean("MOTA");
+                String motadb = resultSet.getString("MOTA");
 				if (erabiltzailea.equals(erabiltzaileadb) && pasahitza.equals(pasahitzadb)) {
-					
+					return motadb;
 				}
 			}
-			    // Eta konexioak itxi
 			    resultSet.close();
 			    statement.close();
 			    con.close();
@@ -113,4 +130,49 @@ public class Login {
 		}
         return null;
     }
+    
+    public static void logeatutakoProfila(int id) {
+    	try {
+    		// Konexioa ezartzen da.
+            Connection con = DriverManager.getConnection(DB.url, DB.erabiltzailea, DB.pasahitza);
+            Statement statement = con.createStatement();
+
+            // LANGILE taulan kontsula egitea lehenik eta behin.
+            String kontsultaLangile = "SELECT ID, IZENA, ABIZENA, EMAILA, TELEFONOA, KONTRATAZIO_DATA, ID_NAGUSI FROM LANGILE WHERE ID = " + id;
+            ResultSet resultSetLangile = statement.executeQuery(kontsultaLangile);
+
+            if (resultSetLangile.next()) {
+            	// Datuak esleitzen dira.
+                id = resultSetLangile.getInt("ID");
+                izena = resultSetLangile.getString("IZENA");
+                abizena = resultSetLangile.getString("ABIZENA");
+                emaila = resultSetLangile.getString("EMAILA");
+                telefonoa = resultSetLangile.getString("TELEFONOA");
+                kontratazioData = resultSetLangile.getDate("KONTRATAZIO_DATA").toLocalDate();
+                idnagusi = resultSetLangile.getInt("ID_NAGUSI");
+            } else {
+                // LANGILE taulan ez bada aurkitzen, BEZERO taulan kontsulta egingo da.
+                String kontsultaBezero = "SELECT ID, IZENA, ABIZENA, HELBIDEA, EMAILA FROM BEZERO WHERE ID = " + id;
+                ResultSet resultSetBezero = statement.executeQuery(kontsultaBezero);
+
+                if (resultSetBezero.next()) {
+                	// Datuak esleitzen dira.
+                    id = resultSetBezero.getInt("ID");
+                    izena = resultSetBezero.getString("IZENA");
+                    abizena = resultSetBezero.getString("ABIZENA");
+                    helbidea = resultSetBezero.getString("HELBIDEA");
+                    emaila = resultSetBezero.getString("EMAILA");
+                }
+                resultSetBezero.close();
+            }
+
+            resultSetLangile.close();
+            statement.close();
+            con.close();
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+    
 }

@@ -35,38 +35,119 @@ public class MenuSaltzaile {
 		// Lehenengo menuaren akzioak.
 		menuItem1.addActionListener(e -> {
 		    cardLayout.show(frame.getContentPane(), "NireKontua");
-		    
-		    JPanel datuPertsonalakPanel = new JPanel(new BorderLayout());
-		    
-		    JLabel nireKontuaLabel = new JLabel("Nire Kontua", SwingConstants.CENTER);
-		    nireKontuaLabel.setFont(new Font("Arial", Font.BOLD, 24));
-		    
-		    JPanel centerPanel = new JPanel(new GridBagLayout());
-		    GridBagConstraints gbc = new GridBagConstraints();
-		    gbc.gridx = 0;
-		    gbc.gridy = 0;
-		    gbc.insets = new Insets(10, 10, 10, 10);
-		    
-		    JTextArea datuPertsonalakTextArea = new JTextArea(10, 20);
-		    datuPertsonalakTextArea.setEditable(false);
-		    datuPertsonalakTextArea.setLineWrap(true);
-		    datuPertsonalakTextArea.setWrapStyleWord(true);
-		    
-		    JScrollPane scrollPane = new JScrollPane(datuPertsonalakTextArea);
-		    centerPanel.add(scrollPane, gbc);
-		    
-		    datuPertsonalakPanel.add(nireKontuaLabel, BorderLayout.NORTH);
-		    datuPertsonalakPanel.add(centerPanel, BorderLayout.CENTER);
-		    
-		    frame.add(datuPertsonalakPanel, "NireKontua");
-		    
-		    datuPertsonalakTextArea.setText("Izena: Juan\nAbizena: Perez\nEmaila: juan.perez@example.com\nTelefonoa: 123456789");
-		    cardLayout.show(frame.getContentPane(), "NireKontua");
 		});
 		menuItem2.addActionListener(e -> {
 			System.exit(0);
 		});
 
+		// Datu pertsonalak
+		JPanel datuPertsonalakPanel = new JPanel(new BorderLayout());
+	    JLabel nireKontuaLabel = new JLabel("Nire Kontua", SwingConstants.CENTER);
+	    nireKontuaLabel.setFont(new Font("Arial", Font.BOLD, 24));
+	    
+	    GridBagConstraints gcbDatuak = new GridBagConstraints();
+		gcbDatuak.insets = new Insets(10, 10, 10, 10);
+
+		JLabel izenaLabelP = new JLabel("Izena:");
+		gcbDatuak.gridx = 0;
+		gcbDatuak.gridy = 0;
+		gcbDatuak.gridwidth = 1;
+		datuPertsonalakPanel.add(izenaLabelP, gcbDatuak);
+
+		JTextField izenaP = new JTextField(10);
+		izenaP.setEditable(true);
+		izenaP.setText(Login.izena);
+		gcbDatuak.gridx = 0;
+		gcbDatuak.gridy = 1;
+		gcbDatuak.gridwidth = 1;
+		datuPertsonalakPanel.add(izenaP, gcbDatuak);
+
+		JLabel abizenaLabelP = new JLabel("Abizena:");
+		gcbDatuak.gridx = 1;
+		gcbDatuak.gridy = 0;
+		gcbDatuak.gridwidth = 1;
+		datuPertsonalakPanel.add(abizenaLabelP, gcbDatuak);
+
+		JTextField abizenaP = new JTextField(10);
+		abizenaP.setEditable(true);
+		abizenaP.setText(Login.abizena);
+		gcbDatuak.gridx = 1;
+		gcbDatuak.gridy = 1;
+		gcbDatuak.gridwidth = 1;
+		datuPertsonalakPanel.add(abizenaP, gcbDatuak);
+
+		JLabel emailaLabelP = new JLabel("Emaila:");
+		gcbDatuak.gridx = 0;
+		gcbDatuak.gridy = 2;
+		gcbDatuak.gridwidth = 1;
+		datuPertsonalakPanel.add(emailaLabelP, gcbDatuak);
+
+		JTextField emailaP = new JTextField(10);
+		emailaP.setEditable(true);
+		emailaP.setText(Login.emaila);
+		gcbDatuak.gridx = 0;
+		gcbDatuak.gridy = 3;
+		gcbDatuak.gridwidth = 1;
+		datuPertsonalakPanel.add(emailaP, gcbDatuak);
+
+		JLabel telefonoaLabelP = new JLabel("Telefonoa:");
+		gcbDatuak.gridx = 1;
+		gcbDatuak.gridy = 2;
+		gcbDatuak.gridwidth = 1;
+		datuPertsonalakPanel.add(telefonoaLabelP, gcbDatuak);
+
+		JTextField telefonoaP = new JTextField(10);
+		telefonoaP.setEditable(true);
+		telefonoaP.setText(Login.telefonoa);
+		gcbDatuak.gridx = 1;
+		gcbDatuak.gridy = 3;
+		gcbDatuak.gridwidth = 1;
+		datuPertsonalakPanel.add(telefonoaP, gcbDatuak);
+		
+		JLabel kontrataziodataLabelP = new JLabel("Kontratazio data:");
+		gcbDatuak.gridx = 0;
+		gcbDatuak.gridy = 4;
+		gcbDatuak.gridwidth = 1;
+		datuPertsonalakPanel.add(telefonoaLabelP, gcbDatuak);
+
+		JTextField kontrataziodataP = new JTextField(10);
+		kontrataziodataP.setEditable(false);
+		kontrataziodataP.setText(String.valueOf(Login.kontratazioData));
+		gcbDatuak.gridx = 0;
+		gcbDatuak.gridy = 5;
+		gcbDatuak.gridwidth = 1;
+		datuPertsonalakPanel.add(telefonoaP, gcbDatuak);
+		
+		JLabel nagusiaLabelP = new JLabel("ID Nagusia:");
+		gcbDatuak.gridx = 1;
+		gcbDatuak.gridy = 4;
+		gcbDatuak.gridwidth = 1;
+		datuPertsonalakPanel.add(nagusiaLabelP, gcbDatuak);
+
+		JTextField nagusiaP = new JTextField(10);
+		nagusiaP.setEditable(false);
+		nagusiaP.setText(String.valueOf(Login.idnagusi));
+		gcbDatuak.gridx = 1;
+		gcbDatuak.gridy = 5;
+		gcbDatuak.gridwidth = 1;
+		datuPertsonalakPanel.add(nagusiaP, gcbDatuak);
+	    
+	    datuPertsonalakPanel.add(nireKontuaLabel, BorderLayout.NORTH);
+	    JPanel centerPanel = new JPanel(new GridBagLayout());
+	    centerPanel.add(izenaLabelP, gcbDatuak);
+	    centerPanel.add(izenaP, gcbDatuak);
+	    centerPanel.add(abizenaLabelP, gcbDatuak);
+	    centerPanel.add(abizenaP, gcbDatuak);
+	    centerPanel.add(emailaLabelP, gcbDatuak);
+	    centerPanel.add(emailaP, gcbDatuak);
+	    centerPanel.add(telefonoaLabelP, gcbDatuak);
+	    centerPanel.add(telefonoaP, gcbDatuak);
+	    centerPanel.add(nagusiaLabelP, gcbDatuak);
+	    centerPanel.add(nagusiaP, gcbDatuak);
+	    
+	    datuPertsonalakPanel.add(centerPanel, BorderLayout.CENTER);
+	    
+	    frame.add(datuPertsonalakPanel, "NireKontua");
 		
 		
 		///// Bigarren menua sortu eta antolatu egiten da.
