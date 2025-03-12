@@ -1,6 +1,12 @@
 package erronka;
 
 import java.io.*;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+
 import javax.swing.*;
 import java.awt.*;
 
@@ -82,18 +88,29 @@ public class Login {
     
     // Erabiltzailea eta pasahitza egiaztatzeko metodoa.
     public static String loginSistema(String erabiltzailea, String pasahitza) {
-        try (BufferedReader br = new BufferedReader(new FileReader(erabiltzaileakFitxategi))) {
-            String lerroa;
-            br.readLine(); // Goiburua ezabatzen du
-            while ((lerroa = br.readLine()) != null) {
-                String[] fitxategi = lerroa.split(";"); // Separadorea ezartzen du
-                if (fitxategi.length == 3 && erabiltzailea.equals(fitxategi[0]) && pasahitza.equals(fitxategi[1])) {
-                    return fitxategi[2]; // Erabiltzailea 0 posizioan, pasahitza 1 posizioan eta mota 2 posizioan. Mota itzultzen du.
-                }
-            }
-        } catch (IOException e) {
-            System.out.println("ERROREA: Fitxategia ezin da irakurri.");
-        }
+        try {
+			Connection con = DriverManager.getConnection(DB.url, DB.erabiltzailea, DB.pasahitza);
+			Statement statement = con.createStatement();
+			String kontsultaLogin = "SELECT * FROM ERABILTZAILEAK";
+			ResultSet resultSet = statement.executeQuery(kontsultaLogin);
+
+			while (resultSet.next()) {
+			    int id = resultSet.getInt("ID");
+			    String erabiltzaileadb = resultSet.getString("ERABILTZAILEA");
+                String pasahitzadb = resultSet.getString("PASAHITZA");
+                boolean motadb = resultSet.getBoolean("MOTA");
+				if (erabiltzailea.equals(erabiltzaileadb) && pasahitza.equals(pasahitzadb)) {
+					
+				}
+			}
+			    // Eta konexioak itxi
+			    resultSet.close();
+			    statement.close();
+			    con.close();
+
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
         return null;
     }
 }
