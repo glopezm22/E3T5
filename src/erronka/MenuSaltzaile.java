@@ -31,16 +31,44 @@ public class MenuSaltzaile {
 		menu.add(menuItem1);
 		menu.add(menuItem2);
 		menuBar.add(menu);
-
+		
 		// Lehenengo menuaren akzioak.
 		menuItem1.addActionListener(e -> {
-			JOptionPane.showMessageDialog(frame, "Informazioa kontsultatu aukeratu duzu.");
+		    cardLayout.show(frame.getContentPane(), "NireKontua");
+		    
+		    JPanel datuPertsonalakPanel = new JPanel(new BorderLayout());
+		    
+		    JLabel nireKontuaLabel = new JLabel("Nire Kontua", SwingConstants.CENTER);
+		    nireKontuaLabel.setFont(new Font("Arial", Font.BOLD, 24));
+		    
+		    JPanel centerPanel = new JPanel(new GridBagLayout());
+		    GridBagConstraints gbc = new GridBagConstraints();
+		    gbc.gridx = 0;
+		    gbc.gridy = 0;
+		    gbc.insets = new Insets(10, 10, 10, 10);
+		    
+		    JTextArea datuPertsonalakTextArea = new JTextArea(10, 20);
+		    datuPertsonalakTextArea.setEditable(false);
+		    datuPertsonalakTextArea.setLineWrap(true);
+		    datuPertsonalakTextArea.setWrapStyleWord(true);
+		    
+		    JScrollPane scrollPane = new JScrollPane(datuPertsonalakTextArea);
+		    centerPanel.add(scrollPane, gbc);
+		    
+		    datuPertsonalakPanel.add(nireKontuaLabel, BorderLayout.NORTH);
+		    datuPertsonalakPanel.add(centerPanel, BorderLayout.CENTER);
+		    
+		    frame.add(datuPertsonalakPanel, "NireKontua");
+		    
+		    datuPertsonalakTextArea.setText("Izena: Juan\nAbizena: Perez\nEmaila: juan.perez@example.com\nTelefonoa: 123456789");
+		    cardLayout.show(frame.getContentPane(), "NireKontua");
 		});
-
 		menuItem2.addActionListener(e -> {
 			System.exit(0);
 		});
 
+		
+		
 		///// Bigarren menua sortu eta antolatu egiten da.
 		JMenu menu2 = new JMenu("Erabiltzaileak");
 		JMenuItem menuItem01 = new JMenuItem("Gehitu");
