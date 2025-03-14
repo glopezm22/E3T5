@@ -5,7 +5,6 @@ import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-
 import javax.swing.*;
 import java.awt.*;
 import java.time.LocalDate;
@@ -27,7 +26,7 @@ public class Login {
     public static LocalDate kontratazioData = null;
     public static int idnagusi = 0;
     
-    @SuppressWarnings("unused")
+   // @SuppressWarnings("unused")
 	public static void main(String[] args) {
     	
 		// Frame-a sortu eta parametroak ezarri.
@@ -103,9 +102,10 @@ public class Login {
     
     // Erabiltzailea eta pasahitza egiaztatzeko metodoa.
     public static String loginSistema(String erabiltzailea, String pasahitza) {
+    	
         try {
         	// Konexioa ezartzen da.
-			Connection con = DriverManager.getConnection(DB.url, DB.erabiltzailea, DB.pasahitza);
+			Connection con = DBmain.konexioa();
 			Statement statement = con.createStatement();
 			
 			// Kontsulta ezartzen da, non erabiltzaileak bilatuko diren.
@@ -134,7 +134,7 @@ public class Login {
     public static void logeatutakoProfila(int id) {
     	try {
     		// Konexioa ezartzen da.
-            Connection con = DriverManager.getConnection(DB.url, DB.erabiltzailea, DB.pasahitza);
+            Connection con = DBmain.konexioa();
             Statement statement = con.createStatement();
 
             // LANGILE taulan kontsula egitea lehenik eta behin.

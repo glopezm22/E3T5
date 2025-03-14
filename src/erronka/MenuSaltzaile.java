@@ -1,12 +1,10 @@
-
 package erronka;
 
 import java.util.List;
-import java.io.*;
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.sql.ResultSet;
 import java.util.ArrayList;
 import javax.swing.*;
 import java.awt.*;
@@ -14,7 +12,6 @@ import java.awt.*;
 public class MenuSaltzaile {
 
 	public static void main(String[] args) {
-
 		// Frame-a sortu eta parametroak ezarri.
 		JFrame frame = new JFrame("GameStop | Saltzaileen menua");
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -23,7 +20,12 @@ public class MenuSaltzaile {
 		CardLayout cardLayout = new CardLayout();
 		frame.setLayout(cardLayout);
 
-		///// Lehenengo menua sortu eta antolatu egiten da.
+		// Defektuzko panela BETI bistaratuko dena hasieran.
+		JPanel defaultPanel = new JPanel();
+		frame.add(defaultPanel, "Default");
+		cardLayout.show(frame.getContentPane(), "Default");
+
+		// Menua sortu eta antolatu.
 		JMenuBar menuBar = new JMenuBar();
 		JMenu menu = new JMenu("Nire kontua");
 		JMenuItem menuItem1 = new JMenuItem("Datu pertsonalak");
@@ -31,126 +33,16 @@ public class MenuSaltzaile {
 		menu.add(menuItem1);
 		menu.add(menuItem2);
 		menuBar.add(menu);
-		
-		// Lehenengo menuaren akzioak.
-		menuItem1.addActionListener(e -> {
-		    cardLayout.show(frame.getContentPane(), "NireKontua");
-		});
-		menuItem2.addActionListener(e -> {
-			System.exit(0);
-		});
 
-		// Datu pertsonalak
-		JPanel datuPertsonalakPanel = new JPanel(new BorderLayout());
-	    JLabel nireKontuaLabel = new JLabel("Nire Kontua", SwingConstants.CENTER);
-	    nireKontuaLabel.setFont(new Font("Arial", Font.BOLD, 24));
-	    
-	    GridBagConstraints gcbDatuak = new GridBagConstraints();
-		gcbDatuak.insets = new Insets(10, 10, 10, 10);
+		// Datu pertsonalak panel-a sortu.
+		JPanel datuPertsonalakPanel = datuPertsonalakPanelSortu();
+		frame.add(datuPertsonalakPanel, "NireKontua");
 
-		JLabel izenaLabelP = new JLabel("Izena:");
-		gcbDatuak.gridx = 0;
-		gcbDatuak.gridy = 0;
-		gcbDatuak.gridwidth = 1;
-		datuPertsonalakPanel.add(izenaLabelP, gcbDatuak);
+		// Menua-ren akzioak.
+		menuItem1.addActionListener(e -> cardLayout.show(frame.getContentPane(), "NireKontua"));
+		menuItem2.addActionListener(e -> System.exit(0));
 
-		JTextField izenaP = new JTextField(10);
-		izenaP.setEditable(true);
-		izenaP.setText(Login.izena);
-		gcbDatuak.gridx = 0;
-		gcbDatuak.gridy = 1;
-		gcbDatuak.gridwidth = 1;
-		datuPertsonalakPanel.add(izenaP, gcbDatuak);
-
-		JLabel abizenaLabelP = new JLabel("Abizena:");
-		gcbDatuak.gridx = 1;
-		gcbDatuak.gridy = 0;
-		gcbDatuak.gridwidth = 1;
-		datuPertsonalakPanel.add(abizenaLabelP, gcbDatuak);
-
-		JTextField abizenaP = new JTextField(10);
-		abizenaP.setEditable(true);
-		abizenaP.setText(Login.abizena);
-		gcbDatuak.gridx = 1;
-		gcbDatuak.gridy = 1;
-		gcbDatuak.gridwidth = 1;
-		datuPertsonalakPanel.add(abizenaP, gcbDatuak);
-
-		JLabel emailaLabelP = new JLabel("Emaila:");
-		gcbDatuak.gridx = 0;
-		gcbDatuak.gridy = 2;
-		gcbDatuak.gridwidth = 1;
-		datuPertsonalakPanel.add(emailaLabelP, gcbDatuak);
-
-		JTextField emailaP = new JTextField(10);
-		emailaP.setEditable(true);
-		emailaP.setText(Login.emaila);
-		gcbDatuak.gridx = 0;
-		gcbDatuak.gridy = 3;
-		gcbDatuak.gridwidth = 1;
-		datuPertsonalakPanel.add(emailaP, gcbDatuak);
-
-		JLabel telefonoaLabelP = new JLabel("Telefonoa:");
-		gcbDatuak.gridx = 1;
-		gcbDatuak.gridy = 2;
-		gcbDatuak.gridwidth = 1;
-		datuPertsonalakPanel.add(telefonoaLabelP, gcbDatuak);
-
-		JTextField telefonoaP = new JTextField(10);
-		telefonoaP.setEditable(true);
-		telefonoaP.setText(Login.telefonoa);
-		gcbDatuak.gridx = 1;
-		gcbDatuak.gridy = 3;
-		gcbDatuak.gridwidth = 1;
-		datuPertsonalakPanel.add(telefonoaP, gcbDatuak);
-		
-		JLabel kontrataziodataLabelP = new JLabel("Kontratazio data:");
-		gcbDatuak.gridx = 0;
-		gcbDatuak.gridy = 4;
-		gcbDatuak.gridwidth = 1;
-		datuPertsonalakPanel.add(telefonoaLabelP, gcbDatuak);
-
-		JTextField kontrataziodataP = new JTextField(10);
-		kontrataziodataP.setEditable(false);
-		kontrataziodataP.setText(String.valueOf(Login.kontratazioData));
-		gcbDatuak.gridx = 0;
-		gcbDatuak.gridy = 5;
-		gcbDatuak.gridwidth = 1;
-		datuPertsonalakPanel.add(telefonoaP, gcbDatuak);
-		
-		JLabel nagusiaLabelP = new JLabel("ID Nagusia:");
-		gcbDatuak.gridx = 1;
-		gcbDatuak.gridy = 4;
-		gcbDatuak.gridwidth = 1;
-		datuPertsonalakPanel.add(nagusiaLabelP, gcbDatuak);
-
-		JTextField nagusiaP = new JTextField(10);
-		nagusiaP.setEditable(false);
-		nagusiaP.setText(String.valueOf(Login.idnagusi));
-		gcbDatuak.gridx = 1;
-		gcbDatuak.gridy = 5;
-		gcbDatuak.gridwidth = 1;
-		datuPertsonalakPanel.add(nagusiaP, gcbDatuak);
-	    
-	    datuPertsonalakPanel.add(nireKontuaLabel, BorderLayout.NORTH);
-	    JPanel centerPanel = new JPanel(new GridBagLayout());
-	    centerPanel.add(izenaLabelP, gcbDatuak);
-	    centerPanel.add(izenaP, gcbDatuak);
-	    centerPanel.add(abizenaLabelP, gcbDatuak);
-	    centerPanel.add(abizenaP, gcbDatuak);
-	    centerPanel.add(emailaLabelP, gcbDatuak);
-	    centerPanel.add(emailaP, gcbDatuak);
-	    centerPanel.add(telefonoaLabelP, gcbDatuak);
-	    centerPanel.add(telefonoaP, gcbDatuak);
-	    centerPanel.add(nagusiaLabelP, gcbDatuak);
-	    centerPanel.add(nagusiaP, gcbDatuak);
-	    
-	    datuPertsonalakPanel.add(centerPanel, BorderLayout.CENTER);
-	    
-	    frame.add(datuPertsonalakPanel, "NireKontua");
-		
-		
-		///// Bigarren menua sortu eta antolatu egiten da.
+		// Erabiltzaileak menua sortu.
 		JMenu menu2 = new JMenu("Erabiltzaileak");
 		JMenuItem menuItem01 = new JMenuItem("Gehitu");
 		JMenuItem menuItem02 = new JMenuItem("Ezabatu");
@@ -160,7 +52,7 @@ public class MenuSaltzaile {
 		menu2.add(menuItem03);
 		menuBar.add(menu2);
 
-		///// Hirugarren menua sortu eta antolatu egiten da.
+		// Produktuak menua sortu.
 		JMenu menu3 = new JMenu("Produktuak");
 		JMenuItem menuItem001 = new JMenuItem("Bistaratu");
 		JMenuItem menuItem002 = new JMenuItem("Gehitu");
@@ -172,7 +64,7 @@ public class MenuSaltzaile {
 		menu3.add(menuItem004);
 		menuBar.add(menu3);
 
-		///// Laugarren menua sortu eta antolatu egiten da.
+		// Eskariak menua sortu.
 		JMenu menu4 = new JMenu("Eskariak");
 		JMenuItem menuItem0001 = new JMenuItem("Bistaratu");
 		menu4.add(menuItem0001);
@@ -180,346 +72,328 @@ public class MenuSaltzaile {
 
 		frame.setJMenuBar(menuBar);
 
-		// Defektuzko panela BETI bistaratuko dena hasieran.
-		JPanel defaultPanel = new JPanel();
-		frame.add(defaultPanel, "Default");
-
-		// Panel nagusia sortzeko erabiltzaileak
+		// Panel nagusia sortu.
 		JPanel mainPanel = new JPanel(new BorderLayout());
 		frame.add(mainPanel, "MainPanel");
 
-		// ComboBox panela aukeratzeko erabiltzaile mota
+		// ComboBox panela sortu.
 		JPanel comboBoxPanel = new JPanel();
-		JComboBox<String> comboBox = new JComboBox<>();
-		comboBox.addItem("Saltzailea");
-		comboBox.addItem("Bezeroa");
+		JComboBox<String> comboBox = new JComboBox<>(new String[] { "Saltzailea", "Bezeroa" });
 		comboBoxPanel.add(comboBox);
 		mainPanel.add(comboBoxPanel, BorderLayout.NORTH);
 
-		// CardLayout panel for user creation
+		// CardLayout panel-a sortu.
 		JPanel cardPanel = new JPanel(new CardLayout());
 		mainPanel.add(cardPanel, BorderLayout.CENTER);
 
-		// Panel for creating "Saltzailea"
-		JPanel panelSaltzailea = new JPanel(new GridBagLayout());
-		GridBagConstraints gbcSaltzailea = new GridBagConstraints();
-		gbcSaltzailea.insets = new Insets(10, 10, 10, 10);
-
-		JLabel izenaLabel = new JLabel("Izena:");
-		gbcSaltzailea.gridx = 0;
-		gbcSaltzailea.gridy = 0;
-		gbcSaltzailea.gridwidth = 1;
-		gbcSaltzailea.fill = GridBagConstraints.HORIZONTAL;
-		panelSaltzailea.add(izenaLabel, gbcSaltzailea);
-
-		JTextField izena = new JTextField(10);
-		gbcSaltzailea.gridx = 1;
-		gbcSaltzailea.gridy = 0;
-		gbcSaltzailea.gridwidth = 1;
-		panelSaltzailea.add(izena, gbcSaltzailea);
-
-		JLabel abizenaLabel = new JLabel("Abizena:");
-		gbcSaltzailea.gridx = 0;
-		gbcSaltzailea.gridy = 1;
-		gbcSaltzailea.gridwidth = 1;
-		gbcSaltzailea.fill = GridBagConstraints.HORIZONTAL;
-		panelSaltzailea.add(abizenaLabel, gbcSaltzailea);
-
-		JTextField abizena = new JTextField(10);
-		gbcSaltzailea.gridx = 1;
-		gbcSaltzailea.gridy = 1;
-		gbcSaltzailea.gridwidth = 1;
-		panelSaltzailea.add(abizena, gbcSaltzailea);
-
-		JLabel emailaLabel = new JLabel("Emaila:");
-		gbcSaltzailea.gridx = 0;
-		gbcSaltzailea.gridy = 2;
-		gbcSaltzailea.gridwidth = 1;
-		gbcSaltzailea.fill = GridBagConstraints.HORIZONTAL;
-		panelSaltzailea.add(emailaLabel, gbcSaltzailea);
-
-		JTextField emaila = new JTextField(10);
-		gbcSaltzailea.gridx = 1;
-		gbcSaltzailea.gridy = 2;
-		gbcSaltzailea.gridwidth = 1;
-		panelSaltzailea.add(emaila, gbcSaltzailea);
-
-		JLabel telefonoaLabel = new JLabel("Telefonoa:");
-		gbcSaltzailea.gridx = 0;
-		gbcSaltzailea.gridy = 3;
-		gbcSaltzailea.gridwidth = 1;
-		gbcSaltzailea.fill = GridBagConstraints.HORIZONTAL;
-		panelSaltzailea.add(telefonoaLabel, gbcSaltzailea);
-
-		JTextField telefonoa = new JTextField(10);
-		gbcSaltzailea.gridx = 1;
-		gbcSaltzailea.gridy = 3;
-		gbcSaltzailea.gridwidth = 1;
-		panelSaltzailea.add(telefonoa, gbcSaltzailea);
-
-		JLabel nagusiaLabel = new JLabel("ID Nagusia:");
-		gbcSaltzailea.gridx = 0;
-		gbcSaltzailea.gridy = 4;
-		gbcSaltzailea.gridwidth = 1;
-		gbcSaltzailea.fill = GridBagConstraints.HORIZONTAL;
-		panelSaltzailea.add(nagusiaLabel, gbcSaltzailea);
-
-		JTextField nagusia = new JTextField(10);
-		gbcSaltzailea.gridx = 1;
-		gbcSaltzailea.gridy = 4;
-		gbcSaltzailea.gridwidth = 1;
-		panelSaltzailea.add(nagusia, gbcSaltzailea);
-
-		JButton gehituSaltzailea = new JButton("Gehitu");
-		gbcSaltzailea.gridx = 0;
-		gbcSaltzailea.gridy = 5;
-		gbcSaltzailea.gridwidth = 2;
-		panelSaltzailea.add(gehituSaltzailea, gbcSaltzailea);
-
-		gehituSaltzailea.addActionListener(e -> {
-			String izenaS = izena.getText();
-			String abizenaS = abizena.getText();
-			String emailaS = emaila.getText();
-			String telefonoaS = telefonoa.getText();
-			String nagusiaS = nagusia.getText();
-
-			try {
-				Connection conn = DriverManager.getConnection(DB.url, DB.erabiltzailea, DB.pasahitza);
-				Statement stmt = conn.createStatement();
-				String sql = "INSERT INTO LANGILE (ID, IZENA, ABIZENA, EMAILA, TELEFONOA, KONTRATAZIO_DATA, ID_NAGUSI, SOLDATA) VALUES ('1234', '"
-						+ izenaS + "', '" + abizenaS + "', '" + emailaS + "', '" + telefonoaS + "', 10/10/20, '"
-						+ nagusiaS + "', 100)";
-				stmt.executeUpdate(sql);
-				String sql2 = "INSERT INTO SALTZAILE (ID, ERABILTZAILEA, PASAHITZA) VALUES ('1234', '" + izenaS + "', '"
-						+ abizenaS + "')";
-				stmt.executeUpdate(sql2);
-				conn.close();
-				JOptionPane.showMessageDialog(null, "Saltzailea gehitu da.");
-			} catch (SQLException ex) {
-				JOptionPane.showMessageDialog(null, "Errorea: saltzailea ezin da gehitu.");
-			}
-		});
-
-		// Panel for creating "Bezeroa"
-		JPanel panelBezeroa = new JPanel(new GridBagLayout());
-		GridBagConstraints gbcBezeroa = new GridBagConstraints();
-		gbcBezeroa.insets = new Insets(10, 10, 10, 10);
-
-		JLabel izenaLabelB = new JLabel("Izena:");
-		gbcBezeroa.gridx = 0;
-		gbcBezeroa.gridy = 0;
-		gbcBezeroa.gridwidth = 1;
-		gbcBezeroa.fill = GridBagConstraints.HORIZONTAL;
-		panelBezeroa.add(izenaLabelB, gbcBezeroa);
-
-		JTextField izenaB = new JTextField(10);
-		gbcBezeroa.gridx = 1;
-		gbcBezeroa.gridy = 0;
-		gbcBezeroa.gridwidth = 1;
-		panelBezeroa.add(izenaB, gbcBezeroa);
-
-		JLabel abizenaLabelB = new JLabel("Abizena:");
-		gbcBezeroa.gridx = 0;
-		gbcBezeroa.gridy = 1;
-		gbcBezeroa.gridwidth = 1;
-		gbcBezeroa.fill = GridBagConstraints.HORIZONTAL;
-		panelBezeroa.add(abizenaLabelB, gbcBezeroa);
-
-		JTextField abizenaB = new JTextField(10);
-		gbcBezeroa.gridx = 1;
-		gbcBezeroa.gridy = 1;
-		gbcBezeroa.gridwidth = 1;
-		panelBezeroa.add(abizenaB, gbcBezeroa);
-
-		JLabel emailaLabelB = new JLabel("Emaila:");
-		gbcBezeroa.gridx = 0;
-		gbcBezeroa.gridy = 2;
-		gbcBezeroa.gridwidth = 1;
-		gbcBezeroa.fill = GridBagConstraints.HORIZONTAL;
-		panelBezeroa.add(emailaLabelB, gbcBezeroa);
-
-		JTextField emailaB = new JTextField(10);
-		gbcBezeroa.gridx = 1;
-		gbcBezeroa.gridy = 2;
-		gbcBezeroa.gridwidth = 1;
-		panelBezeroa.add(emailaB, gbcBezeroa);
-
-		JLabel helbideaLabelB = new JLabel("Helbidea:");
-		gbcBezeroa.gridx = 0;
-		gbcBezeroa.gridy = 3;
-		gbcBezeroa.gridwidth = 1;
-		gbcBezeroa.fill = GridBagConstraints.HORIZONTAL;
-		panelBezeroa.add(helbideaLabelB, gbcBezeroa);
-
-		JTextField helbideaB = new JTextField(10);
-		gbcBezeroa.gridx = 1;
-		gbcBezeroa.gridy = 3;
-		gbcBezeroa.gridwidth = 1;
-		panelBezeroa.add(helbideaB, gbcBezeroa);
-
-		JButton gehituBezeroa = new JButton("Gehitu");
-		gbcBezeroa.gridx = 0;
-		gbcBezeroa.gridy = 4;
-		gbcBezeroa.gridwidth = 2;
-		panelBezeroa.add(gehituBezeroa, gbcBezeroa);
-
-		// Add panels to cardPanel
+		// Saltzailea panel-a sortu.
+		JPanel panelSaltzailea = saltzaileaPanelSortu();
 		cardPanel.add(panelSaltzailea, "Saltzailea");
+
+		// Bezeroa panel-a sortu.
+		JPanel panelBezeroa = bezeroaPanelSortu();
 		cardPanel.add(panelBezeroa, "Bezeroa");
 
-		// ComboBox action listener to switch panels
+		// ComboBox-aren akzioa.
 		comboBox.addActionListener(e -> {
 			CardLayout cl = (CardLayout) (cardPanel.getLayout());
 			cl.show(cardPanel, (String) comboBox.getSelectedItem());
 		});
 
-		// Set default panel
-		comboBox.setSelectedItem("Saltzailea");
+		// Menu item-aren akzioa.
+		menuItem01.addActionListener(e -> cardLayout.show(frame.getContentPane(), "MainPanel"));
 
-		// Menu item action to show main panel
-		menuItem01.addActionListener(e -> {
-			cardLayout.show(frame.getContentPane(), "MainPanel");
+		// Erabiltzaileak ezabatzeko panel-a sortu.
+		JPanel panelErabiltzaileakEzabatu = erabiltzaileakEzabatuPanelSortu();
+		frame.add(panelErabiltzaileakEzabatu, "PanelErabiltzaileakEzabatu");
+
+		// Erabiltzaileak kontsultatzeko panel-a sortu.
+		JPanel panelErabiltzaileakKontsultatu = erabiltzaileakKontsultatuPanelSortu();
+		frame.add(panelErabiltzaileakKontsultatu, "PanelErabiltzaileakKontsultatu");
+
+		// Menu item-aren akzioa "Ezabatu" aukerarako.
+		menuItem02.addActionListener(e -> {
+			cardLayout.show(frame.getContentPane(), "PanelErabiltzaileakEzabatu");
 		});
 
-		///// Erabiltzaileak ezabatzeko dialog-a eta botoiaren akzioa.
-		JPanel panelErabiltzaileakEzabatu = new JPanel(new GridBagLayout());
-		GridBagConstraints gbcEzabatu = new GridBagConstraints();
-		gbcEzabatu.insets = new Insets(10, 10, 10, 10);
+		frame.setVisible(true);
+	}
+
+	// Datu pertsonalak panel-a sortzeko metodoa.
+	private static JPanel datuPertsonalakPanelSortu() {
+		JPanel panel = new JPanel(new BorderLayout());
+		JLabel nireKontuaLabel = new JLabel("Nire Kontua", SwingConstants.CENTER);
+		nireKontuaLabel.setFont(new Font("Arial", Font.BOLD, 24));
+		panel.add(nireKontuaLabel, BorderLayout.NORTH);
+
+		JPanel centerPanel = new JPanel(new GridBagLayout());
+		GridBagConstraints gbc = new GridBagConstraints();
+		gbc.insets = new Insets(10, 10, 10, 10);
+
+		String[] labels = { "Izena:", "Abizena:", "Emaila:", "Telefonoa:", "Kontratazio data:", "ID Nagusia:" };
+		String[] values = { Login.izena, Login.abizena, Login.emaila, Login.telefonoa,
+				String.valueOf(Login.kontratazioData), String.valueOf(Login.idnagusi) };
+		JTextField[] textFields = new JTextField[labels.length];
+
+		for (int i = 0; i < labels.length; i++) {
+			gbc.gridx = 0;
+			gbc.gridy = i;
+			centerPanel.add(new JLabel(labels[i]), gbc);
+
+			textFields[i] = new JTextField(10);
+			textFields[i].setEditable(i != 4 && i != 5); // Kontratazio data eta ID Nagusia ezin dira editatu.
+			textFields[i].setText(values[i]);
+			gbc.gridx = 1;
+			centerPanel.add(textFields[i], gbc);
+		}
+
+		// Botón "Gorde" gehitu.
+		JButton gordeButton = new JButton("Gorde");
+		gbc.gridx = 0;
+		gbc.gridy = labels.length;
+		gbc.gridwidth = 2;
+		centerPanel.add(gordeButton, gbc);
+
+		// Botón "Gorde"-ren akzioa.
+		gordeButton.addActionListener(e -> {
+			String izena = textFields[0].getText();
+			String abizena = textFields[1].getText();
+			String emaila = textFields[2].getText();
+			String telefonoa = textFields[3].getText();
+
+			try {
+				Connection conn = DBmain.konexioa();
+				Statement stmt = conn.createStatement();
+				String sql = "UPDATE LANGILE SET IZENA = '" + izena + "', ABIZENA = '" + abizena + "', EMAILA = '"
+						+ emaila + "', TELEFONOA = '" + telefonoa + "' WHERE ID = '" + Login.id + "'";
+				stmt.executeUpdate(sql);
+				conn.close();
+				JOptionPane.showMessageDialog(null, "Datuak eguneratu dira.");
+			} catch (SQLException ex) {
+				JOptionPane.showMessageDialog(null, "Errorea: ezin dira datuak eguneratu.");
+				ex.printStackTrace();
+			}
+		});
+
+		panel.add(centerPanel, BorderLayout.CENTER);
+		return panel;
+	}
+
+	// Saltzailea panel-a sortzeko metodoa.
+	private static JPanel saltzaileaPanelSortu() {
+		JPanel panel = new JPanel(new GridBagLayout());
+		GridBagConstraints gbc = new GridBagConstraints();
+		gbc.insets = new Insets(10, 10, 10, 10);
+
+		String[] labels = { "Izena:", "Abizena:", "Emaila:", "Telefonoa:", "ID Nagusia:" };
+		JTextField[] textFields = new JTextField[labels.length];
+
+		for (int i = 0; i < labels.length; i++) {
+			gbc.gridx = 0;
+			gbc.gridy = i;
+			panel.add(new JLabel(labels[i]), gbc);
+
+			textFields[i] = new JTextField(10);
+			gbc.gridx = 1;
+			panel.add(textFields[i], gbc);
+		}
+
+		JButton gehituSaltzailea = new JButton("Gehitu");
+		gbc.gridx = 0;
+		gbc.gridy = labels.length;
+		gbc.gridwidth = 2;
+		panel.add(gehituSaltzailea, gbc);
+
+		gehituSaltzailea.addActionListener(e -> {
+			try {
+				Connection conn = DBmain.konexioa();
+				Statement stmt = conn.createStatement();
+				String sqlInsertLANGILE;
+				if (textFields[4].getText().isEmpty()) {
+					sqlInsertLANGILE = "INSERT INTO LANGILE (ID, IZENA, ABIZENA, EMAILA, TELEFONOA, KONTRATAZIO_DATA, ID_NAGUSI, SOLDATA) VALUES ((SELECT NVL(MAX(ID), 0) + 1 FROM LANGILE),'"
+							+ textFields[0].getText() + "', '" + textFields[1].getText() + "', '" + textFields[2].getText()
+							+ "', '" + textFields[3].getText() + "', SYSDATE, NULL, 30000)";
+				} else {
+					sqlInsertLANGILE = "INSERT INTO LANGILE (ID, IZENA, ABIZENA, EMAILA, TELEFONOA, KONTRATAZIO_DATA, ID_NAGUSI, SOLDATA) VALUES ((SELECT NVL(MAX(ID), 0) + 1 FROM LANGILE),'"
+							+ textFields[0].getText() + "', '" + textFields[1].getText() + "', '" + textFields[2].getText()
+							+ "', '" + textFields[3].getText() + "', SYSDATE, " + textFields[4].getText() + ", 30000)";
+				}
+				stmt.executeUpdate(sqlInsertLANGILE);
+				String sqlInsertERABILTZAILEAK = "INSERT INTO ERABILTZAILEAK (ID, ERABILTZAILEA, PASAHITZA, MOTA) SELECT ID, LOWER(SUBSTR(IZENA, 1, 1)) || LOWER(ABIZENA) AS ERABILTZAILEA, LOWER(SUBSTR(IZENA, 1, 1)) || LOWER(ABIZENA) AS PASAHITZA, 'S' AS MOTA FROM LANGILE WHERE ID = (SELECT MAX(ID) FROM LANGILE)";
+				stmt.executeUpdate(sqlInsertERABILTZAILEAK);
+				String sqlInsertSALTZAILE = "INSERT INTO SALTZAILE (ID, ERABILTZAILEA, PASAHITZA) SELECT L.ID, E.ERABILTZAILEA, E.PASAHITZA FROM ERABILTZAILEAK E, LANGILE L WHERE L.ID=E.ID AND L.ID = (SELECT MAX(ID) FROM LANGILE)";
+				stmt.executeUpdate(sqlInsertSALTZAILE);
+				conn.close();
+				JOptionPane.showMessageDialog(null, "Saltzailea gehitu da.");
+			} catch (SQLException ex) {
+				JOptionPane.showMessageDialog(null, "Errorea: saltzailea ezin da gehitu.");
+				ex.printStackTrace();
+			}
+		});
+
+		return panel;
+	}
+
+	// Bezeroa panel-a sortzeko metodoa.
+	private static JPanel bezeroaPanelSortu() {
+		JPanel panel = new JPanel(new GridBagLayout());
+		GridBagConstraints gbc = new GridBagConstraints();
+		gbc.insets = new Insets(10, 10, 10, 10);
+
+		String[] labels = { "Izena:", "Abizena:", "Emaila:", "Helbidea:" };
+		JTextField[] textFields = new JTextField[labels.length];
+
+		for (int i = 0; i < labels.length; i++) {
+			gbc.gridx = 0;
+			gbc.gridy = i;
+			panel.add(new JLabel(labels[i]), gbc);
+
+			textFields[i] = new JTextField(10);
+			gbc.gridx = 1;
+			panel.add(textFields[i], gbc);
+		}
+
+		JButton gehituBezeroa = new JButton("Gehitu");
+		gbc.gridx = 0;
+		gbc.gridy = labels.length;
+		gbc.gridwidth = 2;
+		panel.add(gehituBezeroa, gbc);
+
+		gehituBezeroa.addActionListener(e -> {
+			try {
+				Connection conn = DBmain.konexioa();
+				Statement stmt = conn.createStatement();
+				String sqlInsertBEZERO = "INSERT INTO BEZERO (ID, IZENA, ABIZENA, EMAILA, HELBIDEA) VALUES ((SELECT NVL(MAX(ID), 0) + 1 FROM BEZERO),'"
+						+ textFields[0].getText() + "', '" + textFields[1].getText() + "', '" + textFields[2].getText()
+						+ "', '" + textFields[3].getText() + "')";
+				stmt.executeUpdate(sqlInsertBEZERO);
+				String sqlInsertERABILTZAILEAK = "INSERT INTO ERABILTZAILEAK (ID, ERABILTZAILEA, PASAHITZA, MOTA) SELECT ID, LOWER(SUBSTR(IZENA, 1, 1)) || LOWER(ABIZENA) AS ERABILTZAILEA, LOWER(SUBSTR(IZENA, 1, 1)) || LOWER(ABIZENA) AS PASAHITZA, 'B' AS MOTA FROM BEZERO WHERE ID = (SELECT MAX(ID) FROM BEZERO)";
+				stmt.executeUpdate(sqlInsertERABILTZAILEAK);
+				conn.close();
+				JOptionPane.showMessageDialog(null, "Bezeroa gehitu da.");
+			} catch (SQLException ex) {
+				JOptionPane.showMessageDialog(null, "Errorea: bezeroa ezin da gehitu.");
+				ex.printStackTrace();
+			}
+		});
+
+		return panel;
+	}
+
+	// Erabiltzaileak ezabatzeko panel-a sortzeko metodoa.
+	private static JPanel erabiltzaileakEzabatuPanelSortu() {
+		JPanel panel = new JPanel(new GridBagLayout());
+		GridBagConstraints gbc = new GridBagConstraints();
+		gbc.insets = new Insets(10, 10, 10, 10);
 
 		JLabel labelComboBox = new JLabel("Aukeratu erabiltzailea:");
-		gbcEzabatu.gridx = 0;
-		gbcEzabatu.gridy = 0;
-		gbcEzabatu.gridwidth = 1;
-		gbcEzabatu.fill = GridBagConstraints.HORIZONTAL;
-		panelErabiltzaileakEzabatu.add(labelComboBox, gbcEzabatu);
+		gbc.gridx = 0;
+		gbc.gridy = 0;
+		panel.add(labelComboBox, gbc);
 
 		JComboBox<String> comboBoxUsuarios = new JComboBox<>();
-		gbcEzabatu.gridx = 1;
-		gbcEzabatu.gridy = 0;
-		gbcEzabatu.gridwidth = 1;
-		panelErabiltzaileakEzabatu.add(comboBoxUsuarios, gbcEzabatu);
+		gbc.gridx = 1;
+		panel.add(comboBoxUsuarios, gbc);
 
 		JTextField datosUsuario = new JTextField(20);
 		datosUsuario.setEditable(false);
-		gbcEzabatu.gridx = 0;
-		gbcEzabatu.gridy = 1;
-		gbcEzabatu.gridwidth = 2;
-		panelErabiltzaileakEzabatu.add(datosUsuario, gbcEzabatu);
+		gbc.gridx = 0;
+		gbc.gridy = 1;
+		gbc.gridwidth = 2;
+		panel.add(datosUsuario, gbc);
 
 		JButton ezabatu = new JButton("Ezabatu");
-		gbcEzabatu.gridx = 0;
-		gbcEzabatu.gridy = 2;
-		gbcEzabatu.gridwidth = 2;
-		panelErabiltzaileakEzabatu.add(ezabatu, gbcEzabatu);
+		gbc.gridx = 0;
+		gbc.gridy = 2;
+		gbc.gridwidth = 2;
+		panel.add(ezabatu, gbc);
 
-		// Panel to center the panelErabiltzaileakEzabatu
-		JPanel centerPanelEzabatu = new JPanel(new GridBagLayout());
-		GridBagConstraints gbcCenterEzabatu = new GridBagConstraints();
-		gbcCenterEzabatu.gridx = 0;
-		gbcCenterEzabatu.gridy = 0;
-		gbcCenterEzabatu.anchor = GridBagConstraints.CENTER;
-		centerPanelEzabatu.add(panelErabiltzaileakEzabatu, gbcCenterEzabatu);
-
-		frame.add(centerPanelEzabatu, "PanelErabiltzaileakEzabatu");
-
-		// Cargar usuarios en el JComboBox
-		List<String[]> usuarios = erabiltzaileakIrakurri("erabiltzaileak.txt");
-		for (String[] usuario : usuarios) {
-			comboBoxUsuarios.addItem(usuario[0]);
-		}
+		cargarUsuariosEnComboBox(comboBoxUsuarios);
 
 		comboBoxUsuarios.addActionListener(e -> {
 			String selectedUser = (String) comboBoxUsuarios.getSelectedItem();
-			for (String[] usuario : usuarios) {
-				if (usuario[0].equals(selectedUser)) {
-					datosUsuario.setText("Izena: " + usuario[0] + ", Pasahitza: " + usuario[1]);
-					break;
-				}
+			if (selectedUser != null) {
+				datosUsuario.setText("Erabiltzailea: " + selectedUser);
 			}
 		});
 
 		ezabatu.addActionListener(e -> {
 			String erabiltzailea = (String) comboBoxUsuarios.getSelectedItem();
 			if (erabiltzailea != null) {
-				File inputFile = new File(Login.erabiltzaileakFitxategi);
-				StringBuilder content = new StringBuilder();
-				boolean aurkituta = false;
-
-				try (BufferedReader reader = new BufferedReader(new FileReader(inputFile))) {
-					String currentLine;
-					while ((currentLine = reader.readLine()) != null) {
-						String[] zatiak = currentLine.split(";");
-						if (!zatiak[0].equals(erabiltzailea)) {
-							content.append(currentLine).append(System.lineSeparator());
-						} else {
-							aurkituta = true;
-						}
+				try {
+					Connection conn = DBmain.konexioa();
+					Statement stmt = conn.createStatement();
+					String sql = "DELETE FROM ERABILTZAILEAK WHERE ERABILTZAILEA = '" + erabiltzailea + "'";
+					int rowsAffected = stmt.executeUpdate(sql);
+					if (rowsAffected > 0) {
+						JOptionPane.showMessageDialog(null, "'" + erabiltzailea + "' erabiltzailea ezabatuta.");
+						comboBoxUsuarios.removeItem(erabiltzailea);
+						datosUsuario.setText("");
+					} else {
+						JOptionPane.showMessageDialog(null, "Errorea: erabiltzailea ez da aurkitu.");
 					}
-				} catch (IOException ex) {
-					JOptionPane.showMessageDialog(null, "ERROREA: Fitxategia ezin da irakurri.");
-					return;
-				}
-
-				if (aurkituta) {
-					try (BufferedWriter writer = new BufferedWriter(new FileWriter(inputFile))) {
-						writer.write(content.toString());
-					} catch (IOException ex) {
-						JOptionPane.showMessageDialog(null, "ERROREA: Fitxategia ezin da idatzi.");
-						return;
-					}
-
-					JOptionPane.showMessageDialog(null, "'" + erabiltzailea + "' erabiltzailea ezabatuta.");
-					comboBoxUsuarios.removeItem(erabiltzailea);
-					datosUsuario.setText("");
-				} else {
-					JOptionPane.showMessageDialog(null, "Errorea: erabiltzailea ez da aurkitu.");
+					conn.close();
+				} catch (SQLException ex) {
+					JOptionPane.showMessageDialog(null, "Errorea: ezin da erabiltzailea ezabatu.");
+					ex.printStackTrace();
 				}
 			}
 		});
 
-		menuItem02.addActionListener(e -> {
-			cardLayout.show(frame.getContentPane(), "PanelErabiltzaileakEzabatu");
-		});
-
-		// Erabiltzaileak kontsultatzeko dialog-a eta botoiaren akzioa
-		JPanel panelErabiltzaileak2 = new JPanel();
-		panelErabiltzaileak2.setLayout(new BoxLayout(panelErabiltzaileak2, BoxLayout.Y_AXIS));
-
-		JScrollPane scrollPane = new JScrollPane(panelErabiltzaileak2);
-
-		menuItem03.addActionListener(e -> {
-			panelErabiltzaileak2.removeAll();
-			List<String[]> usuarios2 = erabiltzaileakIrakurri("erabiltzaileak.txt");
-			for (String[] usuario : usuarios2) {
-				panelErabiltzaileak2.add(erabiltzailePanelaSortu(usuario[0], usuario[1]));
-			}
-			panelErabiltzaileak2.revalidate();
-			panelErabiltzaileak2.repaint();
-			cardLayout.show(frame.getContentPane(), "PanelErabiltzaileakKontsultatu");
-		});
-
-		frame.add(scrollPane, "PanelErabiltzaileakKontsultatu");
-
-		frame.setVisible(true);
+		return panel;
 	}
 
-	private static List<String[]> erabiltzaileakIrakurri(String fitxategia) {
-		List<String[]> usuarios = new ArrayList<>();
-		try (BufferedReader br = new BufferedReader(new FileReader(fitxategia))) {
-			String linea;
-			br.readLine();
-			while ((linea = br.readLine()) != null) {
-				String[] datos = linea.split(";");
-				if (datos.length == 3) {
-					usuarios.add(datos);
-				}
+	// Erabiltzaileak kontsultatzeko panel-a sortzeko metodoa.
+	private static JPanel erabiltzaileakKontsultatuPanelSortu() {
+		JPanel panelPrincipal = new JPanel(new BorderLayout());
+		JPanel panel = new JPanel();
+		panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+
+		JScrollPane scrollPane = new JScrollPane(panel);
+		List<String[]> usuarios = cargarUsuariosDesdeBD();
+		for (String[] usuario : usuarios) {
+			panel.add(erabiltzailePanelaSortu(usuario[0], usuario[1]));
+		}
+
+		panelPrincipal.add(scrollPane, BorderLayout.CENTER);
+		return panelPrincipal;
+	}
+
+	// Erabiltzaileak ComboBox-ean kargatzeko metodoa.
+	private static void cargarUsuariosEnComboBox(JComboBox<String> comboBoxUsuarios) {
+		try {
+			Connection conn = DBmain.konexioa();
+			Statement stmt = conn.createStatement();
+			ResultSet rs = stmt.executeQuery("SELECT ERABILTZAILEA FROM ERABILTZAILEAK");
+			while (rs.next()) {
+				comboBoxUsuarios.addItem(rs.getString("ERABILTZAILEA"));
 			}
-		} catch (IOException e) {
-			e.printStackTrace();
+			conn.close();
+		} catch (SQLException ex) {
+			JOptionPane.showMessageDialog(null, "Errorea: ezin dira erabiltzaileak kargatu.");
+			ex.printStackTrace();
+		}
+	}
+
+	// Erabiltzaileak datu-baseetatik kargatzeko metodoa.
+	private static List<String[]> cargarUsuariosDesdeBD() {
+		List<String[]> usuarios = new ArrayList<>();
+		try {
+			Connection conn = DBmain.konexioa();
+			Statement stmt = conn.createStatement();
+			ResultSet rs = stmt.executeQuery("SELECT ERABILTZAILEA, PASAHITZA FROM ERABILTZAILEAK");
+			while (rs.next()) {
+				usuarios.add(new String[] { rs.getString("ERABILTZAILEA"), rs.getString("PASAHITZA") });
+			}
+			conn.close();
+		} catch (SQLException ex) {
+			JOptionPane.showMessageDialog(null, "Errorea: ezin dira erabiltzaileak kargatu.");
+			ex.printStackTrace();
 		}
 		return usuarios;
 	}
 
+	// Erabiltzailearen panel-a sortzeko metodoa.
 	private static JPanel erabiltzailePanelaSortu(String erabiltzailea, String pasahitza) {
 		JPanel panelUsuario = new JPanel();
 		panelUsuario.setLayout(new FlowLayout());
@@ -528,8 +402,8 @@ public class MenuSaltzaile {
 		JLabel fotoLabel = new JLabel();
 		fotoLabel.setIcon(new ImageIcon("../irudiak/user.png"));
 
-		JLabel userLabel = new JLabel("Usuario: " + erabiltzailea);
-		JLabel passLabel = new JLabel("Contraseña: " + pasahitza);
+		JLabel userLabel = new JLabel("Erabiltzailea: " + erabiltzailea);
+		JLabel passLabel = new JLabel("Pasahitza: " + pasahitza);
 
 		panelUsuario.add(fotoLabel);
 		panelUsuario.add(userLabel);
