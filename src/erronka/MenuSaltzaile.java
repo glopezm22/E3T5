@@ -31,9 +31,11 @@ public class MenuSaltzaile {
 		JMenuItem menuItem1 = new JMenuItem("Datu pertsonalak");
 		JMenuItem menuItem2 = new JMenuItem("Pasahitza aldatu");
 		JMenuItem menuItem3 = new JMenuItem("Itxi saioa");
+		JMenuItem menuItem4 = new JMenuItem("Itxi programa");
 		menu.add(menuItem1);
 		menu.add(menuItem2);
 		menu.add(menuItem3);
+		menu.add(menuItem4);
 		menuBar.add(menu);
 
 		// Datu pertsonalak panel-a sortu.
@@ -47,7 +49,7 @@ public class MenuSaltzaile {
 		// Menua-ren akzioak.
 		menuItem1.addActionListener(e -> cardLayout.show(frame.getContentPane(), "NireKontua"));
 		menuItem2.addActionListener(e -> cardLayout.show(frame.getContentPane(), "PasahitzaAldatu"));
-		menuItem3.addActionListener(e -> System.exit(0));
+		menuItem4.addActionListener(e -> System.exit(0));
 
 		// Erabiltzaileak menua sortu.
 		JMenu menu2 = new JMenu("Erabiltzaileak");
@@ -134,7 +136,7 @@ public class MenuSaltzaile {
 		GridBagConstraints gbc = new GridBagConstraints();
 		gbc.insets = new Insets(10, 10, 10, 10);
 
-		// Label "Nire kontua" en el centro y encima de todo
+		// Nire kontua label-a sortu.
 		JLabel nireKontuaLabel = new JLabel("Nire kontua", SwingConstants.CENTER);
 		nireKontuaLabel.setFont(new Font("Arial", Font.BOLD, 26));
 		gbc.gridx = 0;
@@ -150,9 +152,9 @@ public class MenuSaltzaile {
 
 		for (int i = 0; i < labels.length; i++) {
 			gbc.gridx = 0;
-			gbc.gridy = i + 1; // Empezar desde la fila 1 para dejar espacio para el label "Nire kontua"
-			gbc.gridwidth = 1; // Restaurar el ancho de la celda
-			gbc.anchor = GridBagConstraints.WEST; // Alinear a la izquierda
+			gbc.gridy = i + 1; // 1. lerroan hasi, "Pasahitza aldatu" label-ari espazioa uzteko
+			gbc.gridwidth = 1; // Zutabearen zabalera berreskuratu
+			gbc.anchor = GridBagConstraints.WEST; // Ezkerrean alineatu
 			centerPanel.add(new JLabel(labels[i]), gbc);
 
 			textFields[i] = new JTextField(10);
@@ -166,12 +168,12 @@ public class MenuSaltzaile {
 		// Botón "Gorde" gehitu.
 		JButton gordeButton = new JButton("Gorde");
 		gbc.gridx = 0;
-		gbc.gridy = labels.length + 1; // Ajustar la fila para el botón
+		gbc.gridy = labels.length + 1;
 		gbc.gridwidth = 2;
-		gbc.anchor = GridBagConstraints.CENTER; // Centrar el botón
+		gbc.anchor = GridBagConstraints.CENTER;
 		centerPanel.add(gordeButton, gbc);
 
-		// Botón "Gorde"-ren akzioa.
+		// Gorde botoiaren akzioa.
 		gordeButton.addActionListener(e -> {
 			String emaila = textFields[2].getText();
 			String telefonoa = textFields[3].getText();
@@ -195,7 +197,7 @@ public class MenuSaltzaile {
 	}
 
 	// Pasahitza aldatzeko panel-a sortzeko metodoa.
-	private static JPanel pasahitzaPanela() {
+	public static JPanel pasahitzaPanela() {
 		JPanel panel = new JPanel(new BorderLayout());
 
 		JPanel centerPanel = new JPanel(new GridBagLayout());
