@@ -61,12 +61,116 @@ public class MenuBezero {
     }
 
     private static JPanel historialaikusiSortu() {
-    	
-    	JPanel panel = new JPanel(new BorderLayout());
+        JPanel panel = new JPanel(new BorderLayout());
         JLabel label = new JLabel("Historiala", SwingConstants.CENTER);
         label.setFont(new Font("Arial", Font.BOLD, 24));
         panel.add(label, BorderLayout.NORTH);
+
+        JPanel centerPanel = new JPanel(new GridBagLayout());
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.insets = new Insets(10, 10, 10, 10);
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        gbc.anchor = GridBagConstraints.WEST;
+
+        JComboBox<String> comboBoxHistoriala = new JComboBox<>();
+        JTextArea eskariInfoArea = new JTextArea(5, 30);
+        eskariInfoArea.setEditable(false);
+
+        int id = Login.id; // ID del usuario logueado
+        kargatuEskariak(comboBoxHistoriala, id);
+
+        // Acción al seleccionar un pedido
+        comboBoxHistoriala.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                String aukeratutakoEskaria = (String) comboBoxHistoriala.getSelectedItem();
+                if (aukeratutakoEskaria != null) {
+                    int eskariId = Integer.parseInt(aukeratutakoEskaria.split(" ")[1]);
+                    kargatuEskariarenInformazioa(eskariId, eskariInfoArea);
+                }
+            }
+        });
+
+        // Agregar ComboBox y JTextArea al panel
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        centerPanel.add(new JLabel("Aukeratu eskaria:"), gbc);
+        gbc.gridx = 1;
+        centerPanel.add(comboBoxHistoriala, gbc);
+
+        gbc.gridx = 0;
+        gbc.gridy = 1;
+        gbc.gridwidth = 2;
+        centerPanel.add(new JScrollPane(eskariInfoArea), gbc);
+
+        panel.add(centerPanel, BorderLayout.CENTER);
+        return panel;
     }
+
+    // Método para cargar los pedidos en el ComboBox
+    private static void kargatuEskariak(JComboBox<String> comboBox, int bezeroId) {
+        try {
+            Connection conn = DBmain.konexioa();
+            PreparedStatement pstmt = conn.prepareStatement(
+                "SELECT E.ID FROM ESKARI E WHERE E.ID_BEZERO = ?"
+            );
+            pstmt.setInt(1, bezeroId);
+            ResultSet rs = pstmt.executeQuery();
+
+            while (rs.next()) {
+                comboBox.addItem("Eskaria " + rs.getInt("ID"));
+            }
+
+            rs.close();
+            pstmt.close();
+            conn.close();
+        } catch (SQLException ex) {
+            JOptionPane.showMessageDialog(null, "Errorea eskariak kargatzean.");
+            ex.printStackTrace();
+        }
+    }
+
+ // Método para cargar la información detallada del pedido
+    private static void kargatuEskariarenInformazioa(int eskariId, JTextArea eskariInfoArea) {
+        try {
+            Connection conn = DBmain.konexioa();
+            PreparedStatement pstmt = conn.prepareStatement(
+                "SELECT E.ID, L.IZENA, L.ABIZENA, E.ESKAERA_DATA, EG.DESKRIBAPENA " +
+                "FROM ESKARI E " +
+                "JOIN LANGILE L ON E.ID_SALTZAILE = L.ID " +
+                "JOIN ESKARI_EGOERA EG ON E.ID_EGOERA = EG.ID " +
+                "WHERE E.ID = ?"
+            );
+            pstmt.setInt(1, eskariId);
+            ResultSet rs = pstmt.executeQuery();
+
+            if (rs.next()) {
+                int id = rs.getInt("ID");
+                String izena = rs.getString("IZENA");
+                String abizena = rs.getString("ABIZENA");
+                String eskaeraData = rs.getString("ESKAERA_DATA");
+                String deskribapena = rs.getString("DESKRIBAPENA");
+
+                String erabiltzailea = izena + " " + abizena;
+
+                eskariInfoArea.setText(
+                    "Eskari ID: " + id + "\n" +
+                    "Saltzailea: " + erabiltzailea + "\n" +
+                    "Data: " + eskaeraData + "\n" +
+                    "Egoera: " + deskribapena
+                );
+            }
+
+            rs.close();
+            pstmt.close();
+            conn.close();
+        } catch (SQLException ex) {
+            JOptionPane.showMessageDialog(null, "Errorea eskariaren informazioa kargatzean.");
+            ex.printStackTrace();
+        }
+    }
+
+
     private static JPanel produktuakikusiSortu() {
         JPanel panel = new JPanel(new BorderLayout());
         JLabel label = new JLabel("Produktuak", SwingConstants.CENTER);
@@ -186,15 +290,17 @@ public class MenuBezero {
 
     private static JPanel datuPertsonalakPanelSortu() {
         JPanel panel = new JPanel(new BorderLayout());
-        JLabel label = new JLabel("Nire Kontua", SwingConstants.CENTER);
-        label.setFont(new Font("Arial", Font.BOLD, 24));
-        panel.add(label, BorderLayout.NORTH);
+        JLabel nireKontuaLabel = new JLabel("Nire Kontua", SwingConstants.CENTER);
+        nireKontuaLabel.setFont(new Font("Arial", Font.BOLD, 24));
+        panel.add(nireKontuaLabel, BorderLayout.NORTH);
 
         JPanel centerPanel = new JPanel(new GridBagLayout());
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.insets = new Insets(10, 10, 10, 10);
 
-        String[] labels = { "Izena:", "Abizena:", "Emaila:", "Telefonoa:" };
+        String[] labels = { "Izena:", "Abizena:", "Emaila:", "Telefonoa:", "Kontratazio data:", "ID Nagusia:" };
+        String[] values = { Login.izena, Login.abizena, Login.emaila, Login.telefonoa,
+                String.valueOf(Login.kontratazioData), String.valueOf(Login.idnagusi) };
         JTextField[] textFields = new JTextField[labels.length];
 
         for (int i = 0; i < labels.length; i++) {
@@ -203,17 +309,44 @@ public class MenuBezero {
             centerPanel.add(new JLabel(labels[i]), gbc);
 
             textFields[i] = new JTextField(10);
+            textFields[i].setEditable(i != 4 && i != 5); // Kontratazio data eta ID Nagusia ezin dira editatu.
+            textFields[i].setText(values[i]);
             gbc.gridx = 1;
             centerPanel.add(textFields[i], gbc);
         }
 
+        // Botón "Gorde" gehitu.
         JButton gordeButton = new JButton("Gorde");
         gbc.gridx = 0;
         gbc.gridy = labels.length;
         gbc.gridwidth = 2;
         centerPanel.add(gordeButton, gbc);
 
+        // Botón "Gorde"-ren akzioa.
+        gordeButton.addActionListener(e -> {
+            String izena = textFields[0].getText();
+            String abizena = textFields[1].getText();
+            String emaila = textFields[2].getText();
+            String telefonoa = textFields[3].getText();
+
+            try {
+                Connection conn = DBmain.konexioa();
+                Statement stmt = conn.createStatement();
+                String sql = "UPDATE LANGILE SET IZENA = '" + izena + "', ABIZENA = '" + abizena + "', EMAILA = '"
+                        + emaila + "', TELEFONOA = '" + telefonoa + "' WHERE ID = '" + Login.id + "'";
+                stmt.executeUpdate(sql);
+                conn.close();
+                JOptionPane.showMessageDialog(null, "Datuak eguneratu dira.");
+            } catch (SQLException ex) {
+                JOptionPane.showMessageDialog(null, "Errorea: ezin dira datuak eguneratu.");
+                ex.printStackTrace();
+            }
+        });
+
         panel.add(centerPanel, BorderLayout.CENTER);
         return panel;
     }
 }
+
+
+
