@@ -42,8 +42,12 @@ public class MenuBezero {
         JPanel historialaPanel =  historialaikusiSortu();
         frame.add(historialaPanel, "Historiala");
         menuItem01.addActionListener(e -> cardLayout.show(frame.getContentPane(), "Historiala"));
+        
+        JPanel egoeraPanel = egoeraikusiSortu();
+        frame.add(egoeraPanel, "EgoeraBistaratu");
         menuItem02.addActionListener(e -> cardLayout.show(frame.getContentPane(), "EgoeraBistaratu"));
 
+        
         JMenu menu3 = new JMenu("Produktuak");
         JMenuItem menuItem001 = new JMenuItem("Ikusi");
         menu3.add(menuItem001);
@@ -59,6 +63,102 @@ public class MenuBezero {
 
         frame.setVisible(true);
     }
+
+    
+    private static JPanel egoeraikusiSortu() {
+        JPanel panel = new JPanel(new BorderLayout());
+        JLabel label = new JLabel("Egoera Bistaratu", SwingConstants.CENTER);
+        label.setFont(new Font("Arial", Font.BOLD, 24));
+        panel.add(label, BorderLayout.NORTH);
+
+        JPanel centerPanel = new JPanel(new GridBagLayout());
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.insets = new Insets(10, 10, 10, 10);
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        gbc.anchor = GridBagConstraints.WEST;
+
+        // Crear un panel para las columnas
+        JPanel columnsPanel = new JPanel(new GridLayout(0, 3, 10, 10));  // Tres columnas con espacio entre ellas
+
+        // Crear los encabezados para las columnas
+        JPanel headerPanel = new JPanel(new GridLayout(1, 3));
+        headerPanel.add(new JLabel("Shipped", SwingConstants.CENTER));
+        headerPanel.add(new JLabel("Canceled", SwingConstants.CENTER));
+        headerPanel.add(new JLabel("Pending", SwingConstants.CENTER));
+
+        // Agregar los encabezados al panel
+        columnsPanel.add(headerPanel);
+
+        // Consultar los estados de los pedidos del usuario
+        int bezeroId = Login.id; // ID del usuario logueado
+        try {
+            Connection conn = DBmain.konexioa();
+            PreparedStatement pstmt = conn.prepareStatement(
+                "SELECT E.ID, EG.DESKRIBAPENA " +
+                "FROM ESKARI E " +
+                "JOIN ESKARI_EGOERA EG ON E.ID_EGOERA = EG.ID " +
+                "WHERE E.ID_BEZERO = ?"
+            );
+            pstmt.setInt(1, bezeroId);
+            ResultSet rs = pstmt.executeQuery();
+
+            // Crear listas para los pedidos de cada estado
+            DefaultListModel<String> shippedList = new DefaultListModel<>();
+            DefaultListModel<String> canceledList = new DefaultListModel<>();
+            DefaultListModel<String> pendingList = new DefaultListModel<>();
+
+            // Clasificar los pedidos por estado
+            while (rs.next()) {
+                int eskariId = rs.getInt("ID");
+                String egoera = rs.getString("DESKRIBAPENA");
+
+                if ("Shipped".equals(egoera)) {
+                    shippedList.addElement("Eskaria " + eskariId);
+                } else if ("Canceled".equals(egoera)) {
+                    canceledList.addElement("Eskaria " + eskariId);
+                } else if ("Pending".equals(egoera)) {
+                    pendingList.addElement("Eskaria " + eskariId);
+                }
+            }
+
+            // Crear paneles para cada estado y agregar a las columnas
+            columnsPanel.add(createStatusColumn(shippedList));
+            columnsPanel.add(createStatusColumn(canceledList));
+            columnsPanel.add(createStatusColumn(pendingList));
+
+            rs.close();
+            pstmt.close();
+            conn.close();
+        } catch (SQLException ex) {
+            JOptionPane.showMessageDialog(null, "Errorea egoerak kargatzean.");
+            ex.printStackTrace();
+        }
+
+        // Añadir el panel de las columnas al panel central
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        gbc.gridwidth = 3;
+        centerPanel.add(columnsPanel, gbc);
+
+        panel.add(centerPanel, BorderLayout.CENTER);
+        return panel;
+    }
+
+    // Método auxiliar para crear las columnas de estado
+    private static JPanel createStatusColumn(DefaultListModel<String> statusList) {
+        JPanel columnPanel = new JPanel();
+        columnPanel.setLayout(new BoxLayout(columnPanel, BoxLayout.Y_AXIS));
+
+        // Añadir los elementos de la lista de estado a la columna
+        for (int i = 0; i < statusList.size(); i++) {
+            JLabel itemLabel = new JLabel(statusList.get(i), SwingConstants.CENTER);
+            itemLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+            columnPanel.add(itemLabel);
+        }
+
+        return columnPanel;
+    }
+
 
     private static JPanel historialaikusiSortu() {
         JPanel panel = new JPanel(new BorderLayout());
