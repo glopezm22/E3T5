@@ -187,5 +187,50 @@ public class Login {
 			e.printStackTrace();
 		}
 	}
+	
+	public static JDialog saioaItxi(JFrame frame) {
+		JDialog dialog = new JDialog();
+		dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+		dialog.setSize(400, 200);
+		dialog.setLayout(new GridBagLayout());
+		dialog.setTitle("Saioa itxi");
+		dialog.setLocationRelativeTo(frame);
+		JLabel label = new JLabel("Saioa itxi nahi duzu?");
+		JButton baiButton = new JButton("Bai");
+		JButton ezButton = new JButton("Ez");
+		GridBagConstraints gbc = new GridBagConstraints();
+		gbc.insets = new Insets(10, 10, 10, 10);
+		gbc.gridx = 0;
+		gbc.gridy = 0;
+		dialog.add(label, gbc);
+		gbc.gridx = 0;
+		gbc.gridy = 1;
+		dialog.add(baiButton, gbc);
+		gbc.gridx = 1;
+		dialog.add(ezButton, gbc);
+		baiButton.addActionListener(e2 -> {
+			loginDatuakGarbitu();
+			frame.dispose();
+			dialog.dispose();
+			Login.main(null);
+		});
+		ezButton.addActionListener(e2 -> dialog.dispose());
+		dialog.setVisible(true);
+		return dialog;
+	}
+	
+	private static void loginDatuakGarbitu() {
+        Login.id = 0;
+        Login.izena = null;
+        Login.abizena = null;
+        Login.helbidea = null;
+        Login.emaila = null;
+        Login.telefonoa = null;
+        Login.kontratazioData = null;
+        Login.idnagusi = 0;
+        Login.erabiltzailea = null;
+        Login.pasahitza = null;
+        Login.mota = null;
+    }
 
 }

@@ -49,6 +49,7 @@ public class MenuSaltzaile {
 		// Menua-ren akzioak.
 		menuItem1.addActionListener(e -> cardLayout.show(frame.getContentPane(), "NireKontua"));
 		menuItem2.addActionListener(e -> cardLayout.show(frame.getContentPane(), "PasahitzaAldatu"));
+		menuItem3.addActionListener(e -> { Login.saioaItxi(frame); });
 		menuItem4.addActionListener(e -> System.exit(0));
 
 		// Erabiltzaileak menua sortu.

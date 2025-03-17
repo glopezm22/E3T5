@@ -37,13 +37,14 @@ public class MenuBezero {
 		// Datu pertsonalak panel-a sortu.
 		JPanel datuPertsonalakPanel = datuPertsonalakPanelSortu();
 		frame.add(datuPertsonalakPanel, "NireKontua");
-		
+
 		// Pasahitza aldatu panel-a sortu.
 		JPanel pasahitzaPanel = MenuSaltzaile.pasahitzaPanela();
 		frame.add(pasahitzaPanel, "PasahitzaAldatu");
 
 		menuItem1.addActionListener(e -> cardLayout.show(frame.getContentPane(), "NireKontua"));
 		menuItem2.addActionListener(e -> cardLayout.show(frame.getContentPane(), "PasahitzaAldatu"));
+		menuItem3.addActionListener(e -> { Login.saioaItxi(frame); });
 		menuItem4.addActionListener(e -> System.exit(0));
 
 		JMenu menu2 = new JMenu("Nire eskariak");
@@ -438,7 +439,8 @@ public class MenuBezero {
 			try {
 				Connection conn = DBmain.konexioa();
 				Statement stmt = conn.createStatement();
-				String sql = "UPDATE BEZERO SET EMAILA = '" + emaila + "', HELBIDEA = '" + helbidea + "' WHERE ID = '" + Login.id + "'";
+				String sql = "UPDATE BEZERO SET EMAILA = '" + emaila + "', HELBIDEA = '" + helbidea + "' WHERE ID = '"
+						+ Login.id + "'";
 				stmt.executeUpdate(sql);
 				conn.close();
 				JOptionPane.showMessageDialog(null, "Datuak eguneratu dira.");
