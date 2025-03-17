@@ -5,6 +5,9 @@ import java.sql.DriverManager;
 //import java.sql.ResultSet;
 //import java.sql.Statement;
 //import java.sql.SQLException;
+import java.sql.SQLException;
+import java.sql.Statement;
+import javax.swing.JOptionPane;
 
 /**
  * Datu base klasea konexioa eta kontsultak egiteko
@@ -41,5 +44,57 @@ public class DBmain {
 		}
 		return conn;
 	}
+
+	public void deleteUser(String tableName, String izena) {
+		try {
+			Connection conn = konexioa();
+			Statement stmt = conn.createStatement();
+			String sql = "DELETE FROM " + tableName + " WHERE PRODUKTUKODEA = '" + izena + "'";
+			stmt.executeUpdate(sql);
+			conn.close();
+		} catch (SQLException e) {
+			System.out.println("ERROREA: " + e);
+		}
+	}
+
+	// Método para actualizar un campo en la tabla
+	public void updateTable(String tableName, String campo, String nuevoValor, String condition) {
+		try {
+			Connection conn = konexioa();
+			Statement stmt = conn.createStatement();
+			String sql = "UPDATE " + tableName + " SET " + campo + " = '" + nuevoValor + "' WHERE " + condition;
+			stmt.executeUpdate(sql);
+			conn.close();
+		} catch (SQLException e) {
+			System.out.println("ERROREA: " + e);
+		}
+	}
+
+	public static void saltzaileBezeroSortu(String taula, String eremuak, String balioak) {
+		try {
+			Connection conn = konexioa();
+			Statement stmt = conn.createStatement();
+			String sql = "INSERT INTO " + taula + "(" + eremuak + ") VALUES (" + balioak + ")";
+			stmt.executeUpdate(sql);
+			conn.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	public static void erabiltzaileaSortu(String taula, String eremuak, String balioak) {
+		try {
+			Connection conn = konexioa();
+			Statement stmt = conn.createStatement();
+			String sql = "INSERT INTO " + taula + "(" + eremuak + ") SELECT " + balioak + "";
+			stmt.executeUpdate(sql);
+			conn.close();
+			JOptionPane.showMessageDialog(null, "Erabiltzailea gehitu da.");
+		} catch (SQLException e) {
+			JOptionPane.showMessageDialog(null, "Errorea: erabiltzailea ezin da gehitu.");
+			e.printStackTrace();
+		}
+	}
+
 
 }
