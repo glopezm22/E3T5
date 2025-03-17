@@ -1,7 +1,6 @@
 package erronka;
 
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -25,6 +24,10 @@ public class Login {
     public static String telefonoa = null;
     public static LocalDate kontratazioData = null;
     public static int idnagusi = 0;
+    
+    public static String erabiltzailea = null;
+    public static String pasahitza = null;
+    public static String mota = null;
     
    // @SuppressWarnings("unused")
 	public static void main(String[] args) {
@@ -138,7 +141,7 @@ public class Login {
             Statement statement = con.createStatement();
 
             // LANGILE taulan kontsula egitea lehenik eta behin.
-            String kontsultaLangile = "SELECT ID, IZENA, ABIZENA, EMAILA, TELEFONOA, KONTRATAZIO_DATA, ID_NAGUSI FROM LANGILE WHERE ID = " + id;
+            String kontsultaLangile = "SELECT * FROM LANGILE WHERE ID = " + id;
             ResultSet resultSetLangile = statement.executeQuery(kontsultaLangile);
 
             if (resultSetLangile.next()) {
@@ -150,9 +153,21 @@ public class Login {
                 telefonoa = resultSetLangile.getString("TELEFONOA");
                 kontratazioData = resultSetLangile.getDate("KONTRATAZIO_DATA").toLocalDate();
                 idnagusi = resultSetLangile.getInt("ID_NAGUSI");
+                
+                String kontsultaErabiltzailea = "SELECT * FROM ERABILTZAILEAK WHERE ID = " + id + " AND MOTA = 'S'";
+                ResultSet resultSetErabiltzailea = statement.executeQuery(kontsultaErabiltzailea);
+                
+                if (resultSetErabiltzailea.next()) {
+    				erabiltzailea = resultSetErabiltzailea.getString("ERABILTZAILEA");
+    				pasahitza = resultSetErabiltzailea.getString("PASAHITZA");
+    				mota = resultSetErabiltzailea.getString("MOTA");
+    				
+				}
+				resultSetErabiltzailea.close();
+                
             } else {
                 // LANGILE taulan ez bada aurkitzen, BEZERO taulan kontsulta egingo da.
-                String kontsultaBezero = "SELECT ID, IZENA, ABIZENA, HELBIDEA, EMAILA FROM BEZERO WHERE ID = " + id;
+                String kontsultaBezero = "SELECT * FROM BEZERO WHERE ID = " + id;
                 ResultSet resultSetBezero = statement.executeQuery(kontsultaBezero);
 
                 if (resultSetBezero.next()) {
@@ -162,11 +177,22 @@ public class Login {
                     abizena = resultSetBezero.getString("ABIZENA");
                     helbidea = resultSetBezero.getString("HELBIDEA");
                     emaila = resultSetBezero.getString("EMAILA");
+                    
+                    String kontsultaErabiltzailea = "SELECT * FROM ERABILTZAILEAK WHERE ID = " + id + " AND MOTA = 'B'";
+                    ResultSet resultSetErabiltzailea = statement.executeQuery(kontsultaErabiltzailea);
+                    
+                    if (resultSetErabiltzailea.next()) {
+        				erabiltzailea = resultSetErabiltzailea.getString("ERABILTZAILEA");
+        				pasahitza = resultSetErabiltzailea.getString("PASAHITZA");
+        				mota = resultSetErabiltzailea.getString("MOTA");
+        				
+    				}
+    				resultSetErabiltzailea.close();
                 }
                 resultSetBezero.close();
             }
 
-            resultSetLangile.close();
+			resultSetLangile.close();
             statement.close();
             con.close();
 
