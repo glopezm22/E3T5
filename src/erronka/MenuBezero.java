@@ -268,7 +268,7 @@ public class MenuBezero {
 		}
 	}
 
-	private static JPanel produktuakikusiSortu() {
+	public static JPanel produktuakikusiSortu() {
 		JPanel panel = new JPanel(new BorderLayout());
 		JLabel label = new JLabel("Produktuak", SwingConstants.CENTER);
 		label.setFont(new Font("Arial", Font.BOLD, 24));
