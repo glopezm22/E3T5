@@ -268,7 +268,7 @@ public class MenuBezero {
 		}
 	}
 
-	private static JPanel produktuakikusiSortu() {
+	public static JPanel produktuakikusiSortu() {
 		JPanel panel = new JPanel(new BorderLayout());
 		JLabel label = new JLabel("Produktuak", SwingConstants.CENTER);
 		label.setFont(new Font("Arial", Font.BOLD, 24));
@@ -283,16 +283,13 @@ public class MenuBezero {
 		JComboBox<String> comboBoxProduktuak = new JComboBox<>();
 
 		JLabel deskribapenaLabel = new JLabel("Deskribapena:");
-		JTextArea deskribapenaArea = new JTextArea(3, 20);
-		deskribapenaArea.setEditable(false);
-		deskribapenaArea.setLineWrap(true);
-		deskribapenaArea.setWrapStyleWord(true);
-		JScrollPane deskribapenaScroll = new JScrollPane(deskribapenaArea);
+		JTextField deskribapenaField = new JTextField(20);
+		deskribapenaField.setEditable(false);
 
 		JLabel balioaLabel = new JLabel("Balioa:");
-		JTextArea balioaArea = new JTextArea(1, 10);
-		balioaArea.setEditable(false);
-		JScrollPane balioaScroll = new JScrollPane(balioaArea);
+		JTextField balioaField = new JTextField(10);
+		balioaField.setEditable(false);
+
 
 		// Añadir ComboBox
 		gbc.gridx = 0;
@@ -306,23 +303,21 @@ public class MenuBezero {
 		gbc.gridy = 1;
 		centerPanel.add(deskribapenaLabel, gbc);
 		gbc.gridx = 1;
-		centerPanel.add(deskribapenaScroll, gbc);
 
 		// Añadir valor (balioa)
 		gbc.gridx = 0;
 		gbc.gridy = 2;
 		centerPanel.add(balioaLabel, gbc);
 		gbc.gridx = 1;
-		centerPanel.add(balioaScroll, gbc);
 
-		kargatuProduktuak(comboBoxProduktuak, deskribapenaArea, balioaArea);
+		kargatuProduktuak(comboBoxProduktuak, deskribapenaField, balioaField);
 
 		panel.add(centerPanel, BorderLayout.CENTER);
 		return panel;
 	}
 
-	private static void kargatuProduktuak(JComboBox<String> comboBox, JTextArea deskribapenaArea,
-			JTextArea balioaArea) {
+	private static void kargatuProduktuak(JComboBox<String> comboBox, JTextField deskribapenaField,
+			JTextField balioaField) {
 		try {
 			Connection conn = DBmain.konexioa();
 			Statement stmt = conn.createStatement();
@@ -353,14 +348,14 @@ public class MenuBezero {
 				if (aukeratutakoProduktua != null) {
 					String produktuaIzena = aukeratutakoProduktua.split(" \\(")[0]; // Elimina la categoría de la
 																					// selección
-					kargatuProduktuarenInformazioa(produktuaIzena, deskribapenaArea, balioaArea);
+					kargatuProduktuarenInformazioa(produktuaIzena, deskribapenaField, balioaField);
 				}
 			}
 		});
 	}
 
-	private static void kargatuProduktuarenInformazioa(String produktua, JTextArea deskribapenaArea,
-			JTextArea balioaArea) {
+	private static void kargatuProduktuarenInformazioa(String produktua, JTextField deskribapenaField,
+			JTextField balioaField) {
 		try {
 			Connection conn = DBmain.konexioa();
 			PreparedStatement pstmt = conn
@@ -372,11 +367,11 @@ public class MenuBezero {
 				String deskribapena = rs.getString("DESKRIBAPENA");
 				double balioa = rs.getDouble("BALIOA");
 
-				deskribapenaArea.setText(deskribapena);
-				balioaArea.setText(balioa + " €");
+				deskribapenaField.setText(deskribapena);
+				balioaField.setText(balioa + " €");
 			} else {
-				deskribapenaArea.setText("");
-				balioaArea.setText("");
+				deskribapenaField.setText("");
+				balioaField.setText("");
 			}
 
 			rs.close();

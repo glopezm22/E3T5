@@ -1,4 +1,4 @@
-package Aplikazioa;
+package erronka;
 
 public class Produktu {
 	//ATRIBUTOAK

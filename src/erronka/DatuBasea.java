@@ -1,12 +1,10 @@
-package Aplikazioa;
+package erronka;
 
 import java.sql.Connection;
+
 import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.Statement;
-
-import Ariketak.Produktua;
-import Ariketak.Produktuak;
 
 import java.sql.SQLException;
 

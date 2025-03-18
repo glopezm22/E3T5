@@ -65,7 +65,13 @@ public class MenuSaltzaile {
 		// Produktuak menua sortu.
 		JMenu menu3 = new JMenu("Produktuak");
 		JMenuItem menuItem001 = new JMenuItem("Bistaratu");
+		JPanel produktuakPanel = MenuBezero.produktuakikusiSortu();
+		frame.add(produktuakPanel, "ProduktuakIkusi");
+		menuItem001.addActionListener(e -> cardLayout.show(frame.getContentPane(), "ProduktuakIkusi"));
 		JMenuItem menuItem002 = new JMenuItem("Gehitu");
+		JPanel produktuakgehituPanel = produktuakgehituSortu();
+		frame.add(produktuakgehituPanel, "ProduktuakGehitu");
+		menuItem002.addActionListener(e -> cardLayout.show(frame.getContentPane(), "ProduktuakGehitu"));
 		JMenuItem menuItem003 = new JMenuItem("Ezabatu");
 		JMenuItem menuItem004 = new JMenuItem("Editatu");
 		menu3.add(menuItem001);
@@ -513,4 +519,92 @@ public class MenuSaltzaile {
 
 		return panelUsuario;
 	}
+	
+	private static JPanel produktuakgehituSortu() {
+	    JPanel panel = new JPanel(new GridBagLayout());
+	    GridBagConstraints gbc = new GridBagConstraints();
+	    gbc.insets = new Insets(10, 10, 10, 10);
+	    
+	    String[] labels = {"Izena:", "Deskribapena:", "Prezioa:", "Kategoria:"};
+	    JTextField[] textFields = new JTextField[labels.length - 1]; // Ya no usamos el último campo
+
+	    for (int i = 0; i < labels.length - 1; i++) {
+	        gbc.gridx = 0;
+	        gbc.gridy = i;
+	        panel.add(new JLabel(labels[i]), gbc);
+
+	        textFields[i] = new JTextField(10);
+	        gbc.gridx = 1;
+	        panel.add(textFields[i], gbc);
+	    }
+
+	    // ComboBox para categorías
+	    JComboBox<String> categoriaComboBox = new JComboBox<>();
+	    cargarCategorias(categoriaComboBox); // Método para llenar el ComboBox
+
+	    gbc.gridx = 0;
+	    gbc.gridy = labels.length - 1;
+	    panel.add(new JLabel("Kategoria:"), gbc);
+
+	    gbc.gridx = 1;
+	    panel.add(categoriaComboBox, gbc);
+
+	    JButton gehituProduktu = new JButton("Gehitu Produktua");
+	    gbc.gridx = 0;
+	    gbc.gridy = labels.length;
+	    gbc.gridwidth = 2;
+	    panel.add(gehituProduktu, gbc);
+
+	    gehituProduktu.addActionListener(e -> {
+	        String izena = textFields[0].getText();
+	        String deskribapena = textFields[1].getText();
+	        double balioa;
+
+	        try {
+	            balioa = Double.parseDouble(textFields[2].getText());
+	        } catch (NumberFormatException ex) {
+	            JOptionPane.showMessageDialog(null, "Prezioa ez da zuzena");
+	            return;
+	        }
+
+	        String kategoria = (String) categoriaComboBox.getSelectedItem(); 
+
+	        try {
+	            Connection conn = DBmain.konexioa();
+	            Statement stmt = conn.createStatement();
+	            String sql = "INSERT INTO PRODUKTU (ID, IZENA, DESKRIBAPENA, BALIOA, SALNEURRIA, ID_KATEGORIA) VALUES " +
+	                         "((SELECT COALESCE(MAX(ID), 0) + 1 FROM PRODUKTU), '" + izena + "', '" + deskribapena + "', " + balioa + ", 0, (SELECT ID FROM KATEGORIA WHERE IZENA= '" + kategoria + "'))";
+	            stmt.executeUpdate(sql);
+
+	            conn.close();
+	            JOptionPane.showMessageDialog(null, "Produktua gehitu da.");
+	        } catch (SQLException ex) {
+	            JOptionPane.showMessageDialog(null, "Errorea: ezin da produktua gehitu.");
+	            ex.printStackTrace();
+	        }
+	    });
+
+	    return panel;
+	}
+	private static void cargarCategorias(JComboBox<String> comboBox) {
+	    try {
+	        Connection conn = DBmain.konexioa();
+	        Statement stmt = conn.createStatement();
+	        ResultSet rs = stmt.executeQuery("SELECT IZENA FROM KATEGORIA");
+
+	        while (rs.next()) {
+	            comboBox.addItem(rs.getString("IZENA"));
+	        }
+
+	        conn.close();
+	    } catch (SQLException ex) {
+	        JOptionPane.showMessageDialog(null, "Errorea: ezin dira kategoriak kargatu.");
+	        ex.printStackTrace();
+	    }
+	}
+
+	
+	
+	
+	
 }
