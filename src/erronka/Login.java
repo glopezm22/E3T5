@@ -123,8 +123,6 @@ public class Login {
 				String erabiltzaileadb = resultSet.getString("ERABILTZAILEA");
 				String pasahitzadb = resultSet.getString("PASAHITZA");
 				String motadb = resultSet.getString("MOTA");
-				Login.erabiltzailea = erabiltzaileadb;
-				Login.pasahitza = pasahitzadb;
 				if (erabiltzailea.equals(erabiltzaileadb) && pasahitza.equals(pasahitzadb)) {
 					return motadb;
 				}
@@ -139,6 +137,7 @@ public class Login {
 		return null;
 	}
 
+	// Sesioan logeatutako erabiltzailearen datuak gordetzeko metodoa.
 	public static void logeatutakoProfila(int id) {
 		try {
 			// Konexioa ezartzen da.
@@ -179,6 +178,14 @@ public class Login {
 				}
 				resultSetBezero.close();
 			}
+			
+			String kontsultaErabiltzaile = "SELECT * FROM ERABILTZAILEAK WHERE ID = " + id + " AND MOTA = '" + mota + "'";
+			ResultSet resultSetErabiltzaile = statement.executeQuery(kontsultaErabiltzaile);
+			if (resultSetErabiltzaile.next()) {
+				erabiltzailea = resultSetErabiltzaile.getString("ERABILTZAILEA");
+				pasahitza = resultSetErabiltzaile.getString("PASAHITZA");
+			}
+			resultSetErabiltzaile.close();
 
 			statement.close();
 			con.close();
@@ -188,6 +195,7 @@ public class Login {
 		}
 	}
 	
+	// Saioa ixteko metodoa. Dialog bat bistaratzen du non atzera emateko aukera emango duen.
 	public static JDialog saioaItxi(JFrame frame) {
 		JDialog dialog = new JDialog();
 		dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
@@ -219,6 +227,7 @@ public class Login {
 		return dialog;
 	}
 	
+	// Sesioko datuak garbitzeko metodoa.
 	private static void loginDatuakGarbitu() {
         Login.id = 0;
         Login.izena = null;

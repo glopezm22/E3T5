@@ -1,12 +1,15 @@
 package erronka;
 
-import java.util.List;
+//import java.util.List;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.ResultSet;
-import java.util.ArrayList;
+//import java.util.ArrayList;
 import javax.swing.*;
+
+import erronka.DB.Erabiltzaileak;
+
 import java.awt.*;
 
 public class MenuSaltzaile {
@@ -49,7 +52,9 @@ public class MenuSaltzaile {
 		// Menua-ren akzioak.
 		menuItem1.addActionListener(e -> cardLayout.show(frame.getContentPane(), "NireKontua"));
 		menuItem2.addActionListener(e -> cardLayout.show(frame.getContentPane(), "PasahitzaAldatu"));
-		menuItem3.addActionListener(e -> { Login.saioaItxi(frame); });
+		menuItem3.addActionListener(e -> {
+			Login.saioaItxi(frame);
+		});
 		menuItem4.addActionListener(e -> System.exit(0));
 
 		// Erabiltzaileak menua sortu.
@@ -118,8 +123,8 @@ public class MenuSaltzaile {
 		frame.add(panelErabiltzaileakEzabatu, "PanelErabiltzaileakEzabatu");
 
 		// Erabiltzaileak kontsultatzeko panel-a sortu.
-		JPanel panelErabiltzaileakKontsultatu = erabiltzaileakKontsultatuPanelSortu();
-		frame.add(panelErabiltzaileakKontsultatu, "PanelErabiltzaileakKontsultatu");
+//		JPanel panelErabiltzaileakKontsultatu = erabiltzaileakKontsultatuPanelSortu();
+//		frame.add(panelErabiltzaileakKontsultatu, "PanelErabiltzaileakKontsultatu");
 
 		// Menu item-aren akzioa "Ezabatu" aukerarako.
 		menuItem02.addActionListener(e -> {
@@ -246,43 +251,43 @@ public class MenuSaltzaile {
 
 		// Botón "Gorde"-ren akzioa.
 		gordeButton.addActionListener(e -> {
-		    String pasahitzaZaharra = new String(((JPasswordField) textFields[1]).getPassword());
-		    String pasahitzaBerria = new String(((JPasswordField) textFields[2]).getPassword());
-		    String pasahitzaBerriaErrepikatu = new String(((JPasswordField) textFields[3]).getPassword());
+			String pasahitzaZaharra = new String(((JPasswordField) textFields[1]).getPassword());
+			String pasahitzaBerria = new String(((JPasswordField) textFields[2]).getPassword());
+			String pasahitzaBerriaErrepikatu = new String(((JPasswordField) textFields[3]).getPassword());
 
-		    // Ziurtatu pasahitzak bat datozela
-		    if (!pasahitzaBerria.equals(pasahitzaBerriaErrepikatu)) {
-		        JOptionPane.showMessageDialog(null, "Errorea: pasahitzak ez datoz bat.");
-		        return;
-		    }
+			// Ziurtatu pasahitzak bat datozela
+			if (!pasahitzaBerria.equals(pasahitzaBerriaErrepikatu)) {
+				JOptionPane.showMessageDialog(null, "Errorea: pasahitzak ez datoz bat.");
+				return;
+			}
 
-		    try {
-		        Connection conn = DBmain.konexioa();
-		        Statement stmt = conn.createStatement();
+			try {
+				Connection conn = DBmain.konexioa();
+				Statement stmt = conn.createStatement();
 
-		        // Egiaztatzen du pasahitza zaharra eta erabiltzaile-izena zuzenak direla.
-		        String checkSql = "SELECT COUNT(*) FROM ERABILTZAILEAK WHERE ID = " + Login.id
-		                + " AND ERABILTZAILEA = '" + Login.erabiltzailea + "' AND PASAHITZA = '" + pasahitzaZaharra
-		                + "' AND MOTA = '" + Login.mota + "'";
-		        ResultSet rs = stmt.executeQuery(checkSql);
+				// Egiaztatzen du pasahitza zaharra eta erabiltzaile-izena zuzenak direla.
+				String checkSql = "SELECT COUNT(*) FROM ERABILTZAILEAK WHERE ID = " + Login.id
+						+ " AND ERABILTZAILEA = '" + Login.erabiltzailea + "' AND PASAHITZA = '" + pasahitzaZaharra
+						+ "' AND MOTA = '" + Login.mota + "'";
+				ResultSet rs = stmt.executeQuery(checkSql);
 
-		        // Egiaztatu erregistro bat existitzen dela
-		        if (rs.next() && rs.getInt(1) > 0) {
-		            String pasahitzaEguneratuSQL = "UPDATE ERABILTZAILEAK SET PASAHITZA = '" + pasahitzaBerria + "' WHERE ID = " + Login.id
-		                    + " AND ERABILTZAILEA = '" + Login.erabiltzailea + "' AND PASAHITZA = '" + pasahitzaZaharra
-		                    + "' AND MOTA = '" + Login.mota + "'";
-		            stmt.executeUpdate(pasahitzaEguneratuSQL);
-		            JOptionPane.showMessageDialog(null, "Pasahitza eguneratu da.");
-		        } else {
-		            // Ez badaude erregistro bat, errorea erakutsi
-		            JOptionPane.showMessageDialog(null, "Errorea: pasahitza okerra da.");
-		        }
+				// Egiaztatu erregistro bat existitzen dela
+				if (rs.next() && rs.getInt(1) > 0) {
+					String pasahitzaEguneratuSQL = "UPDATE ERABILTZAILEAK SET PASAHITZA = '" + pasahitzaBerria
+							+ "' WHERE ID = " + Login.id + " AND ERABILTZAILEA = '" + Login.erabiltzailea
+							+ "' AND PASAHITZA = '" + pasahitzaZaharra + "' AND MOTA = '" + Login.mota + "'";
+					stmt.executeUpdate(pasahitzaEguneratuSQL);
+					JOptionPane.showMessageDialog(null, "Pasahitza eguneratu da.");
+				} else {
+					// Ez badaude erregistro bat, errorea erakutsi
+					JOptionPane.showMessageDialog(null, "Errorea: pasahitza okerra da.");
+				}
 
-		        conn.close();
-		    } catch (SQLException ex) {
-		        JOptionPane.showMessageDialog(null, "Errorea: ezin da pasahitza eguneratu.");
-		        ex.printStackTrace();
-		    }
+				conn.close();
+			} catch (SQLException ex) {
+				JOptionPane.showMessageDialog(null, "Errorea: ezin da pasahitza eguneratu.");
+				ex.printStackTrace();
+			}
 		});
 
 		panel.add(centerPanel, BorderLayout.CENTER);
@@ -393,44 +398,87 @@ public class MenuSaltzaile {
 		gbc.gridy = 0;
 		panel.add(labelComboBox, gbc);
 
-		JComboBox<String> comboBoxUsuarios = new JComboBox<>();
+		JComboBox<Erabiltzaileak> comboBoxUsuarios = new JComboBox<>();
 		gbc.gridx = 1;
 		panel.add(comboBoxUsuarios, gbc);
 
-		JTextField datosUsuario = new JTextField(20);
-		datosUsuario.setEditable(false);
+		// Línea separadora
+		JSeparator separator = new JSeparator();
 		gbc.gridx = 0;
 		gbc.gridy = 1;
 		gbc.gridwidth = 2;
-		panel.add(datosUsuario, gbc);
+		gbc.fill = GridBagConstraints.HORIZONTAL;
+		panel.add(separator, gbc);
 
-		JButton ezabatu = new JButton("Ezabatu");
+		JTextField izenaField = new JTextField(20);
+		izenaField.setEditable(false);
 		gbc.gridx = 0;
 		gbc.gridy = 2;
 		gbc.gridwidth = 2;
+		panel.add(new JLabel("Izena:"), gbc);
+		gbc.gridy = 3;
+		panel.add(izenaField, gbc);
+
+		JTextField abizenaField = new JTextField(20);
+		abizenaField.setEditable(false);
+		gbc.gridy = 4;
+		panel.add(new JLabel("Abizena:"), gbc);
+		gbc.gridy = 5;
+		panel.add(abizenaField, gbc);
+
+		JTextField motaField = new JTextField(20);
+		motaField.setEditable(false);
+		gbc.gridy = 6;
+		panel.add(new JLabel("Mota:"), gbc);
+		gbc.gridy = 7;
+		panel.add(motaField, gbc);
+
+		JButton ezabatu = new JButton("Ezabatu");
+		gbc.gridx = 0;
+		gbc.gridy = 8;
+		gbc.gridwidth = 2;
 		panel.add(ezabatu, gbc);
 
-		cargarUsuariosEnComboBox(comboBoxUsuarios);
+		erabiltzaileakComboBox(comboBoxUsuarios);
 
 		comboBoxUsuarios.addActionListener(e -> {
-			String selectedUser = (String) comboBoxUsuarios.getSelectedItem();
+			Erabiltzaileak selectedUser = (Erabiltzaileak) comboBoxUsuarios.getSelectedItem();
 			if (selectedUser != null) {
-				datosUsuario.setText("Erabiltzailea: " + selectedUser);
+				izenaField.setText(selectedUser.getIzena());
+				abizenaField.setText(selectedUser.getAbizena());
+				motaField.setText(selectedUser.getMota());
+				if (motaField.getText().equals("S")) {
+					motaField.setText("Saltzailea");
+				} else if (motaField.getText().equals("B")) {
+					motaField.setText("Bezeroa");
+				}
 			}
 		});
 
 		ezabatu.addActionListener(e -> {
-			String erabiltzailea = (String) comboBoxUsuarios.getSelectedItem();
+			Erabiltzaileak erabiltzailea = (Erabiltzaileak) comboBoxUsuarios.getSelectedItem();
 			if (erabiltzailea != null) {
 				try {
 					Connection conn = DBmain.konexioa();
 					Statement stmt = conn.createStatement();
-					String sql = "DELETE FROM ERABILTZAILEAK WHERE ERABILTZAILEA = '" + erabiltzailea + "'";
+					String sql = "DELETE FROM ERABILTZAILEAK WHERE ID = " + erabiltzailea.getId();
 					int rowsAffected = stmt.executeUpdate(sql);
 					if (rowsAffected > 0) {
-						JOptionPane.showMessageDialog(null, "'" + erabiltzailea + "' erabiltzailea ezabatuta.");
+						JOptionPane.showMessageDialog(null,
+								"'" + erabiltzailea.getErabiltzailea() + "' erabiltzailea ezabatuta.");
 						comboBoxUsuarios.removeItem(erabiltzailea);
-						datosUsuario.setText("");
+						izenaField.setText("");
+						abizenaField.setText("");
+						motaField.setText("");
+
+						// Si es BEZERO, borrar también de la tabla BEZEROAK
+						if (erabiltzailea.getMota().equals("B")) {
+							stmt.executeUpdate("DELETE FROM BEZERO WHERE ID = " + erabiltzailea.getId());
+						}
+						// Si es LANGILE, borrar también de la tabla LANGILEAK
+						else if (erabiltzailea.getMota().equals("S")) {
+							stmt.executeUpdate("DELETE FROM LANGILE WHERE ID = " + erabiltzailea.getId());
+						}
 					} else {
 						JOptionPane.showMessageDialog(null, "Errorea: erabiltzailea ez da aurkitu.");
 					}
@@ -445,30 +493,28 @@ public class MenuSaltzaile {
 		return panel;
 	}
 
-	// Erabiltzaileak kontsultatzeko panel-a sortzeko metodoa.
-	private static JPanel erabiltzaileakKontsultatuPanelSortu() {
-		JPanel panelPrincipal = new JPanel(new BorderLayout());
-		JPanel panel = new JPanel();
-		panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
-
-		JScrollPane scrollPane = new JScrollPane(panel);
-		List<String[]> usuarios = cargarUsuariosDesdeBD();
-		for (String[] usuario : usuarios) {
-			panel.add(erabiltzailePanelaSortu(usuario[0], usuario[1]));
-		}
-
-		panelPrincipal.add(scrollPane, BorderLayout.CENTER);
-		return panelPrincipal;
-	}
-
 	// Erabiltzaileak ComboBox-ean kargatzeko metodoa.
-	private static void cargarUsuariosEnComboBox(JComboBox<String> comboBoxUsuarios) {
+	private static void erabiltzaileakComboBox(JComboBox<Erabiltzaileak> comboBoxUsuarios) {
 		try {
 			Connection conn = DBmain.konexioa();
 			Statement stmt = conn.createStatement();
-			ResultSet rs = stmt.executeQuery("SELECT ERABILTZAILEA FROM ERABILTZAILEAK");
+			ResultSet rs = stmt.executeQuery("SELECT E.ID, E.ERABILTZAILEA, E.PASAHITZA, E.MOTA, "
+					+ "L.IZENA AS LANGILE_IZENA, L.ABIZENA AS LANGILE_ABIZENA, L.EMAILA AS LANGILE_EMAILA, "
+					+ "B.IZENA AS BEZERO_IZENA, B.ABIZENA AS BEZERO_ABIZENA, B.EMAILA AS BEZERO_EMAILA "
+					+ "FROM ERABILTZAILEAK E " + "LEFT JOIN LANGILE L ON E.ID = L.ID AND E.MOTA = 'S' "
+					+ "LEFT JOIN BEZERO B ON E.ID = B.ID AND E.MOTA = 'B'");
+
 			while (rs.next()) {
-				comboBoxUsuarios.addItem(rs.getString("ERABILTZAILEA"));
+				String mota = rs.getString("MOTA");
+				String izena = mota.equals("S") ? rs.getString("LANGILE_IZENA") : rs.getString("BEZERO_IZENA");
+				String abizena = mota.equals("S") ? rs.getString("LANGILE_ABIZENA") : rs.getString("BEZERO_ABIZENA");
+				String emaila = mota.equals("S") ? rs.getString("LANGILE_EMAILA") : rs.getString("BEZERO_EMAILA");
+				String erabiltzailea = rs.getString("ERABILTZAILEA");
+				String pasahitza = rs.getString("PASAHITZA");
+
+				Erabiltzaileak erabiltzaileaObj = new Erabiltzaileak(rs.getInt("ID"), izena, abizena, emaila,
+						erabiltzailea, pasahitza, mota);
+				comboBoxUsuarios.addItem(erabiltzaileaObj);
 			}
 			conn.close();
 		} catch (SQLException ex) {
@@ -477,40 +523,41 @@ public class MenuSaltzaile {
 		}
 	}
 
-	// Erabiltzaileak datu-baseetatik kargatzeko metodoa.
-	private static List<String[]> cargarUsuariosDesdeBD() {
-		List<String[]> usuarios = new ArrayList<>();
-		try {
-			Connection conn = DBmain.konexioa();
-			Statement stmt = conn.createStatement();
-			ResultSet rs = stmt.executeQuery("SELECT ERABILTZAILEA, PASAHITZA FROM ERABILTZAILEAK");
-			while (rs.next()) {
-				usuarios.add(new String[] { rs.getString("ERABILTZAILEA"), rs.getString("PASAHITZA") });
-			}
-			conn.close();
-		} catch (SQLException ex) {
-			JOptionPane.showMessageDialog(null, "Errorea: ezin dira erabiltzaileak kargatu.");
-			ex.printStackTrace();
-		}
-		return usuarios;
-	}
+//	// Erabiltzaileak datu-baseetatik kargatzeko metodoa.
+//	private static List<String[]> cargarUsuariosDesdeBD() {
+//		List<String[]> usuarios = new ArrayList<>();
+//		try {
+//			Connection conn = DBmain.konexioa();
+//			Statement stmt = conn.createStatement();
+//			ResultSet rs = stmt.executeQuery("SELECT ERABILTZAILEA, PASAHITZA FROM ERABILTZAILEAK");
+//			while (rs.next()) {
+//				usuarios.add(new String[] { rs.getString("ERABILTZAILEA"), rs.getString("PASAHITZA") });
+//			}
+//			conn.close();
+//		} catch (SQLException ex) {
+//			JOptionPane.showMessageDialog(null, "Errorea: ezin dira erabiltzaileak kargatu.");
+//			ex.printStackTrace();
+//		}
+//		return usuarios;
+//	}
 
-	// Erabiltzailearen panel-a sortzeko metodoa.
-	private static JPanel erabiltzailePanelaSortu(String erabiltzailea, String pasahitza) {
-		JPanel panelUsuario = new JPanel();
-		panelUsuario.setLayout(new FlowLayout());
-		panelUsuario.setBorder(BorderFactory.createLineBorder(Color.BLACK));
+//	// Erabiltzailearen panel-a sortzeko metodoa.
+//	private static JPanel erabiltzailePanelaSortu(String erabiltzailea, String pasahitza) {
+//		JPanel panelUsuario = new JPanel();
+//		panelUsuario.setLayout(new FlowLayout());
+//		panelUsuario.setBorder(BorderFactory.createLineBorder(Color.BLACK));
+//
+//		JLabel fotoLabel = new JLabel();
+//		fotoLabel.setIcon(new ImageIcon("../irudiak/user.png"));
+//
+//		JLabel userLabel = new JLabel("Erabiltzailea: " + erabiltzailea);
+//		JLabel passLabel = new JLabel("Pasahitza: " + pasahitza);
+//
+//		panelUsuario.add(fotoLabel);
+//		panelUsuario.add(userLabel);
+//		panelUsuario.add(passLabel);
+//
+//		return panelUsuario;
+//	}
 
-		JLabel fotoLabel = new JLabel();
-		fotoLabel.setIcon(new ImageIcon("../irudiak/user.png"));
-
-		JLabel userLabel = new JLabel("Erabiltzailea: " + erabiltzailea);
-		JLabel passLabel = new JLabel("Pasahitza: " + pasahitza);
-
-		panelUsuario.add(fotoLabel);
-		panelUsuario.add(userLabel);
-		panelUsuario.add(passLabel);
-
-		return panelUsuario;
-	}
 }
