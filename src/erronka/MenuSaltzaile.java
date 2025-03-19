@@ -5,10 +5,12 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.ResultSet;
+import java.sql.CallableStatement;
 //import java.util.ArrayList;
 import javax.swing.*;
 
 import erronka.DB.Erabiltzaileak;
+import erronka.DB.Produktu;
 
 import java.awt.*;
 
@@ -80,7 +82,7 @@ public class MenuSaltzaile {
 		menuBar.add(menu3);
 		
 		// Produktuak bistaratzeko panela sortu.
-		JPanel panelProduktuakBistaratu = new JPanel();
+		JPanel panelProduktuakBistaratu = MenuBezero.produktuakikusiSortu();
 		frame.add(panelProduktuakBistaratu, "ProduktuakBistaratu");
 		
 		// Produktuak gehitu panela sortu.
@@ -216,95 +218,94 @@ public class MenuSaltzaile {
 
 	// Pasahitza aldatzeko panel-a sortzeko metodoa.
 	public static JPanel pasahitzaPanela() {
-		JPanel panel = new JPanel(new BorderLayout());
+        JPanel panel = new JPanel(new BorderLayout());
 
-		JPanel centerPanel = new JPanel(new GridBagLayout());
-		GridBagConstraints gbc = new GridBagConstraints();
-		gbc.insets = new Insets(10, 10, 10, 10);
+        JPanel centerPanel = new JPanel(new GridBagLayout());
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.insets = new Insets(10, 10, 10, 10);
 
-		JLabel pasahitzaAldatuLabel = new JLabel("Pasahitza aldatu", SwingConstants.CENTER);
-		pasahitzaAldatuLabel.setFont(new Font("Arial", Font.BOLD, 26));
-		gbc.gridx = 0;
-		gbc.gridy = 0;
-		gbc.gridwidth = 2; // Bi zutabe hartzen ditu
-		gbc.anchor = GridBagConstraints.CENTER; // Panela erdian
-		centerPanel.add(pasahitzaAldatuLabel, gbc);
+        JLabel pasahitzaAldatuLabel = new JLabel("Pasahitza aldatu", SwingConstants.CENTER);
+        pasahitzaAldatuLabel.setFont(new Font("Arial", Font.BOLD, 26));
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        gbc.gridwidth = 2; // Bi zutabe hartzen ditu
+        gbc.anchor = GridBagConstraints.CENTER; // Panela erdian
+        centerPanel.add(pasahitzaAldatuLabel, gbc);
 
-		String[] labels = { "Erabiltzaile-izena:", "Pasahitza:", "Pasahitza berria:", "Pasahitza berria errepikatu:" };
-		String[] values = { Login.erabiltzailea, null, null, null };
-		JTextField[] textFields = new JTextField[labels.length];
+        String[] labels = { "Erabiltzaile-izena:", "Pasahitza:", "Pasahitza berria:", "Pasahitza berria errepikatu:" };
+        String[] values = { Login.erabiltzailea, null, null, null };
+        JTextField[] textFields = new JTextField[labels.length];
 
-		for (int i = 0; i < labels.length; i++) {
-			gbc.gridx = 0;
-			gbc.gridy = i + 1; // 1. lerroan hasi, "Pasahitza aldatu" label-ari espazioa uzteko
-			gbc.gridwidth = 1; // Zutabearen zabalera berreskuratu
-			gbc.anchor = GridBagConstraints.WEST; // Ezkerrean alineatu
-			centerPanel.add(new JLabel(labels[i]), gbc);
+        for (int i = 0; i < labels.length; i++) {
+            gbc.gridx = 0;
+            gbc.gridy = i + 1; // 1. lerroan hasi, "Pasahitza aldatu" label-ari espazioa uzteko
+            gbc.gridwidth = 1; // Zutabearen zabalera berreskuratu
+            gbc.anchor = GridBagConstraints.WEST; // Ezkerrean alineatu
+            centerPanel.add(new JLabel(labels[i]), gbc);
 
-			if (i == 1 || i == 2 || i == 3) {
-				textFields[i] = new JPasswordField(10);
-			} else {
-				textFields[i] = new JTextField(10);
-			}
+            if (i == 1 || i == 2 || i == 3) {
+                textFields[i] = new JPasswordField(10);
+            } else {
+                textFields[i] = new JTextField(10);
+            }
 
-			textFields[i].setEditable(i != 0); // Erabiltzaile-izena ezin da editatu.
-			textFields[i].setText(values[i]);
-			gbc.gridx = 1;
-			centerPanel.add(textFields[i], gbc);
-		}
+            textFields[i].setEditable(i != 0); // Erabiltzaile-izena ezin da editatu.
+            textFields[i].setText(values[i]);
+            gbc.gridx = 1;
+            centerPanel.add(textFields[i], gbc);
+        }
 
-		// Botón "Gorde" gehitu.
-		JButton gordeButton = new JButton("Gorde");
-		gbc.gridx = 0;
-		gbc.gridy = labels.length + 1; // Ajustar la fila para el botón
-		gbc.gridwidth = 2;
-		gbc.anchor = GridBagConstraints.CENTER; // Centrar el botón
-		centerPanel.add(gordeButton, gbc);
+        // "Gorde" botoia.
+        JButton gordeButton = new JButton("Gorde");
+        gbc.gridx = 0;
+        gbc.gridy = labels.length + 1;
+        gbc.gridwidth = 2;
+        gbc.anchor = GridBagConstraints.CENTER;
+        centerPanel.add(gordeButton, gbc);
 
-		// Botón "Gorde"-ren akzioa.
-		gordeButton.addActionListener(e -> {
-			String pasahitzaZaharra = new String(((JPasswordField) textFields[1]).getPassword());
-			String pasahitzaBerria = new String(((JPasswordField) textFields[2]).getPassword());
-			String pasahitzaBerriaErrepikatu = new String(((JPasswordField) textFields[3]).getPassword());
+        // Botón "Gorde"-ren akzioa.
+        gordeButton.addActionListener(e -> {
+            String pasahitzaZaharra = new String(((JPasswordField) textFields[1]).getPassword());
+            String pasahitzaBerria = new String(((JPasswordField) textFields[2]).getPassword());
+            String pasahitzaBerriaErrepikatu = new String(((JPasswordField) textFields[3]).getPassword());
 
-			// Ziurtatu pasahitzak bat datozela
-			if (!pasahitzaBerria.equals(pasahitzaBerriaErrepikatu)) {
-				JOptionPane.showMessageDialog(null, "Errorea: pasahitzak ez datoz bat.");
-				return;
-			}
+            // Ziurtatu pasahitzak bat datozela
+            if (!pasahitzaBerria.equals(pasahitzaBerriaErrepikatu)) {
+                JOptionPane.showMessageDialog(null, "Errorea: pasahitzak ez datoz bat.");
+                return;
+            }
 
-			try {
-				Connection conn = DBmain.konexioa();
-				Statement stmt = conn.createStatement();
+            try {
+                Connection conn = DBmain.konexioa();
+                String sql = "{call PASAHITZA_EGUNERATU(?, ?, ?, ?, ?)}";
+                CallableStatement cstmt = conn.prepareCall(sql);
 
-				// Egiaztatzen du pasahitza zaharra eta erabiltzaile-izena zuzenak direla.
-				String checkSql = "SELECT COUNT(*) FROM ERABILTZAILEAK WHERE ID = " + Login.id
-						+ " AND ERABILTZAILEA = '" + Login.erabiltzailea + "' AND PASAHITZA = '" + pasahitzaZaharra
-						+ "' AND MOTA = '" + Login.mota + "'";
-				ResultSet rs = stmt.executeQuery(checkSql);
+                // Parametroak ezarri
+                cstmt.setInt(1, Login.id);
+                cstmt.setString(2, Login.erabiltzailea);
+                cstmt.setString(3, Login.mota);
+                cstmt.setString(4, pasahitzaZaharra);
+                cstmt.setString(5, pasahitzaBerria);
 
-				// Egiaztatu erregistro bat existitzen dela
-				if (rs.next() && rs.getInt(1) > 0) {
-					String pasahitzaEguneratuSQL = "UPDATE ERABILTZAILEAK SET PASAHITZA = '" + pasahitzaBerria
-							+ "' WHERE ID = " + Login.id + " AND ERABILTZAILEA = '" + Login.erabiltzailea
-							+ "' AND PASAHITZA = '" + pasahitzaZaharra + "' AND MOTA = '" + Login.mota + "'";
-					stmt.executeUpdate(pasahitzaEguneratuSQL);
-					JOptionPane.showMessageDialog(null, "Pasahitza eguneratu da.");
-				} else {
-					// Ez badaude erregistro bat, errorea erakutsi
-					JOptionPane.showMessageDialog(null, "Errorea: pasahitza okerra da.");
-				}
+                cstmt.execute();
 
-				conn.close();
-			} catch (SQLException ex) {
-				JOptionPane.showMessageDialog(null, "Errorea: ezin da pasahitza eguneratu.");
-				ex.printStackTrace();
-			}
-		});
+                JOptionPane.showMessageDialog(null, "Pasahitza eguneratu da.");
 
-		panel.add(centerPanel, BorderLayout.CENTER);
-		return panel;
-	}
+                cstmt.close();
+                conn.close();
+            } catch (SQLException ex) {
+                if (ex.getErrorCode() == 20001) {
+                    JOptionPane.showMessageDialog(null, "Errorea: pasahitza okerra da.");
+                } else {
+                    JOptionPane.showMessageDialog(null, "Errorea: ezin da pasahitza eguneratu.");
+                    ex.printStackTrace();
+                }
+            }
+        });
+
+        panel.add(centerPanel, BorderLayout.CENTER);
+        return panel;
+    }
 
 	// Saltzaileak sortzeko panel-a sortzeko metodoa.
 	private static JPanel saltzaileaPanelSortu() {
@@ -333,18 +334,18 @@ public class MenuSaltzaile {
 
 		gehituSaltzailea.addActionListener(e -> {
 			if (textFields[4].getText().isEmpty()) {
-				DBmain.saltzaileBezeroSortu("LANGILE",
-						"ID, IZENA, ABIZENA, EMAILA, TELEFONOA, KONTRATAZIO_DATA, ID_NAGUSI, SOLDATA",
-						"(SELECT NVL(MAX(ID), 0) + 1 FROM LANGILE), '" + textFields[0].getText() + "', '"
-								+ textFields[1].getText() + "', '" + textFields[2].getText() + "', '"
-								+ textFields[3].getText() + "', SYSDATE, " + textFields[4].getText() + ", 30000");
-
-			} else {
-				DBmain.saltzaileBezeroSortu("LANGILE",
+				DBmain.saltzaileEdoBezeroSortu("LANGILE",
 						"ID, IZENA, ABIZENA, EMAILA, TELEFONOA, KONTRATAZIO_DATA, ID_NAGUSI, SOLDATA",
 						"(SELECT NVL(MAX(ID), 0) + 1 FROM LANGILE), '" + textFields[0].getText() + "', '"
 								+ textFields[1].getText() + "', '" + textFields[2].getText() + "', '"
 								+ textFields[3].getText() + "', SYSDATE, NULL, 30000");
+
+			} else {
+				DBmain.saltzaileEdoBezeroSortu("LANGILE",
+						"ID, IZENA, ABIZENA, EMAILA, TELEFONOA, KONTRATAZIO_DATA, ID_NAGUSI, SOLDATA",
+						"(SELECT NVL(MAX(ID), 0) + 1 FROM LANGILE), '" + textFields[0].getText() + "', '"
+								+ textFields[1].getText() + "', '" + textFields[2].getText() + "', '"
+								+ textFields[3].getText() + "', SYSDATE, " + textFields[4].getText() + ", 30000");
 
 			}
 			DBmain.erabiltzaileaSortu("ERABILTZAILEAK", "ID, ERABILTZAILEA, PASAHITZA, MOTA",
@@ -536,71 +537,99 @@ public class MenuSaltzaile {
 	}
 
 	private static JPanel produktuakgehituSortu() {
-		JPanel panel = new JPanel(new GridBagLayout());
-		GridBagConstraints gbc = new GridBagConstraints();
-		gbc.insets = new Insets(10, 10, 10, 10);
+	    JPanel panel = new JPanel(new GridBagLayout());
+	    GridBagConstraints gbc = new GridBagConstraints();
+	    gbc.insets = new Insets(10, 10, 10, 10);
 
-		String[] labels = { "Izena:", "Deskribapena:", "Prezioa:", "Kategoria:" };
-		JTextField[] textFields = new JTextField[labels.length - 1]; // Ya no usamos el último campo
+	    String[] labels = { "Izena:", "Deskribapena:", "Balioa:", "Salneurria:", "Kategoria:" };
+	    JTextField[] textFields = new JTextField[labels.length - 1];
 
-		for (int i = 0; i < labels.length - 1; i++) {
-			gbc.gridx = 0;
-			gbc.gridy = i;
-			panel.add(new JLabel(labels[i]), gbc);
+	    for (int i = 0; i < labels.length - 1; i++) {
+	        gbc.gridx = 0;
+	        gbc.gridy = i;
+	        panel.add(new JLabel(labels[i]), gbc);
 
-			textFields[i] = new JTextField(10);
-			gbc.gridx = 1;
-			panel.add(textFields[i], gbc);
-		}
+	        textFields[i] = new JTextField(10);
+	        gbc.gridx = 1;
+	        panel.add(textFields[i], gbc);
+	    }
 
-		// ComboBox para categorías
-		JComboBox<String> categoriaComboBox = new JComboBox<>();
-		kategoriakKargatu(categoriaComboBox); // Método para llenar el ComboBox
+	    // ComboBox para categorías
+	    JComboBox<String> categoriaComboBox = new JComboBox<>();
+	    kategoriakKargatu(categoriaComboBox);
 
-		gbc.gridx = 0;
-		gbc.gridy = labels.length - 1;
-		panel.add(new JLabel("Kategoria:"), gbc);
+	    gbc.gridx = 0;
+	    gbc.gridy = labels.length - 1;
+	    panel.add(new JLabel("Kategoria:"), gbc);
 
-		gbc.gridx = 1;
-		panel.add(categoriaComboBox, gbc);
+	    gbc.gridx = 1;
+	    panel.add(categoriaComboBox, gbc);
 
-		JButton gehituProduktu = new JButton("Gehitu Produktua");
-		gbc.gridx = 0;
-		gbc.gridy = labels.length;
-		gbc.gridwidth = 2;
-		panel.add(gehituProduktu, gbc);
+	    JButton gehituProduktu = new JButton("Gehitu produktua");
+	    gbc.gridx = 0;
+	    gbc.gridy = labels.length;
+	    gbc.gridwidth = 2;
+	    panel.add(gehituProduktu, gbc);
 
-		gehituProduktu.addActionListener(e -> {
-			String izena = textFields[0].getText();
-			String deskribapena = textFields[1].getText();
-			double balioa;
+	    gehituProduktu.addActionListener(e -> {
+	        String izena = textFields[0].getText();
+	        String deskribapena = textFields[1].getText();
+	        double balioa;
+	        double salneurria;
 
-			try {
-				balioa = Double.parseDouble(textFields[2].getText());
-			} catch (NumberFormatException ex) {
-				JOptionPane.showMessageDialog(null, "Prezioa ez da zuzena");
-				return;
-			}
+	        // "Izena" gehienez 255 karaktere izan dezake.
+	        if (izena.length() > 255) {
+	            JOptionPane.showMessageDialog(null, "Izena gehienez 255 karaktere izan ditzake.");
+	            return;
+	        }
 
-			String kategoria = (String) categoriaComboBox.getSelectedItem();
+	        // "Deskribapena" gehienez 2000 karaktere izan ditzake.
+	        if (deskribapena.length() > 2000) {
+	            JOptionPane.showMessageDialog(null, "Deskribapena gehienez 2000 karaktere izan ditzake.");
+	            return;
+	        }
 
-			try {
-				Connection conn = DBmain.konexioa();
-				Statement stmt = conn.createStatement();
-				String sql = "INSERT INTO PRODUKTU (ID, IZENA, DESKRIBAPENA, BALIOA, SALNEURRIA, ID_KATEGORIA) VALUES "
-						+ "((SELECT COALESCE(MAX(ID), 0) + 1 FROM PRODUKTU), '" + izena + "', '" + deskribapena + "', "
-						+ balioa + ", 0, (SELECT ID FROM KATEGORIA WHERE IZENA= '" + kategoria + "'))";
-				stmt.executeUpdate(sql);
+	        // "Balioa" eta "Salneurria" Double bezala sartu behar dira.
+	        try {
+	            balioa = Double.parseDouble(textFields[2].getText());
+	            if (String.valueOf(balioa).length() > 9) {
+	                JOptionPane.showMessageDialog(null, "Balioa gehienez 9 karaktere izan ditzake.");
+	                return;
+	            }
+	        } catch (NumberFormatException ex) {
+	            JOptionPane.showMessageDialog(null, "Balioa ez da zuzena.");
+	            return;
+	        }
+	        try {
+	            salneurria = Double.parseDouble(textFields[3].getText());
+	            if (String.valueOf(salneurria).length() > 9) {
+	                JOptionPane.showMessageDialog(null, "Salneurria gehienez 9 karaktere izan ditzake.");
+	                return;
+	            }
+	        } catch (NumberFormatException ex) {
+	            JOptionPane.showMessageDialog(null, "Salneurria ez da zuzena.");
+	            return;
+	        }
 
-				conn.close();
-				JOptionPane.showMessageDialog(null, "Produktua gehitu da.");
-			} catch (SQLException ex) {
-				JOptionPane.showMessageDialog(null, "Errorea: ezin da produktua gehitu.");
-				ex.printStackTrace();
-			}
-		});
+	        String kategoria = (String) categoriaComboBox.getSelectedItem();
 
-		return panel;
+	        try {
+	            Connection conn = DBmain.konexioa();
+	            Statement stmt = conn.createStatement();
+	            String sql = "INSERT INTO PRODUKTU (ID, IZENA, DESKRIBAPENA, BALIOA, SALNEURRIA, ID_KATEGORIA) VALUES "
+	                    + "((SELECT COALESCE(MAX(ID), 0) + 1 FROM PRODUKTU), '" + izena + "', '" + deskribapena + "', "
+	                    + balioa + ", " + salneurria + ", (SELECT ID FROM KATEGORIA WHERE IZENA= '" + kategoria + "'))";
+	            stmt.executeUpdate(sql);
+
+	            conn.close();
+	            JOptionPane.showMessageDialog(null, "Produktua gehitu da.");
+	        } catch (SQLException ex) {
+	            JOptionPane.showMessageDialog(null, "Errorea: ezin da produktua gehitu.");
+	            ex.printStackTrace();
+	        }
+	    });
+
+	    return panel;
 	}
 
 	private static void kategoriakKargatu(JComboBox<String> comboBox) {
