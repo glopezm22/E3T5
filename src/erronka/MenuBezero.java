@@ -6,6 +6,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.sql.*;
 
+import erronka.DB.DBProduktu;
+
 public class MenuBezero {
 	public static void main(String[] args) {
 		// Frame-a sortu eta parametroak ezarri.
@@ -44,7 +46,9 @@ public class MenuBezero {
 
 		menuItem1.addActionListener(e -> cardLayout.show(frame.getContentPane(), "NireKontua"));
 		menuItem2.addActionListener(e -> cardLayout.show(frame.getContentPane(), "PasahitzaAldatu"));
-		menuItem3.addActionListener(e -> { Login.saioaItxi(frame); });
+		menuItem3.addActionListener(e -> {
+			Login.saioaItxi(frame);
+		});
 		menuItem4.addActionListener(e -> System.exit(0));
 
 		JMenu menu2 = new JMenu("Nire eskariak");
@@ -77,6 +81,72 @@ public class MenuBezero {
 		frame.setVisible(true);
 	}
 
+	// Datu pertsonalak bistaratzeko panel-a sortzeko metodoa.
+	private static JPanel datuPertsonalakPanelSortu() {
+		JPanel panel = new JPanel(new BorderLayout());
+
+		JPanel centerPanel = new JPanel(new GridBagLayout());
+		GridBagConstraints gbc = new GridBagConstraints();
+		gbc.insets = new Insets(10, 10, 10, 10);
+
+		// Nire kontua label-a sortu.
+		JLabel nireKontuaLabel = new JLabel("Nire kontua", SwingConstants.CENTER);
+		nireKontuaLabel.setFont(new Font("Arial", Font.BOLD, 26));
+		gbc.gridx = 0;
+		gbc.gridy = 0;
+		gbc.gridwidth = 2;
+		gbc.anchor = GridBagConstraints.CENTER;
+		centerPanel.add(nireKontuaLabel, gbc);
+
+		String[] labels = { "Izena:", "Abizena:", "Emaila:", "Helbidea:" };
+		String[] values = { Login.izena, Login.abizena, Login.emaila, Login.helbidea };
+		JTextField[] textFields = new JTextField[labels.length];
+
+		for (int i = 0; i < labels.length; i++) {
+			gbc.gridx = 0;
+			gbc.gridy = i + 1; // 1. lerroan hasi, "Pasahitza aldatu" label-ari espazioa uzteko
+			gbc.gridwidth = 1; // Zutabearen zabalera berreskuratu
+			gbc.anchor = GridBagConstraints.WEST; // Ezkerrean alineatu
+			centerPanel.add(new JLabel(labels[i]), gbc);
+
+			textFields[i] = new JTextField(10);
+			textFields[i].setEditable(i != 0 && i != 1); // Izena eta abizena ezin dira editatu
+			textFields[i].setText(values[i]);
+			gbc.gridx = 1;
+			centerPanel.add(textFields[i], gbc);
+		}
+
+		// Botón "Gorde" gehitu.
+		JButton gordeButton = new JButton("Gorde");
+		gbc.gridx = 0;
+		gbc.gridy = labels.length + 1;
+		gbc.gridwidth = 2;
+		gbc.anchor = GridBagConstraints.CENTER;
+		centerPanel.add(gordeButton, gbc);
+
+		// Gorde botoiaren akzioa.
+		gordeButton.addActionListener(e -> {
+			String emaila = textFields[2].getText();
+			String helbidea = textFields[3].getText();
+
+			try {
+				Connection conn = DBmain.konexioa();
+				Statement stmt = conn.createStatement();
+				String sql = "UPDATE BEZERO SET EMAILA = '" + emaila + "', HELBIDEA = '" + helbidea + "' WHERE ID = '"
+						+ Login.id + "'";
+				stmt.executeUpdate(sql);
+				conn.close();
+				JOptionPane.showMessageDialog(null, "Datuak eguneratu dira.");
+			} catch (SQLException ex) {
+				JOptionPane.showMessageDialog(null, "Errorea: ezin dira datuak eguneratu.");
+				ex.printStackTrace();
+			}
+		});
+
+		panel.add(centerPanel, BorderLayout.CENTER);
+		return panel;
+	}
+
 	private static JPanel egoeraikusiSortu() {
 		JPanel panel = new JPanel(new BorderLayout());
 		JLabel label = new JLabel("Egoera Bistaratu", SwingConstants.CENTER);
@@ -89,10 +159,8 @@ public class MenuBezero {
 		gbc.fill = GridBagConstraints.HORIZONTAL;
 		gbc.anchor = GridBagConstraints.WEST;
 
-		// Crear un panel para las columnas
-		JPanel columnsPanel = new JPanel(new GridLayout(0, 3, 10, 10)); // Tres columnas con espacio entre ellas
+		JPanel columnsPanel = new JPanel(new GridLayout(0, 3, 10, 10));
 
-		// Crear los encabezados para las columnas
 		JPanel headerPanel = new JPanel(new GridLayout(1, 3));
 		headerPanel.add(new JLabel("Shipped", SwingConstants.CENTER));
 		headerPanel.add(new JLabel("Canceled", SwingConstants.CENTER));
@@ -282,6 +350,10 @@ public class MenuBezero {
 
 		JComboBox<String> comboBoxProduktuak = new JComboBox<>();
 
+		JLabel kategoriaLabel = new JLabel("Kategoria:");
+		JTextField kategoriaField = new JTextField(10);
+		kategoriaField.setEditable(false);
+
 		JLabel deskribapenaLabel = new JLabel("Deskribapena:");
 		JTextArea deskribapenaArea = new JTextArea(3, 20);
 		deskribapenaArea.setEditable(false);
@@ -289,168 +361,42 @@ public class MenuBezero {
 		deskribapenaArea.setWrapStyleWord(true);
 		JScrollPane deskribapenaScroll = new JScrollPane(deskribapenaArea);
 
-		JLabel balioaLabel = new JLabel("Balioa:");
-		JTextArea balioaArea = new JTextArea(1, 10);
-		balioaArea.setEditable(false);
-		JScrollPane balioaScroll = new JScrollPane(balioaArea);
+		JLabel salneurriaLabel = new JLabel("Balioa:");
+		JTextField salneurriaField = new JTextField(10);
+		salneurriaField.setEditable(false);
 
-		// Añadir ComboBox
+		// ComboBox gehitu
 		gbc.gridx = 0;
 		gbc.gridy = 0;
 		centerPanel.add(new JLabel("Aukeratu produktua:"), gbc);
 		gbc.gridx = 1;
 		centerPanel.add(comboBoxProduktuak, gbc);
 
-		// Añadir descripción
+		// Kategoria gehitu
 		gbc.gridx = 0;
 		gbc.gridy = 1;
+		centerPanel.add(kategoriaLabel, gbc);
+		gbc.gridx = 1;
+		centerPanel.add(kategoriaField, gbc);
+
+		// Deskribapena gehitu
+		gbc.gridx = 0;
+		gbc.gridy = 2;
 		centerPanel.add(deskribapenaLabel, gbc);
 		gbc.gridx = 1;
 		centerPanel.add(deskribapenaScroll, gbc);
 
-		// Añadir valor (balioa)
+		// Salneurria gehitu
 		gbc.gridx = 0;
-		gbc.gridy = 2;
-		centerPanel.add(balioaLabel, gbc);
+		gbc.gridy = 3;
+		centerPanel.add(salneurriaLabel, gbc);
 		gbc.gridx = 1;
-		centerPanel.add(balioaScroll, gbc);
+		centerPanel.add(salneurriaField, gbc);
 
-		kargatuProduktuak(comboBoxProduktuak, deskribapenaArea, balioaArea);
-
-		panel.add(centerPanel, BorderLayout.CENTER);
-		return panel;
-	}
-
-	private static void kargatuProduktuak(JComboBox<String> comboBox, JTextArea deskribapenaArea,
-			JTextArea balioaArea) {
-		try {
-			Connection conn = DBmain.konexioa();
-			Statement stmt = conn.createStatement();
-
-			String query = "SELECT P.IZENA AS PRODUKTU_IZENA, K.IZENA AS KATEGORIA_IZENA " + "FROM PRODUKTU P "
-					+ "JOIN KATEGORIA K ON P.ID_KATEGORIA = K.ID";
-
-			ResultSet rs = stmt.executeQuery(query);
-
-			while (rs.next()) {
-				String produktua = rs.getString("PRODUKTU_IZENA");
-				String kategoria = rs.getString("KATEGORIA_IZENA");
-				comboBox.addItem(produktua + " (" + kategoria + ")");
-			}
-
-			rs.close();
-			stmt.close();
-			conn.close();
-		} catch (SQLException ex) {
-			JOptionPane.showMessageDialog(null, "Errorea produktuak kargatzean.");
-			ex.printStackTrace();
-		}
-
-		comboBox.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				String aukeratutakoProduktua = (String) comboBox.getSelectedItem();
-				if (aukeratutakoProduktua != null) {
-					String produktuaIzena = aukeratutakoProduktua.split(" \\(")[0]; // Elimina la categoría de la
-																					// selección
-					kargatuProduktuarenInformazioa(produktuaIzena, deskribapenaArea, balioaArea);
-				}
-			}
-		});
-	}
-
-	private static void kargatuProduktuarenInformazioa(String produktua, JTextArea deskribapenaArea,
-			JTextArea balioaArea) {
-		try {
-			Connection conn = DBmain.konexioa();
-			PreparedStatement pstmt = conn
-					.prepareStatement("SELECT DESKRIBAPENA, BALIOA FROM PRODUKTU WHERE IZENA = ?");
-			pstmt.setString(1, produktua);
-			ResultSet rs = pstmt.executeQuery();
-
-			if (rs.next()) {
-				String deskribapena = rs.getString("DESKRIBAPENA");
-				double balioa = rs.getDouble("BALIOA");
-
-				deskribapenaArea.setText(deskribapena);
-				balioaArea.setText(balioa + " €");
-			} else {
-				deskribapenaArea.setText("");
-				balioaArea.setText("");
-			}
-
-			rs.close();
-			pstmt.close();
-			conn.close();
-		} catch (SQLException ex) {
-			JOptionPane.showMessageDialog(null, "Errorea produktuen informazioa kargatzean.");
-			ex.printStackTrace();
-		}
-	}
-
-	// Datu pertsonalak bistaratzeko panel-a sortzeko metodoa.
-	private static JPanel datuPertsonalakPanelSortu() {
-		JPanel panel = new JPanel(new BorderLayout());
-
-		JPanel centerPanel = new JPanel(new GridBagLayout());
-		GridBagConstraints gbc = new GridBagConstraints();
-		gbc.insets = new Insets(10, 10, 10, 10);
-
-		// Nire kontua label-a sortu.
-		JLabel nireKontuaLabel = new JLabel("Nire kontua", SwingConstants.CENTER);
-		nireKontuaLabel.setFont(new Font("Arial", Font.BOLD, 26));
-		gbc.gridx = 0;
-		gbc.gridy = 0;
-		gbc.gridwidth = 2;
-		gbc.anchor = GridBagConstraints.CENTER;
-		centerPanel.add(nireKontuaLabel, gbc);
-
-		String[] labels = { "Izena:", "Abizena:", "Emaila:", "Helbidea:" };
-		String[] values = { Login.izena, Login.abizena, Login.emaila, Login.helbidea };
-		JTextField[] textFields = new JTextField[labels.length];
-
-		for (int i = 0; i < labels.length; i++) {
-			gbc.gridx = 0;
-			gbc.gridy = i + 1; // 1. lerroan hasi, "Pasahitza aldatu" label-ari espazioa uzteko
-			gbc.gridwidth = 1; // Zutabearen zabalera berreskuratu
-			gbc.anchor = GridBagConstraints.WEST; // Ezkerrean alineatu
-			centerPanel.add(new JLabel(labels[i]), gbc);
-
-			textFields[i] = new JTextField(10);
-			textFields[i].setEditable(i != 0 && i != 1); // Izena eta abizena ezin dira editatu
-			textFields[i].setText(values[i]);
-			gbc.gridx = 1;
-			centerPanel.add(textFields[i], gbc);
-		}
-
-		// Botón "Gorde" gehitu.
-		JButton gordeButton = new JButton("Gorde");
-		gbc.gridx = 0;
-		gbc.gridy = labels.length + 1;
-		gbc.gridwidth = 2;
-		gbc.anchor = GridBagConstraints.CENTER;
-		centerPanel.add(gordeButton, gbc);
-
-		// Gorde botoiaren akzioa.
-		gordeButton.addActionListener(e -> {
-			String emaila = textFields[2].getText();
-			String helbidea = textFields[3].getText();
-
-			try {
-				Connection conn = DBmain.konexioa();
-				Statement stmt = conn.createStatement();
-				String sql = "UPDATE BEZERO SET EMAILA = '" + emaila + "', HELBIDEA = '" + helbidea + "' WHERE ID = '"
-						+ Login.id + "'";
-				stmt.executeUpdate(sql);
-				conn.close();
-				JOptionPane.showMessageDialog(null, "Datuak eguneratu dira.");
-			} catch (SQLException ex) {
-				JOptionPane.showMessageDialog(null, "Errorea: ezin dira datuak eguneratu.");
-				ex.printStackTrace();
-			}
-		});
+		DBProduktu.kargatuProduktuak(comboBoxProduktuak, kategoriaField, deskribapenaArea, salneurriaField);
 
 		panel.add(centerPanel, BorderLayout.CENTER);
 		return panel;
 	}
+
 }

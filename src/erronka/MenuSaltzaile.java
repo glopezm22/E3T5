@@ -101,8 +101,6 @@ public class MenuSaltzaile {
 		menu4.add(menuItem0001);
 		menuBar.add(menu4);
 
-		frame.setJMenuBar(menuBar);
-
 		// Panel nagusia sortu.
 		JPanel mainPanel = new JPanel(new BorderLayout());
 		frame.add(mainPanel, "MainPanel");
@@ -146,6 +144,8 @@ public class MenuSaltzaile {
 		menuItem02.addActionListener(e -> {
 			cardLayout.show(frame.getContentPane(), "PanelErabiltzaileakEzabatu");
 		});
+
+		frame.setJMenuBar(menuBar);
 
 		frame.setVisible(true);
 	}
@@ -352,6 +352,9 @@ public class MenuSaltzaile {
 			}
 			DBmain.erabiltzaileaSortu("ERABILTZAILEAK", "ID, ERABILTZAILEA, PASAHITZA, MOTA",
 					"ID, LOWER(SUBSTR(IZENA, 1, 1)) || LOWER(ABIZENA) AS ERABILTZAILEA, LOWER(SUBSTR(IZENA, 1, 1)) || LOWER(ABIZENA) AS PASAHITZA, 'S' AS MOTA FROM LANGILE WHERE ID = (SELECT MAX(ID) FROM LANGILE)");
+		for (int i = 0; i < labels.length; i++) {
+            textFields[i].setText("");
+        }
 		});
 		return panel;
 	}
@@ -397,8 +400,10 @@ public class MenuSaltzaile {
 				JOptionPane.showMessageDialog(null, "Errorea: bezeroa ezin da gehitu.");
 				ex.printStackTrace();
 			}
+			for (int i = 0; i < labels.length; i++) {
+	            textFields[i].setText("");
+	        }
 		});
-
 		return panel;
 	}
 
@@ -558,7 +563,7 @@ public class MenuSaltzaile {
 
 	    // ComboBox para categorías
 	    JComboBox<String> categoriaComboBox = new JComboBox<>();
-	    kategoriakKargatu(categoriaComboBox);
+	    kategoriakKargatuCOMBOBOX(categoriaComboBox);
 
 	    gbc.gridx = 0;
 	    gbc.gridy = labels.length - 1;
@@ -673,7 +678,7 @@ public class MenuSaltzaile {
 	    return panel;
 	}
 
-    private static void kategoriakKargatu(JComboBox<String> comboBox) {
+    private static void kategoriakKargatuCOMBOBOX(JComboBox<String> comboBox) {
         try {
             Connection conn = DBmain.konexioa();
             Statement stmt = conn.createStatement();
