@@ -51,4 +51,17 @@ public class Erabiltzaileak {
     public String toString() {
         return izena + " " + abizena + " (" + mota + ")";
     }
+    
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Erabiltzaileak erabiltzailea = (Erabiltzaileak) o;
+        return id == erabiltzailea.id;
+    }
+
+    @Override
+    public int hashCode() {
+        return Integer.hashCode(id);
+    }
 }

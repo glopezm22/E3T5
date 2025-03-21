@@ -6,11 +6,13 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.ResultSet;
 import java.sql.CallableStatement;
+import java.sql.PreparedStatement;
 //import java.util.ArrayList;
 import javax.swing.*;
 
 import erronka.DB.Erabiltzaileak;
 import erronka.DB.Produktu;
+import erronka.DB.DBProduktu;
 
 import java.awt.*;
 
@@ -99,8 +101,6 @@ public class MenuSaltzaile {
 		menu4.add(menuItem0001);
 		menuBar.add(menu4);
 
-		frame.setJMenuBar(menuBar);
-
 		// Panel nagusia sortu.
 		JPanel mainPanel = new JPanel(new BorderLayout());
 		frame.add(mainPanel, "MainPanel");
@@ -144,6 +144,8 @@ public class MenuSaltzaile {
 		menuItem02.addActionListener(e -> {
 			cardLayout.show(frame.getContentPane(), "PanelErabiltzaileakEzabatu");
 		});
+
+		frame.setJMenuBar(menuBar);
 
 		frame.setVisible(true);
 	}
@@ -350,6 +352,9 @@ public class MenuSaltzaile {
 			}
 			DBmain.erabiltzaileaSortu("ERABILTZAILEAK", "ID, ERABILTZAILEA, PASAHITZA, MOTA",
 					"ID, LOWER(SUBSTR(IZENA, 1, 1)) || LOWER(ABIZENA) AS ERABILTZAILEA, LOWER(SUBSTR(IZENA, 1, 1)) || LOWER(ABIZENA) AS PASAHITZA, 'S' AS MOTA FROM LANGILE WHERE ID = (SELECT MAX(ID) FROM LANGILE)");
+		for (int i = 0; i < labels.length; i++) {
+            textFields[i].setText("");
+        }
 		});
 		return panel;
 	}
@@ -395,8 +400,10 @@ public class MenuSaltzaile {
 				JOptionPane.showMessageDialog(null, "Errorea: bezeroa ezin da gehitu.");
 				ex.printStackTrace();
 			}
+			for (int i = 0; i < labels.length; i++) {
+	            textFields[i].setText("");
+	        }
 		});
-
 		return panel;
 	}
 
@@ -556,7 +563,7 @@ public class MenuSaltzaile {
 
 	    // ComboBox para categorías
 	    JComboBox<String> categoriaComboBox = new JComboBox<>();
-	    kategoriakKargatu(categoriaComboBox);
+	    kategoriakKargatuCOMBOBOX(categoriaComboBox);
 
 	    gbc.gridx = 0;
 	    gbc.gridy = labels.length - 1;
@@ -572,24 +579,22 @@ public class MenuSaltzaile {
 	    panel.add(gehituProduktu, gbc);
 
 	    gehituProduktu.addActionListener(e -> {
+	        DBProduktu dbProduktu = new DBProduktu();
+
 	        String izena = textFields[0].getText();
 	        String deskribapena = textFields[1].getText();
 	        double balioa;
 	        double salneurria;
 
-	        // "Izena" gehienez 255 karaktere izan dezake.
+	        // Validaciones de longitud y tipo de datos
 	        if (izena.length() > 255) {
 	            JOptionPane.showMessageDialog(null, "Izena gehienez 255 karaktere izan ditzake.");
 	            return;
 	        }
-
-	        // "Deskribapena" gehienez 2000 karaktere izan ditzake.
 	        if (deskribapena.length() > 2000) {
 	            JOptionPane.showMessageDialog(null, "Deskribapena gehienez 2000 karaktere izan ditzake.");
 	            return;
 	        }
-
-	        // "Balioa" eta "Salneurria" Double bezala sartu behar dira.
 	        try {
 	            balioa = Double.parseDouble(textFields[2].getText());
 	            if (String.valueOf(balioa).length() > 9) {
@@ -613,15 +618,56 @@ public class MenuSaltzaile {
 
 	        String kategoria = (String) categoriaComboBox.getSelectedItem();
 
+	        // Obtener el ID de la categoría
+	        int id_kategoria = -1;
 	        try {
 	            Connection conn = DBmain.konexioa();
-	            Statement stmt = conn.createStatement();
-	            String sql = "INSERT INTO PRODUKTU (ID, IZENA, DESKRIBAPENA, BALIOA, SALNEURRIA, ID_KATEGORIA) VALUES "
-	                    + "((SELECT COALESCE(MAX(ID), 0) + 1 FROM PRODUKTU), '" + izena + "', '" + deskribapena + "', "
-	                    + balioa + ", " + salneurria + ", (SELECT ID FROM KATEGORIA WHERE IZENA= '" + kategoria + "'))";
-	            stmt.executeUpdate(sql);
+	            String sql = "SELECT ID FROM KATEGORIA WHERE IZENA = ?";
+	            PreparedStatement pstmt = conn.prepareStatement(sql);
+	            pstmt.setString(1, kategoria);
+	            ResultSet rs = pstmt.executeQuery();
+
+	            if (rs.next()) {
+	                id_kategoria = rs.getInt("ID"); // Asegúrate de que la columna "ID" sea de tipo numérico
+	            } else {
+	                JOptionPane.showMessageDialog(null, "Kategoria ez da aurkitu.");
+	                return;
+	            }
+
+	            rs.close();
+	            pstmt.close();
+	            conn.close();
+	        } catch (SQLException ex) {
+	            JOptionPane.showMessageDialog(null, "Errorea kategoria IDa lortzean.");
+	            ex.printStackTrace();
+	            return;
+	        }
+
+	        // Insertar el producto en la base de datos
+	        try {
+	            Connection conn = DBmain.konexioa();
+	            String sql = "INSERT INTO PRODUKTU (ID, IZENA, DESKRIBAPENA, BALIOA, SALNEURRIA, ID_KATEGORIA) VALUES ((SELECT COALESCE(MAX(ID), 0) + 1 FROM PRODUKTU), ?, ?, ?, ?, ?)";
+	            PreparedStatement pstmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+	            pstmt.setString(1, izena);
+	            pstmt.setString(2, deskribapena);
+	            pstmt.setDouble(3, balioa);
+	            pstmt.setDouble(4, salneurria);
+	            pstmt.setInt(5, id_kategoria);
+	            pstmt.executeUpdate();
+
+	            // Obtener el ID generado
+	            ResultSet generatedKeys = pstmt.getGeneratedKeys();
+	            int id = -1;
+	            if (generatedKeys.next()) {
+	                id = generatedKeys.getInt(1); // Asegúrate de que la columna "ID" sea de tipo numérico
+	            }
 
 	            conn.close();
+
+	            // Crear el objeto Produktu y añadirlo a la lista
+	            Produktu produktuBerria = new Produktu(id, izena, deskribapena, balioa, salneurria, id_kategoria);
+	            dbProduktu.gehituProduktua(produktuBerria);
+
 	            JOptionPane.showMessageDialog(null, "Produktua gehitu da.");
 	        } catch (SQLException ex) {
 	            JOptionPane.showMessageDialog(null, "Errorea: ezin da produktua gehitu.");
@@ -632,22 +678,24 @@ public class MenuSaltzaile {
 	    return panel;
 	}
 
-	private static void kategoriakKargatu(JComboBox<String> comboBox) {
-		try {
-			Connection conn = DBmain.konexioa();
-			Statement stmt = conn.createStatement();
-			ResultSet rs = stmt.executeQuery("SELECT IZENA FROM KATEGORIA");
+    private static void kategoriakKargatuCOMBOBOX(JComboBox<String> comboBox) {
+        try {
+            Connection conn = DBmain.konexioa();
+            Statement stmt = conn.createStatement();
+            ResultSet rs = stmt.executeQuery("SELECT IZENA FROM KATEGORIA");
 
-			while (rs.next()) {
-				comboBox.addItem(rs.getString("IZENA"));
-			}
+            while (rs.next()) {
+                comboBox.addItem(rs.getString("IZENA"));
+            }
 
-			conn.close();
-		} catch (SQLException ex) {
-			JOptionPane.showMessageDialog(null, "Errorea: ezin dira kategoriak kargatu.");
-			ex.printStackTrace();
-		}
-	}
+            rs.close();
+            stmt.close();
+            conn.close();
+        } catch (SQLException ex) {
+            JOptionPane.showMessageDialog(null, "Errorea kategoriak kargatzean.");
+            ex.printStackTrace();
+        }
+    }
 
 //	// Erabiltzaileak datu-baseetatik kargatzeko metodoa.
 //	private static List<String[]> cargarUsuariosDesdeBD() {
