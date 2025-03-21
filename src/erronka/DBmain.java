@@ -70,7 +70,7 @@ public class DBmain {
 		}
 	}
 
-	public static void saltzaileBezeroSortu(String taula, String eremuak, String balioak) {
+	public static void saltzaileEdoBezeroSortu(String taula, String eremuak, String balioak) {
 		try {
 			Connection conn = konexioa();
 			Statement stmt = conn.createStatement();
