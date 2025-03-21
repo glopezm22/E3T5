@@ -15,6 +15,8 @@ import erronka.DB.Produktu;
 import erronka.DB.DBProduktu;
 
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 public class MenuSaltzaile {
 
@@ -100,6 +102,11 @@ public class MenuSaltzaile {
 		JMenuItem menuItem0001 = new JMenuItem("Bistaratu");
 		menu4.add(menuItem0001);
 		menuBar.add(menu4);
+		
+		JPanel eskariakPanel = eskariakikusiSortu();
+		frame.add(eskariakPanel, "EskariakBistaratu");
+
+		menuItem0001.addActionListener(e -> cardLayout.show(frame.getContentPane(), "EskariakBistaratu"));
 
 		// Panel nagusia sortu.
 		JPanel mainPanel = new JPanel(new BorderLayout());
@@ -148,6 +155,131 @@ public class MenuSaltzaile {
 		frame.setJMenuBar(menuBar);
 
 		frame.setVisible(true);
+	}
+	
+	
+	private static void kargatuEskariak(JComboBox<String> comboBox, int saltzaileId) {
+		try {
+			Connection conn = DBmain.konexioa();
+			PreparedStatement pstmt = conn.prepareStatement("SELECT E.ID FROM ESKARI E WHERE E.ID_SALTZAILE = ?");
+			pstmt.setInt(1, saltzaileId);  // Aquí el índice debe ser 1, no 3
+			ResultSet rs = pstmt.executeQuery();
+
+			while (rs.next()) {
+				comboBox.addItem("Eskaria " + rs.getInt("ID"));
+			}
+
+			rs.close();
+			pstmt.close();
+			conn.close();
+		} catch (SQLException ex) {
+			JOptionPane.showMessageDialog(null, "Errorea eskariak kargatzean.");
+			ex.printStackTrace();
+		}
+	}
+
+	private static JPanel eskariakikusiSortu() {
+	    JPanel panel = new JPanel(new BorderLayout());
+	    JLabel label = new JLabel("Historiala", SwingConstants.CENTER);
+	    label.setFont(new Font("Arial", Font.BOLD, 24));
+	    panel.add(label, BorderLayout.NORTH);
+
+	    JPanel centerPanel = new JPanel(new GridBagLayout());
+	    GridBagConstraints gbc = new GridBagConstraints();
+	    gbc.insets = new Insets(10, 10, 10, 10);
+	    gbc.fill = GridBagConstraints.HORIZONTAL;
+	    gbc.anchor = GridBagConstraints.WEST;
+
+	    // Componentes
+	    JComboBox<String> comboBoxHistoriala = new JComboBox<>();
+	    JTextField txtEskariId = new JTextField(10);
+	    JTextField txtSaltzailea = new JTextField(20);
+	    JTextField txtData = new JTextField(15);
+	    JTextField txtEgoera = new JTextField(15);
+
+	    // Deshabilitar edición
+	    txtEskariId.setEditable(false);
+	    txtSaltzailea.setEditable(false);
+	    txtData.setEditable(false);
+	    txtEgoera.setEditable(false);
+
+	    int id = Login.id; // ID del usuario logueado
+	    kargatuEskariak(comboBoxHistoriala, id);
+
+	    // Acción al seleccionar un pedido
+	    comboBoxHistoriala.addActionListener(new ActionListener() {
+	        @Override
+	        public void actionPerformed(ActionEvent e) {
+	            String aukeratutakoEskaria = (String) comboBoxHistoriala.getSelectedItem();
+	            if (aukeratutakoEskaria != null) {
+	                int eskariId = Integer.parseInt(aukeratutakoEskaria.split(" ")[1]);
+	                kargatuEskariarenInformazioa(eskariId, txtEskariId, txtSaltzailea, txtData, txtEgoera);
+	            }
+	        }
+	    });
+
+	    // Agregar componentes al panel
+	    gbc.gridx = 0;
+	    gbc.gridy = 0;
+	    centerPanel.add(new JLabel("Aukeratu eskaria:"), gbc);
+	    gbc.gridx = 1;
+	    centerPanel.add(comboBoxHistoriala, gbc);
+
+	    gbc.gridx = 0;
+	    gbc.gridy = 1;
+	    centerPanel.add(new JLabel("Eskari ID:"), gbc);
+	    gbc.gridx = 1;
+	    centerPanel.add(txtEskariId, gbc);
+
+	    gbc.gridx = 0;
+	    gbc.gridy = 2;
+	    centerPanel.add(new JLabel("Bezero:"), gbc);
+	    gbc.gridx = 1;
+	    centerPanel.add(txtSaltzailea, gbc);
+
+	    gbc.gridx = 0;
+	    gbc.gridy = 3;
+	    centerPanel.add(new JLabel("Data:"), gbc);
+	    gbc.gridx = 1;
+	    centerPanel.add(txtData, gbc);
+
+	    gbc.gridx = 0;
+	    gbc.gridy = 4;
+	    centerPanel.add(new JLabel("Egoera:"), gbc);
+	    gbc.gridx = 1;
+	    centerPanel.add(txtEgoera, gbc);
+
+	    panel.add(centerPanel, BorderLayout.CENTER);
+	    return panel;
+	}
+
+	private static void kargatuEskariarenInformazioa(int eskariId, JTextField txtEskariId, JTextField txtSaltzailea, JTextField txtData, JTextField txtEgoera) {
+	    try {
+	        Connection conn = DBmain.konexioa();
+	        PreparedStatement pstmt = conn.prepareStatement(
+	            "SELECT E.ID, B.IZENA, B.ABIZENA, E.ESKAERA_DATA, EG.DESKRIBAPENA " +
+	            "FROM ESKARI E " +
+	            "JOIN BEZERO B ON E.ID_BEZERO = B.ID " +
+	            "JOIN ESKARI_EGOERA EG ON E.ID_EGOERA = EG.ID " +
+	            "WHERE E.ID = ?"
+	        );
+	        pstmt.setInt(1, eskariId);
+	        ResultSet rs = pstmt.executeQuery();
+
+	        if (rs.next()) {
+	            txtEskariId.setText(String.valueOf(rs.getInt("ID")));
+	            txtSaltzailea.setText(rs.getString("IZENA") + " " + rs.getString("ABIZENA"));
+	            txtData.setText(rs.getString("ESKAERA_DATA"));
+	            txtEgoera.setText(rs.getString("DESKRIBAPENA"));
+	        }
+
+	        rs.close();
+	        pstmt.close();
+	        conn.close();
+	    } catch (SQLException ex) {
+	        JOptionPane.showMessageDialog(null, "Errorea eskariaren informazioa kargatzean.");
+	        ex.printStackTrace();
+	    }
 	}
 
 	// Datu pertsonalak bistaratzeko panel-a sortzeko metodoa.
@@ -697,6 +829,9 @@ public class MenuSaltzaile {
         }
     }
 
+    
+    
+    
 //	// Erabiltzaileak datu-baseetatik kargatzeko metodoa.
 //	private static List<String[]> cargarUsuariosDesdeBD() {
 //		List<String[]> usuarios = new ArrayList<>();
