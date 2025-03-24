@@ -86,17 +86,24 @@ public class MenuSaltzaile {
 		menuBar.add(menu3);
 		
 		// Produktuak bistaratzeko panela sortu.
+		menuItem001.addActionListener(e -> cardLayout.show(frame.getContentPane(), "ProduktuakBistaratu"));
 		JPanel panelProduktuakBistaratu = MenuBezero.produktuakikusiSortu();
 		frame.add(panelProduktuakBistaratu, "ProduktuakBistaratu");
 		
 		// Produktuak gehitu panela sortu.
-		JPanel produktuakPanel = produktuakgehituSortu();
-		frame.add(produktuakPanel, "ProduktuakGehitu");
+		menuItem002.addActionListener(e -> cardLayout.show(frame.getContentPane(), "ProduktuakGehitu"));
+		JPanel produktuakPanelgehitu = produktuakgehituSortu();
+		frame.add(produktuakPanelgehitu, "ProduktuakGehitu");
 		
 		// Menua-ren akzioak.
-		menuItem001.addActionListener(e -> cardLayout.show(frame.getContentPane(), "ProduktuakBistaratu"));
-		menuItem002.addActionListener(e -> cardLayout.show(frame.getContentPane(), "ProduktuakGehitu"));
+		menuItem003.addActionListener(e -> cardLayout.show(frame.getContentPane(), "ProduktuakEzabatu"));
+		JPanel produktuakezabatuPanel = produktuakEzabatu();
+		frame.add(produktuakezabatuPanel, "ProduktuakEzabatu");
+		
 
+		menuItem004.addActionListener(e -> cardLayout.show(frame.getContentPane(), "ProduktuakEditatu"));
+		JPanel produktuakeditatuPanel = produktuakgehituEditatu();
+		frame.add(produktuakeditatuPanel, "ProduktuakEditatu");
 		// Eskariak menua sortu.
 		JMenu menu4 = new JMenu("Eskariak");
 		JMenuItem menuItem0001 = new JMenuItem("Bistaratu");
@@ -157,6 +164,182 @@ public class MenuSaltzaile {
 		frame.setVisible(true);
 	}
 	
+
+	public static JPanel produktuakEzabatu() {
+	    JPanel panel = new JPanel(new BorderLayout());
+	    JLabel label = new JLabel("Produktuak Ezabatu", SwingConstants.CENTER);
+	    label.setFont(new Font("Arial", Font.BOLD, 24));
+	    panel.add(label, BorderLayout.NORTH);
+
+	    JPanel centerPanel = new JPanel(new GridBagLayout());
+	    GridBagConstraints gbc = new GridBagConstraints();
+	    gbc.insets = new Insets(10, 10, 10, 10);
+	    gbc.fill = GridBagConstraints.HORIZONTAL;
+	    gbc.anchor = GridBagConstraints.WEST;
+
+	    JComboBox<String> comboBoxProduktuak = new JComboBox<>();
+
+	    JLabel kategoriaLabel = new JLabel("Kategoria:");
+	    JTextField kategoriaField = new JTextField(10);
+	    kategoriaField.setEditable(false);
+
+	    JLabel deskribapenaLabel = new JLabel("Deskribapena:");
+	    JTextArea deskribapenaArea = new JTextArea(3, 20);
+	    deskribapenaArea.setEditable(false);
+	    deskribapenaArea.setLineWrap(true);
+	    deskribapenaArea.setWrapStyleWord(true);
+	    JScrollPane deskribapenaScroll = new JScrollPane(deskribapenaArea);
+
+	    JLabel salneurriaLabel = new JLabel("Balioa:");
+	    JTextField salneurriaField = new JTextField(10);
+	    salneurriaField.setEditable(false);
+
+	    JButton ezabatuButton = new JButton("Ezabatu");
+
+	    // Añadir componentes al panel
+	    gbc.gridx = 0;
+	    gbc.gridy = 0;
+	    centerPanel.add(new JLabel("Aukeratu produktua:"), gbc);
+	    gbc.gridx = 1;
+	    centerPanel.add(comboBoxProduktuak, gbc);
+
+	    gbc.gridx = 0;
+	    gbc.gridy = 1;
+	    centerPanel.add(kategoriaLabel, gbc);
+	    gbc.gridx = 1;
+	    centerPanel.add(kategoriaField, gbc);
+
+	    gbc.gridx = 0;
+	    gbc.gridy = 2;
+	    centerPanel.add(deskribapenaLabel, gbc);
+	    gbc.gridx = 1;
+	    centerPanel.add(deskribapenaScroll, gbc);
+
+	    gbc.gridx = 0;
+	    gbc.gridy = 3;
+	    centerPanel.add(salneurriaLabel, gbc);
+	    gbc.gridx = 1;
+	    centerPanel.add(salneurriaField, gbc);
+
+	    gbc.gridx = 0;
+	    gbc.gridy = 4;
+	    gbc.gridwidth = 2;
+	    gbc.anchor = GridBagConstraints.CENTER;
+	    centerPanel.add(ezabatuButton, gbc);
+
+	    DBProduktu.kargatuProduktuak(comboBoxProduktuak, kategoriaField, deskribapenaArea, salneurriaField);
+
+	    // Acción del botón "Ezabatu"
+	    ezabatuButton.addActionListener(new ActionListener() {
+	        @Override
+	        public void actionPerformed(ActionEvent e) {
+	            String aukeratutakoProduktua = (String) comboBoxProduktuak.getSelectedItem();
+	            if (aukeratutakoProduktua != null) {
+	                String produktuaIzena = aukeratutakoProduktua.split(" \\(")[0];
+
+	                int erantzuna = JOptionPane.showConfirmDialog(panel, 
+	                        "Ziur zaude " + produktuaIzena + " ezabatu nahi duzula?", 
+	                        "Berretsi Ezabatzea", JOptionPane.YES_NO_OPTION);
+
+	                if (erantzuna == JOptionPane.YES_OPTION) {
+	                    DBProduktu.ezabatuProduktua(produktuaIzena);
+	                    DBProduktu.kargatuProduktuak(comboBoxProduktuak, kategoriaField, deskribapenaArea, salneurriaField);
+	                }
+	            }
+	        }
+	    });
+
+	    panel.add(centerPanel, BorderLayout.CENTER);
+	    return panel;
+	}
+
+	
+	public static JPanel produktuakgehituEditatu() {
+	    JPanel panel = new JPanel(new BorderLayout());
+	    JLabel label = new JLabel("Produktuak Editatu", SwingConstants.CENTER);
+	    label.setFont(new Font("Arial", Font.BOLD, 24));
+	    panel.add(label, BorderLayout.NORTH);
+
+	    JPanel centerPanel = new JPanel(new GridBagLayout());
+	    GridBagConstraints gbc = new GridBagConstraints();
+	    gbc.insets = new Insets(10, 10, 10, 10);
+	    gbc.fill = GridBagConstraints.HORIZONTAL;
+	    gbc.anchor = GridBagConstraints.WEST;
+
+	    JComboBox<String> comboBoxProduktuak = new JComboBox<>();
+
+	    JLabel kategoriaLabel = new JLabel("Kategoria:");
+	    JTextField kategoriaField = new JTextField(10);
+	    kategoriaField.setEditable(false);
+
+	    JLabel deskribapenaLabel = new JLabel("Deskribapena:");
+	    JTextArea deskribapenaArea = new JTextArea(3, 20);
+	    deskribapenaArea.setLineWrap(true);
+	    deskribapenaArea.setWrapStyleWord(true);
+	    JScrollPane deskribapenaScroll = new JScrollPane(deskribapenaArea);
+
+	    JLabel salneurriaLabel = new JLabel("Balioa:");
+	    JTextField salneurriaField = new JTextField(10);
+	    
+	    JButton gordeButton = new JButton("Gorde");
+
+	    // Añadir componentes al panel
+	    gbc.gridx = 0;
+	    gbc.gridy = 0;
+	    centerPanel.add(new JLabel("Aukeratu produktua:"), gbc);
+	    gbc.gridx = 1;
+	    centerPanel.add(comboBoxProduktuak, gbc);
+
+	    gbc.gridx = 0;
+	    gbc.gridy = 1;
+	    centerPanel.add(kategoriaLabel, gbc);
+	    gbc.gridx = 1;
+	    centerPanel.add(kategoriaField, gbc);
+
+	    gbc.gridx = 0;
+	    gbc.gridy = 2;
+	    centerPanel.add(deskribapenaLabel, gbc);
+	    gbc.gridx = 1;
+	    centerPanel.add(deskribapenaScroll, gbc);
+
+	    gbc.gridx = 0;
+	    gbc.gridy = 3;
+	    centerPanel.add(salneurriaLabel, gbc);
+	    gbc.gridx = 1;
+	    centerPanel.add(salneurriaField, gbc);
+
+	    gbc.gridx = 0;
+	    gbc.gridy = 4;
+	    gbc.gridwidth = 2;
+	    gbc.anchor = GridBagConstraints.CENTER;
+	    centerPanel.add(gordeButton, gbc);
+
+	    DBProduktu.kargatuProduktuak(comboBoxProduktuak, kategoriaField, deskribapenaArea, salneurriaField);
+
+	    gordeButton.addActionListener(new ActionListener() {
+	        @Override
+	        public void actionPerformed(ActionEvent e) {
+	            String aukeratutakoProduktua = (String) comboBoxProduktuak.getSelectedItem();
+	            if (aukeratutakoProduktua != null) {
+	            	String produktuaIzena = aukeratutakoProduktua.split(" \\(")[0];
+	                String deskribapena = deskribapenaArea.getText();
+	                double salneurria;
+	                
+	                try {
+	                    salneurria = Double.parseDouble(salneurriaField.getText());
+	                } catch (NumberFormatException ex) {
+	                    JOptionPane.showMessageDialog(panel, "Mesedez, sartu baliozko zenbaki bat Balioa eremuan.", "Errorea", JOptionPane.ERROR_MESSAGE);
+	                    return;
+	                }
+	                
+	                DBProduktu.eguneratuProduktua(produktuaIzena, deskribapena, salneurria);
+	            }
+	        }
+	    });
+
+	    panel.add(centerPanel, BorderLayout.CENTER);
+	    return panel;
+	}
 	
 	private static void kargatuEskariak(JComboBox<String> comboBox, int saltzaileId) {
 		try {

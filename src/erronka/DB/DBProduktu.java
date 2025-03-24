@@ -147,6 +147,37 @@ public class DBProduktu {
         return kategoriaIzena;
     }
 
+    public static void eguneratuProduktua(String izena, String deskribapena, double salneurria) {
+        Connection conn = null;
+        PreparedStatement pstmt = null;
+
+        try {
+            conn = DBmain.konexioa();
+            String sql = "UPDATE PRODUKTU SET DESKRIBAPENA = ?, SALNEURRIA = ? WHERE IZENA = ?";
+            pstmt = conn.prepareStatement(sql);
+            pstmt.setString(1, deskribapena);
+            pstmt.setDouble(2, salneurria);
+            pstmt.setString(3, izena);
+
+            int updatedRows = pstmt.executeUpdate();
+            if (updatedRows > 0) {
+                JOptionPane.showMessageDialog(null, "Produktua eguneratu da!");
+            } else {
+                JOptionPane.showMessageDialog(null, "Ezin da produktua eguneratu. Ziurtatu izena zuzena dela.");
+            }
+        } catch (SQLException e) {
+            JOptionPane.showMessageDialog(null, "Errorea produktua eguneratzean: " + e.getMessage());
+            e.printStackTrace();
+        } finally {
+            try {
+                if (pstmt != null) pstmt.close();
+                if (conn != null) conn.close();
+            } catch (SQLException e) {
+                System.err.println("Errorea konexioa ixterakoan: " + e.getMessage());
+            }
+        }
+    }
+
     public List<Produktu> getProduktuak() {
         return new ArrayList<>(produktuak);
     }
@@ -165,12 +196,33 @@ public class DBProduktu {
         this.produktuak.add(produktua);
     }
 
-    public void ezabatuProduktua(Produktu produktua) {
-        if (produktua == null) {
-            throw new IllegalArgumentException("Produktua ezin da nulua izan.");
-        }
-        if (!this.produktuak.remove(produktua)) {
-            throw new IllegalArgumentException("Produktua ez dago zerrendan.");
+    public static void ezabatuProduktua(String izena) {
+        Connection conn = null;
+        PreparedStatement pstmt = null;
+
+        try {
+            conn = DBmain.konexioa();
+            String sql = "DELETE FROM PRODUKTU WHERE IZENA = ?";
+            pstmt = conn.prepareStatement(sql);
+            pstmt.setString(1, izena);
+
+            int deletedRows = pstmt.executeUpdate();
+            if (deletedRows > 0) {
+                JOptionPane.showMessageDialog(null, "Produktua ezabatu da!");
+            } else {
+                JOptionPane.showMessageDialog(null, "Ez da produkturik aurkitu izen horrekin.");
+            }
+        } catch (SQLException e) {
+            JOptionPane.showMessageDialog(null, "Errorea produktua ezabatzean: " + e.getMessage());
+            e.printStackTrace();
+        } finally {
+            try {
+                if (pstmt != null) pstmt.close();
+                if (conn != null) conn.close();
+            } catch (SQLException e) {
+                System.err.println("Errorea konexioa ixterakoan: " + e.getMessage());
+            }
         }
     }
+
 }
