@@ -1,428 +1,116 @@
 package erronka;
 
-import javax.swing.*;
-import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.sql.*;
-
-import erronka.DB.DBProduktu;
+import javax.swing.JFrame;
+import javax.swing.JPanel;
+import javax.swing.JMenuBar;
+import javax.swing.JMenu;
+import javax.swing.JMenuItem;
+import java.awt.CardLayout;
 
 public class MenuBezero {
-	public static void main(String[] args) {
-		// Frame-a sortu eta parametroak ezarri.
+
+    public static void main(String[] args) {
+		// Frame nagusia eta CardLayout-a sortu
+        JFrame frame = sortuFrameNagusia();
+        CardLayout cardLayout = new CardLayout();
+        frame.setLayout(cardLayout);
+
+		// Defektuzko panela
+        JPanel defaultPanel = new JPanel();
+        frame.add(defaultPanel, "Default");
+        cardLayout.show(frame.getContentPane(), "Default");
+
+		// Menu barra sortu
+        JMenuBar menuBar = sortuMenuBarra(frame, cardLayout);
+
+        frame.setJMenuBar(menuBar);
+        frame.setVisible(true);
+    }
+
+	// Frame nagusia sortzen da, titulua eta tamaina ezarrita.
+	private static JFrame sortuFrameNagusia() {
 		JFrame frame = new JFrame("GameStop | Bezeroen menua");
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.setExtendedState(JFrame.MAXIMIZED_BOTH);
 		frame.setSize(1920, 1080);
-		CardLayout cardLayout = new CardLayout();
-		frame.setLayout(cardLayout);
-
-		// Defektuzko panela BETI bistaratuko dena hasieran.
-		JPanel defaultPanel = new JPanel();
-		frame.add(defaultPanel, "Default");
-		cardLayout.show(frame.getContentPane(), "Default");
-
-		// Menua sortu eta antolatu.
-		JMenuBar menuBar = new JMenuBar();
-		JMenu menu = new JMenu("Nire kontua");
-		JMenuItem menuItem1 = new JMenuItem("Datu pertsonalak");
-		JMenuItem menuItem2 = new JMenuItem("Pasahitza aldatu");
-		JMenuItem menuItem3 = new JMenuItem("Itxi saioa");
-		JMenuItem menuItem4 = new JMenuItem("Itxi programa");
-		menu.add(menuItem1);
-		menu.add(menuItem2);
-		menu.add(menuItem3);
-		menu.add(menuItem4);
-		menuBar.add(menu);
-
-		// Datu pertsonalak panel-a sortu.
-		JPanel datuPertsonalakPanel = datuPertsonalakPanelSortu();
-		frame.add(datuPertsonalakPanel, "NireKontua");
-
-		// Pasahitza aldatu panel-a sortu.
-		JPanel pasahitzaPanel = MenuSaltzaile.pasahitzaPanela();
-		frame.add(pasahitzaPanel, "PasahitzaAldatu");
-
-		menuItem1.addActionListener(e -> cardLayout.show(frame.getContentPane(), "NireKontua"));
-		menuItem2.addActionListener(e -> cardLayout.show(frame.getContentPane(), "PasahitzaAldatu"));
-		menuItem3.addActionListener(e -> {
-			Login.saioaItxi(frame);
-		});
-		menuItem4.addActionListener(e -> System.exit(0));
-
-		JMenu menu2 = new JMenu("Nire eskariak");
-		JMenuItem menuItem01 = new JMenuItem("Historiala bistaratu");
-		JMenuItem menuItem02 = new JMenuItem("Egoera");
-		menu2.add(menuItem01);
-		menu2.add(menuItem02);
-		menuBar.add(menu2);
-
-		JPanel historialaPanel = historialaikusiSortu();
-		frame.add(historialaPanel, "Historiala");
-		menuItem01.addActionListener(e -> cardLayout.show(frame.getContentPane(), "Historiala"));
-
-		JPanel egoeraPanel = egoeraikusiSortu();
-		frame.add(egoeraPanel, "EgoeraBistaratu");
-		menuItem02.addActionListener(e -> cardLayout.show(frame.getContentPane(), "EgoeraBistaratu"));
-
-		JMenu menu3 = new JMenu("Produktuak");
-		JMenuItem menuItem001 = new JMenuItem("Ikusi");
-		menu3.add(menuItem001);
-		menuBar.add(menu3);
-
-		JPanel produktuakPanel = produktuakikusiSortu();
-		frame.add(produktuakPanel, "ProduktuakIkusi");
-
-		menuItem001.addActionListener(e -> cardLayout.show(frame.getContentPane(), "ProduktuakIkusi"));
-
-		frame.setJMenuBar(menuBar);
-
-		frame.setVisible(true);
+		return frame;
 	}
+	
+	// Menu barra sortzen da, non menuaren submenuak eta aukerak definitzen diren.
+    private static JMenuBar sortuMenuBarra(JFrame frame, CardLayout cardLayout) {
+        JMenuBar menuBar = new JMenuBar();
 
-	// Datu pertsonalak bistaratzeko panel-a sortzeko metodoa.
-	private static JPanel datuPertsonalakPanelSortu() {
-		JPanel panel = new JPanel(new BorderLayout());
+		// "Nire kontua" menua
+        JMenu nireKontua = sortuKontuaMenua(frame, cardLayout);
+        menuBar.add(nireKontua);
 
-		JPanel centerPanel = new JPanel(new GridBagLayout());
-		GridBagConstraints gbc = new GridBagConstraints();
-		gbc.insets = new Insets(10, 10, 10, 10);
+		// "Eskariak" menua
+        JMenu eskariak = sortuEskariakMenua(frame, cardLayout);
+        menuBar.add(eskariak);
 
-		// Nire kontua label-a sortu.
-		JLabel nireKontuaLabel = new JLabel("Nire kontua", SwingConstants.CENTER);
-		nireKontuaLabel.setFont(new Font("Arial", Font.BOLD, 26));
-		gbc.gridx = 0;
-		gbc.gridy = 0;
-		gbc.gridwidth = 2;
-		gbc.anchor = GridBagConstraints.CENTER;
-		centerPanel.add(nireKontuaLabel, gbc);
+		// "Produktuak" menua
+        JMenu produktuak = sortuProduktuakMenua(frame, cardLayout);
+        menuBar.add(produktuak);
 
-		String[] labels = { "Izena:", "Abizena:", "Emaila:", "Helbidea:" };
-		String[] values = { Login.izena, Login.abizena, Login.emaila, Login.helbidea };
-		JTextField[] textFields = new JTextField[labels.length];
+        return menuBar;
+    }
 
-		for (int i = 0; i < labels.length; i++) {
-			gbc.gridx = 0;
-			gbc.gridy = i + 1; // 1. lerroan hasi, "Pasahitza aldatu" label-ari espazioa uzteko
-			gbc.gridwidth = 1; // Zutabearen zabalera berreskuratu
-			gbc.anchor = GridBagConstraints.WEST; // Ezkerrean alineatu
-			centerPanel.add(new JLabel(labels[i]), gbc);
+	// "Nire kontua" menua sortu.
+    private static JMenu sortuKontuaMenua(JFrame frame, CardLayout cardLayout) {
+		JMenu nireKontua = new JMenu("Nire kontua");
 
-			textFields[i] = new JTextField(10);
-			textFields[i].setEditable(i != 0 && i != 1); // Izena eta abizena ezin dira editatu
-			textFields[i].setText(values[i]);
-			gbc.gridx = 1;
-			centerPanel.add(textFields[i], gbc);
-		}
+		JMenuItem datuPertsonalak = new JMenuItem("Datu pertsonalak");
+		datuPertsonalak.addActionListener(e -> cardLayout.show(frame.getContentPane(), "NireKontua"));
+		nireKontua.add(datuPertsonalak);
 
-		// Botón "Gorde" gehitu.
-		JButton gordeButton = new JButton("Gorde");
-		gbc.gridx = 0;
-		gbc.gridy = labels.length + 1;
-		gbc.gridwidth = 2;
-		gbc.anchor = GridBagConstraints.CENTER;
-		centerPanel.add(gordeButton, gbc);
+		JMenuItem pasahitzaAldatu = new JMenuItem("Pasahitza aldatu");
+		pasahitzaAldatu.addActionListener(e -> cardLayout.show(frame.getContentPane(), "PasahitzaAldatu"));
+		nireKontua.add(pasahitzaAldatu);
 
-		// Gorde botoiaren akzioa.
-		gordeButton.addActionListener(e -> {
-			String emaila = textFields[2].getText();
-			String helbidea = textFields[3].getText();
+		JMenuItem saioaItxi = new JMenuItem("Itxi saioa");
+		saioaItxi.addActionListener(e -> Login.saioaItxi(frame));
+		nireKontua.add(saioaItxi);
 
-			try {
-				Connection conn = DBmain.konexioa();
-				Statement stmt = conn.createStatement();
-				String sql = "UPDATE BEZERO SET EMAILA = '" + emaila + "', HELBIDEA = '" + helbidea + "' WHERE ID = '"
-						+ Login.id + "'";
-				stmt.executeUpdate(sql);
-				conn.close();
-				JOptionPane.showMessageDialog(null, "Datuak eguneratu dira.");
-			} catch (SQLException ex) {
-				JOptionPane.showMessageDialog(null, "Errorea: ezin dira datuak eguneratu.");
-				ex.printStackTrace();
-			}
-		});
+		JMenuItem irten = new JMenuItem("Itxi programa");
+		irten.addActionListener(e -> System.exit(0));
+		nireKontua.add(irten);
 
-		panel.add(centerPanel, BorderLayout.CENTER);
-		return panel;
+		// Panelak gehitu framera
+		frame.add(NireKontuaMenu.bezeroenDatuPertsonalak(), "NireKontua");
+		frame.add(NireKontuaMenu.pasahitzaPanela(), "PasahitzaAldatu");
+
+		return nireKontua;
 	}
+	
+	// "Eskariak" menua sortu.
+    private static JMenu sortuEskariakMenua(JFrame frame, CardLayout cardLayout) {
+        JMenu eskariak = new JMenu("Nire eskariak");
 
-	private static JPanel egoeraikusiSortu() {
-		JPanel panel = new JPanel(new BorderLayout());
-		JLabel label = new JLabel("Egoera Bistaratu", SwingConstants.CENTER);
-		label.setFont(new Font("Arial", Font.BOLD, 24));
-		panel.add(label, BorderLayout.NORTH);
+        JMenuItem historiala = new JMenuItem("Historiala bistaratu");
+        historiala.addActionListener(e -> cardLayout.show(frame.getContentPane(), "Historiala"));
+        eskariak.add(historiala);
 
-		JPanel centerPanel = new JPanel(new GridBagLayout());
-		GridBagConstraints gbc = new GridBagConstraints();
-		gbc.insets = new Insets(10, 10, 10, 10);
-		gbc.fill = GridBagConstraints.HORIZONTAL;
-		gbc.anchor = GridBagConstraints.WEST;
+        JMenuItem egoera = new JMenuItem("Egoera");
+        egoera.addActionListener(e -> cardLayout.show(frame.getContentPane(), "EgoeraBistaratu"));
+        eskariak.add(egoera);
 
-		JPanel columnsPanel = new JPanel(new GridLayout(0, 3, 10, 10));
+		// Panelak gehitu framera
+        frame.add(EskariakMenu.historialaikusiSortu(), "Historiala");
+        frame.add(EskariakMenu.egoeraikusiSortu(), "EgoeraBistaratu");
 
-		JPanel headerPanel = new JPanel(new GridLayout(1, 3));
-		headerPanel.add(new JLabel("Shipped", SwingConstants.CENTER));
-		headerPanel.add(new JLabel("Canceled", SwingConstants.CENTER));
-		headerPanel.add(new JLabel("Pending", SwingConstants.CENTER));
+        return eskariak;
+    }
 
-		// Agregar los encabezados al panel
-		columnsPanel.add(headerPanel);
+    private static JMenu sortuProduktuakMenua(JFrame frame, CardLayout cardLayout) {
+        JMenu productsMenu = new JMenu("Produktuak");
 
-		// Consultar los estados de los pedidos del usuario
-		int bezeroId = Login.id; // ID del usuario logueado
-		try {
-			Connection conn = DBmain.konexioa();
-			PreparedStatement pstmt = conn.prepareStatement("SELECT E.ID, EG.DESKRIBAPENA " + "FROM ESKARI E "
-					+ "JOIN ESKARI_EGOERA EG ON E.ID_EGOERA = EG.ID " + "WHERE E.ID_BEZERO = ?");
-			pstmt.setInt(1, bezeroId);
-			ResultSet rs = pstmt.executeQuery();
+        JMenuItem bistaratu = new JMenuItem("Ikusi");
+        bistaratu.addActionListener(e -> cardLayout.show(frame.getContentPane(), "ProduktuakBistaratu"));
+        productsMenu.add(bistaratu);
 
-			// Crear listas para los pedidos de cada estado
-			DefaultListModel<String> shippedList = new DefaultListModel<>();
-			DefaultListModel<String> canceledList = new DefaultListModel<>();
-			DefaultListModel<String> pendingList = new DefaultListModel<>();
+		// Panelak gehitu framera
+        frame.add(ProduktuakMenu.produktuakBistaratu(), "ProduktuakBistaratu");
 
-			// Clasificar los pedidos por estado
-			while (rs.next()) {
-				int eskariId = rs.getInt("ID");
-				String egoera = rs.getString("DESKRIBAPENA");
-
-				if ("Shipped".equals(egoera)) {
-					shippedList.addElement("Eskaria " + eskariId);
-				} else if ("Canceled".equals(egoera)) {
-					canceledList.addElement("Eskaria " + eskariId);
-				} else if ("Pending".equals(egoera)) {
-					pendingList.addElement("Eskaria " + eskariId);
-				}
-			}
-
-			// Crear paneles para cada estado y agregar a las columnas
-			columnsPanel.add(createStatusColumn(shippedList));
-			columnsPanel.add(createStatusColumn(canceledList));
-			columnsPanel.add(createStatusColumn(pendingList));
-
-			rs.close();
-			pstmt.close();
-			conn.close();
-		} catch (SQLException ex) {
-			JOptionPane.showMessageDialog(null, "Errorea egoerak kargatzean.");
-			ex.printStackTrace();
-		}
-
-		// Añadir el panel de las columnas al panel central
-		gbc.gridx = 0;
-		gbc.gridy = 0;
-		gbc.gridwidth = 3;
-		centerPanel.add(columnsPanel, gbc);
-
-		panel.add(centerPanel, BorderLayout.CENTER);
-		return panel;
-	}
-
-	// Método auxiliar para crear las columnas de estado
-	private static JPanel createStatusColumn(DefaultListModel<String> statusList) {
-		JPanel columnPanel = new JPanel();
-		columnPanel.setLayout(new BoxLayout(columnPanel, BoxLayout.Y_AXIS));
-
-		// Añadir los elementos de la lista de estado a la columna
-		for (int i = 0; i < statusList.size(); i++) {
-			JLabel itemLabel = new JLabel(statusList.get(i), SwingConstants.CENTER);
-			itemLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
-			columnPanel.add(itemLabel);
-		}
-
-		return columnPanel;
-	}
-
-	private static JPanel historialaikusiSortu() {
-	    JPanel panel = new JPanel(new BorderLayout());
-	    JLabel label = new JLabel("Historiala", SwingConstants.CENTER);
-	    label.setFont(new Font("Arial", Font.BOLD, 24));
-	    panel.add(label, BorderLayout.NORTH);
-
-	    JPanel centerPanel = new JPanel(new GridBagLayout());
-	    GridBagConstraints gbc = new GridBagConstraints();
-	    gbc.insets = new Insets(10, 10, 10, 10);
-	    gbc.fill = GridBagConstraints.HORIZONTAL;
-	    gbc.anchor = GridBagConstraints.WEST;
-
-	    // Declarar los JTextField correctamente
-	    JComboBox<String> comboBoxHistoriala = new JComboBox<>();
-	    JTextField txtEskariId = new JTextField(10);
-	    JTextField txtSaltzailea = new JTextField(20);
-	    JTextField txtData = new JTextField(15);
-	    JTextField txtEgoera = new JTextField(15);
-
-	    // Deshabilitar edición para evitar que el usuario los modifique
-	    txtEskariId.setEditable(false);
-	    txtSaltzailea.setEditable(false);
-	    txtData.setEditable(false);
-	    txtEgoera.setEditable(false);
-
-	    int id = Login.id; // ID del usuario logueado
-	    kargatuEskariak(comboBoxHistoriala, id);
-
-	    // Acción al seleccionar un pedido
-	    comboBoxHistoriala.addActionListener(new ActionListener() {
-	        @Override
-	        public void actionPerformed(ActionEvent e) {
-	            String aukeratutakoEskaria = (String) comboBoxHistoriala.getSelectedItem();
-	            if (aukeratutakoEskaria != null) {
-	                int eskariId = Integer.parseInt(aukeratutakoEskaria.split(" ")[1]);
-	                kargatuEskariarenInformazioa(eskariId, txtEskariId, txtSaltzailea, txtData, txtEgoera);
-	            }
-	        }
-	    });
-
-	    // Agregar componentes al panel
-	    gbc.gridx = 0;
-	    gbc.gridy = 0;
-	    centerPanel.add(new JLabel("Aukeratu eskaria:"), gbc);
-	    gbc.gridx = 1;
-	    centerPanel.add(comboBoxHistoriala, gbc);
-
-	    gbc.gridx = 0;
-	    gbc.gridy = 1;
-	    centerPanel.add(new JLabel("Eskari ID:"), gbc);
-	    gbc.gridx = 1;
-	    centerPanel.add(txtEskariId, gbc);
-
-	    gbc.gridx = 0;
-	    gbc.gridy = 2;
-	    centerPanel.add(new JLabel("Bezero:"), gbc);
-	    gbc.gridx = 1;
-	    centerPanel.add(txtSaltzailea, gbc);
-
-	    gbc.gridx = 0;
-	    gbc.gridy = 3;
-	    centerPanel.add(new JLabel("Data:"), gbc);
-	    gbc.gridx = 1;
-	    centerPanel.add(txtData, gbc);
-
-	    gbc.gridx = 0;
-	    gbc.gridy = 4;
-	    centerPanel.add(new JLabel("Egoera:"), gbc);
-	    gbc.gridx = 1;
-	    centerPanel.add(txtEgoera, gbc);
-
-	    panel.add(centerPanel, BorderLayout.CENTER);
-	    return panel;
-	}
-
-	// Método para cargar los pedidos en el ComboBox
-	private static void kargatuEskariak(JComboBox<String> comboBox, int bezeroId) {
-	    try {
-	        Connection conn = DBmain.konexioa();
-	        PreparedStatement pstmt = conn.prepareStatement("SELECT E.ID FROM ESKARI E WHERE E.ID_BEZERO = ?");
-	        pstmt.setInt(1, bezeroId);
-	        ResultSet rs = pstmt.executeQuery();
-
-	        while (rs.next()) {
-	            comboBox.addItem("Eskaria " + rs.getInt("ID"));
-	        }
-
-	        rs.close();
-	        pstmt.close();
-	        conn.close();
-	    } catch (SQLException ex) {
-	        JOptionPane.showMessageDialog(null, "Errorea eskariak kargatzean.");
-	        ex.printStackTrace();
-	    }
-	}
-
-	// Método para cargar la información detallada del pedido
-	private static void kargatuEskariarenInformazioa(int eskariId, JTextField txtEskariId, JTextField txtSaltzailea, JTextField txtData, JTextField txtEgoera) {
-	    try {
-	        Connection conn = DBmain.konexioa();
-	        PreparedStatement pstmt = conn.prepareStatement(
-	            "SELECT E.ID, L.IZENA, L.ABIZENA, E.ESKAERA_DATA, EG.DESKRIBAPENA " +
-	            "FROM ESKARI E " +
-	            "JOIN LANGILE L ON E.ID_SALTZAILE = L.ID " +
-	            "JOIN ESKARI_EGOERA EG ON E.ID_EGOERA = EG.ID " +
-	            "WHERE E.ID = ?"
-	        );
-	        pstmt.setInt(1, eskariId);
-	        ResultSet rs = pstmt.executeQuery();
-
-	        if (rs.next()) {
-	            txtEskariId.setText(String.valueOf(rs.getInt("ID")));
-	            txtSaltzailea.setText(rs.getString("IZENA") + " " + rs.getString("ABIZENA"));
-	            txtData.setText(rs.getString("ESKAERA_DATA"));
-	            txtEgoera.setText(rs.getString("DESKRIBAPENA"));
-	        }
-
-	        rs.close();
-	        pstmt.close();
-	        conn.close();
-	    } catch (SQLException ex) {
-	        JOptionPane.showMessageDialog(null, "Errorea eskariaren informazioa kargatzean.");
-	        ex.printStackTrace();
-	    }
-	}
-
-
-	public static JPanel produktuakikusiSortu() {
-		JPanel panel = new JPanel(new BorderLayout());
-		JLabel label = new JLabel("Produktuak", SwingConstants.CENTER);
-		label.setFont(new Font("Arial", Font.BOLD, 24));
-		panel.add(label, BorderLayout.NORTH);
-
-		JPanel centerPanel = new JPanel(new GridBagLayout());
-		GridBagConstraints gbc = new GridBagConstraints();
-		gbc.insets = new Insets(10, 10, 10, 10);
-		gbc.fill = GridBagConstraints.HORIZONTAL;
-		gbc.anchor = GridBagConstraints.WEST;
-
-		JComboBox<String> comboBoxProduktuak = new JComboBox<>();
-
-		JLabel kategoriaLabel = new JLabel("Kategoria:");
-		JTextField kategoriaField = new JTextField(10);
-		kategoriaField.setEditable(false);
-
-		JLabel deskribapenaLabel = new JLabel("Deskribapena:");
-		JTextArea deskribapenaArea = new JTextArea(3, 20);
-		deskribapenaArea.setEditable(false);
-		deskribapenaArea.setLineWrap(true);
-		deskribapenaArea.setWrapStyleWord(true);
-		JScrollPane deskribapenaScroll = new JScrollPane(deskribapenaArea);
-
-		JLabel salneurriaLabel = new JLabel("Balioa:");
-		JTextField salneurriaField = new JTextField(10);
-		salneurriaField.setEditable(false);
-
-		// ComboBox gehitu
-		gbc.gridx = 0;
-		gbc.gridy = 0;
-		centerPanel.add(new JLabel("Aukeratu produktua:"), gbc);
-		gbc.gridx = 1;
-		centerPanel.add(comboBoxProduktuak, gbc);
-
-		// Kategoria gehitu
-		gbc.gridx = 0;
-		gbc.gridy = 1;
-		centerPanel.add(kategoriaLabel, gbc);
-		gbc.gridx = 1;
-		centerPanel.add(kategoriaField, gbc);
-
-		// Deskribapena gehitu
-		gbc.gridx = 0;
-		gbc.gridy = 2;
-		centerPanel.add(deskribapenaLabel, gbc);
-		gbc.gridx = 1;
-		centerPanel.add(deskribapenaScroll, gbc);
-
-		// Salneurria gehitu
-		gbc.gridx = 0;
-		gbc.gridy = 3;
-		centerPanel.add(salneurriaLabel, gbc);
-		gbc.gridx = 1;
-		centerPanel.add(salneurriaField, gbc);
-
-		DBProduktu.kargatuProduktuak(comboBoxProduktuak, kategoriaField, deskribapenaArea, salneurriaField);
-
-		panel.add(centerPanel, BorderLayout.CENTER);
-		return panel;
-	}
-
+        return productsMenu;
+    }
 }

@@ -46,7 +46,7 @@ public class DBErabiltzaileak {
 					+ "FROM ERABILTZAILEAK E " + "LEFT JOIN LANGILE L ON E.ID = L.ID AND E.MOTA = 'S' "
 					+ "LEFT JOIN BEZERO B ON E.ID = B.ID AND E.MOTA = 'B'";
             rs = stmt.executeQuery(sql);
-            erabiltzaileak.clear(); // Zerrenda garbitu
+            erabiltzaileak.clear();
             while (rs.next()) {
 				String mota = rs.getString("MOTA");
 				String izena = mota.equals("S") ? rs.getString("LANGILE_IZENA") : rs.getString("BEZERO_IZENA");
