@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.JComboBox;
-import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.JOptionPane;
 
@@ -72,36 +71,36 @@ public class DBErabiltzaileak {
         }
     }
     
-    public static void kargatuErabiltzaileak(JComboBox<String> comboBox, JTextField kategoria, JTextArea deskribapena, JTextField salneurria) {
+    public static void kargatuErabiltzaileak(JComboBox<String> comboBox, JTextField izena, JTextField abizena, JTextField mota) {
 	    DBErabiltzaileak dbErabiltzaileak = new DBErabiltzaileak();
 	    dbErabiltzaileak.erabiltzaileakKargatu();
 
 	    // ComboBox-a garbitu elementuak gehitu baino lehen
 	    comboBox.removeAllItems();
 
-	    // Produktuen lista rekorrito eta gehitu comboBox-ean
+	    // Erabiltzaileen lista rekorritu eta gehitu ComboBox-ean
 	    for (Erabiltzaileak erabiltzailea : dbErabiltzaileak.getErabiltzaileak()) {
 	        comboBox.addItem(erabiltzailea.toString());
 	    }
 
-	    // Añadir ActionListener al ComboBox
+	    // ComboBox-aren ActionListener-a definitu
 	    comboBox.addActionListener(new ActionListener() {
 	        @Override
 	        public void actionPerformed(ActionEvent e) {
 	            String aukeratutakoErabiltzailea = (String) comboBox.getSelectedItem();
 	            if (aukeratutakoErabiltzailea != null) {
-	                String produktuaIzena = aukeratutakoErabiltzailea.split(" \\(")[0];
-	                kargatuErabiltzailearenInformazioa(produktuaIzena, kategoria, deskribapena, salneurria, dbErabiltzaileak);
+	                String erabiltzaileId = aukeratutakoErabiltzailea.split(" \\(")[0];
+	                kargatuErabiltzailearenInformazioa(erabiltzaileId, izena, abizena, mota, dbErabiltzaileak);
 	                
 	            }
 	        }
 	    });
 	}
 
-    private static void kargatuErabiltzailearenInformazioa(String produktua, JTextField izena,  JTextField abizena, JTextField mota, DBErabiltzaileak dbErabiltzaileak) {
-        // Buscar el producto en la lista de productos
+    private static void kargatuErabiltzailearenInformazioa(String erabiltzaileId, JTextField izena,  JTextField abizena, JTextField mota, DBErabiltzaileak dbErabiltzaileak) {
+        // Erabiltzailea kargatu erabiltzaile-zerrendan.
         for (Erabiltzaileak erabiltzailea : dbErabiltzaileak.getErabiltzaileak()) {
-            if (erabiltzailea.getIzena().equals(erabiltzailea)) {
+            if (erabiltzailea.getId() == Integer.parseInt(erabiltzaileId) && erabiltzailea.getMota().equals(mota.getText())) {
             	izena.setText(erabiltzailea.getIzena());
 				abizena.setText(erabiltzailea.getAbizena());
 				mota.setText(erabiltzailea.getMota());
@@ -114,7 +113,7 @@ public class DBErabiltzaileak {
             }
         }
 
-        // Si no se encuentra el producto, limpiar los campos
+        // Ez bada aurkitzen, garbitu testu eremua.
         izena.setText("");
         abizena.setText("");
         mota.setText("");
@@ -138,12 +137,51 @@ public class DBErabiltzaileak {
         this.erabiltzaileak.add(erabiltzailea);
     }
 
-    public void ezabatuErabiltzailea(Erabiltzaileak erabiltzailea) {
-        if (erabiltzailea == null) {
-            throw new IllegalArgumentException("Erabiltzailea ezin da nulua izan.");
+    public void ezabatuErabiltzailea(int id, String mota) {
+        Connection conn = null;
+        PreparedStatement pstmt = null;
+        boolean eginda = false;
+
+        try {
+            conn = DBmain.konexioa();
+            String sql = "DELETE FROM ERABILTZAILEAK WHERE ID = ? AND MOTA = ?";
+            pstmt = conn.prepareStatement(sql);
+            pstmt.setInt(1, id);
+            pstmt.setString(2, mota);
+            int deletedRows = pstmt.executeUpdate();
+            
+            if (deletedRows > 0) {
+                if (mota.equals("S")) {
+                    sql = "DELETE FROM LANGILE WHERE ID = ?";
+                } else if (mota.equals("B")) {
+                    sql = "DELETE FROM BEZERO WHERE ID = ?";
+                }
+                
+                pstmt.close();
+                
+                pstmt = conn.prepareStatement(sql);
+                pstmt.setInt(1, id);
+                pstmt.executeUpdate();
+                
+                eginda = true;
+                JOptionPane.showMessageDialog(null, "Erabiltzailea ezabatu da!");
+            } else {
+                JOptionPane.showMessageDialog(null, "Ez da erabiltzailerik aurkitu.");
+            }
+        } catch (SQLException e) {
+            JOptionPane.showMessageDialog(null, "Errorea erabiltzailea ezabatzean: " + e.getMessage());
+            e.printStackTrace();
+        } finally {
+            try {
+                if (pstmt != null) pstmt.close();
+                if (conn != null) conn.close();
+            } catch (SQLException e) {
+                System.err.println("Errorea konexioa ixterakoan: " + e.getMessage());
+            }
         }
-        if (!this.erabiltzaileak.remove(erabiltzailea)) {
-            throw new IllegalArgumentException("Erabiltzailea ez dago zerrendan.");
+        
+        if (!eginda) {
+            JOptionPane.showMessageDialog(null, "Erabiltzailea ezin izan da ezabatu.");
         }
     }
 }

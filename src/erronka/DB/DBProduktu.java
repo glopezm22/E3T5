@@ -196,7 +196,7 @@ public class DBProduktu {
         this.produktuak.add(produktua);
     }
 
-    public static void ezabatuProduktua(String izena) {
+    public static void ezabatuProduktua(String id) {
         Connection conn = null;
         PreparedStatement pstmt = null;
 
@@ -204,7 +204,7 @@ public class DBProduktu {
             conn = DBmain.konexioa();
             String sql = "DELETE FROM PRODUKTU WHERE IZENA = ?";
             pstmt = conn.prepareStatement(sql);
-            pstmt.setString(1, izena);
+            pstmt.setString(1, id);
 
             int deletedRows = pstmt.executeUpdate();
             if (deletedRows > 0) {

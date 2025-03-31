@@ -314,14 +314,15 @@ public class ProduktuakMenu {
 	        public void actionPerformed(ActionEvent e) {
 	            String aukeratutakoProduktua = (String) comboBoxProduktuak.getSelectedItem();
 	            if (aukeratutakoProduktua != null) {
-	                String produktuaIzena = aukeratutakoProduktua.split(" \\(")[0];
+	                String produktuaID = aukeratutakoProduktua.split(" \\(")[0];
+	                String produktuaIzena = aukeratutakoProduktua.split(" \\(")[1];
 
 	                int erantzuna = JOptionPane.showConfirmDialog(panel, 
 	                        "Ziur zaude " + produktuaIzena + " ezabatu nahi duzula?", 
 	                        "Berretsi Ezabatzea", JOptionPane.YES_NO_OPTION);
 
 	                if (erantzuna == JOptionPane.YES_OPTION) {
-	                    DBProduktu.ezabatuProduktua(produktuaIzena);
+	                    DBProduktu.ezabatuProduktua(produktuaID);
 	                    DBProduktu.kargatuProduktuak(comboBoxProduktuak, kategoriaField, deskribapenaArea, salneurriaField);
 	                }
 	            }

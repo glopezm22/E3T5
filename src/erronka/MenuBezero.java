@@ -101,6 +101,7 @@ public class MenuBezero {
         return eskariak;
     }
 
+    // "Produktuak" menua sortu.
     private static JMenu sortuProduktuakMenua(JFrame frame, CardLayout cardLayout) {
         JMenu productsMenu = new JMenu("Produktuak");
 
