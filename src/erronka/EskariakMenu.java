@@ -15,7 +15,6 @@ import java.sql.SQLException;
 import javax.swing.BoxLayout;
 import javax.swing.DefaultListModel;
 import javax.swing.JComboBox;
-import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -40,10 +39,10 @@ public class EskariakMenu {
 	    gbc.anchor = GridBagConstraints.WEST;
 
 	    JComboBox<String> comboBoxHistoriala = new JComboBox<>();
-	    JTextField txtEskariId = sortuTextFieldEditatugabea(10);
-	    JTextField txtBezeroa = sortuTextFieldEditatugabea(20);
-	    JTextField txtData = sortuTextFieldEditatugabea(15);
-	    JTextField txtEgoera = sortuTextFieldEditatugabea(15);
+	    JTextField txtEskariId = Login.sortuTextFieldEditatugabea(10);
+	    JTextField txtBezeroa = Login.sortuTextFieldEditatugabea(20);
+	    JTextField txtData = Login.sortuTextFieldEditatugabea(15);
+	    JTextField txtEgoera = Login.sortuTextFieldEditatugabea(15);
 
 	    // ID balioa lortu
 	    int id = Login.id;
@@ -67,32 +66,17 @@ public class EskariakMenu {
 	    });
 
 	    // Konponente guztiak panelera gehitu
-	    sortuKonponenteaEtiketarekin(centerPanel, gbc, "Aukeratu eskaria:", comboBoxHistoriala, 0, 0);
-	    sortuKonponenteaEtiketarekin(centerPanel, gbc, "Eskari ID:", txtEskariId, 0, 1);
-	    sortuKonponenteaEtiketarekin(centerPanel, gbc, "Bezeroa:", txtBezeroa, 0, 2);
-	    sortuKonponenteaEtiketarekin(centerPanel, gbc, "Data:", txtData, 0, 3);
-	    sortuKonponenteaEtiketarekin(centerPanel, gbc, "Egoera:", txtEgoera, 0, 4);
+	    Login.sortuKonponenteaEtiketarekin(centerPanel, gbc, "Aukeratu eskaria:", comboBoxHistoriala, 0, 0);
+	    Login.sortuKonponenteaEtiketarekin(centerPanel, gbc, "Eskari ID:", txtEskariId, 0, 1);
+	    Login.sortuKonponenteaEtiketarekin(centerPanel, gbc, "Bezeroa:", txtBezeroa, 0, 2);
+	    Login.sortuKonponenteaEtiketarekin(centerPanel, gbc, "Data:", txtData, 0, 3);
+	    Login.sortuKonponenteaEtiketarekin(centerPanel, gbc, "Egoera:", txtEgoera, 0, 4);
 
 	    panel.add(centerPanel, BorderLayout.CENTER);
 	    return panel;
 	}
 
-	// Textfield-ak sortzeko metodoa.
-	private static JTextField sortuTextFieldEditatugabea(int columns) {
-	    JTextField eremua = new JTextField(columns);
-	    eremua.setEditable(false);
-	    return eremua;
-	}
 
-	// Konponenteak sortzeko metodoa, etiketarekin
-	private static void sortuKonponenteaEtiketarekin(JPanel panel, GridBagConstraints gbc, 
-	    String etiketa, JComponent konponentea, int x, int y) {
-	    gbc.gridx = 0;
-	    gbc.gridy = y;
-	    panel.add(new JLabel(etiketa), gbc);
-	    gbc.gridx = 1;
-	    panel.add(konponentea, gbc);
-	}
 	
 	// SALTZAILEAK - Eskariak ComboBox-ean kargatzeko metodoa.
 	private static void kargatuSaltzaileenEskariak(JComboBox<String> comboBox, int saltzaileId) {
@@ -297,10 +281,10 @@ public class EskariakMenu {
 
 	    // Componentes UI
 	    JComboBox<String> comboBoxHistoriala = new JComboBox<>();
-	    JTextField txtEskariId = sortuTextFieldEditatugabea(10);
-	    JTextField txtSaltzailea = sortuTextFieldEditatugabea(20);
-	    JTextField txtData = sortuTextFieldEditatugabea(15);
-	    JTextField txtEgoera = sortuTextFieldEditatugabea(15);
+	    JTextField txtEskariId = Login.sortuTextFieldEditatugabea(10);
+	    JTextField txtSaltzailea = Login.sortuTextFieldEditatugabea(20);
+	    JTextField txtData = Login.sortuTextFieldEditatugabea(15);
+	    JTextField txtEgoera = Login.sortuTextFieldEditatugabea(15);
 
 	    // Validar ID de usuario
 	    int id = Login.id;
@@ -326,11 +310,11 @@ public class EskariakMenu {
 	    });
 
 	    // Añadir componentes al panel (reutilizando método auxiliar)
-	    sortuKonponenteaEtiketarekin(centerPanel, gbc, "Aukeratu eskaria:", comboBoxHistoriala, 0, 0);
-	    sortuKonponenteaEtiketarekin(centerPanel, gbc, "Eskari ID:", txtEskariId, 0, 1);
-	    sortuKonponenteaEtiketarekin(centerPanel, gbc, "Saltzailea:", txtSaltzailea, 0, 2);
-	    sortuKonponenteaEtiketarekin(centerPanel, gbc, "Data:", txtData, 0, 3);
-	    sortuKonponenteaEtiketarekin(centerPanel, gbc, "Egoera:", txtEgoera, 0, 4);
+	    Login.sortuKonponenteaEtiketarekin(centerPanel, gbc, "Aukeratu eskaria:", comboBoxHistoriala, 0, 0);
+	    Login.sortuKonponenteaEtiketarekin(centerPanel, gbc, "Eskari ID:", txtEskariId, 0, 1);
+	    Login.sortuKonponenteaEtiketarekin(centerPanel, gbc, "Saltzailea:", txtSaltzailea, 0, 2);
+	    Login.sortuKonponenteaEtiketarekin(centerPanel, gbc, "Data:", txtData, 0, 3);
+	    Login.sortuKonponenteaEtiketarekin(centerPanel, gbc, "Egoera:", txtEgoera, 0, 4);
 
 	    panel.add(centerPanel, BorderLayout.CENTER);
 	    return panel;

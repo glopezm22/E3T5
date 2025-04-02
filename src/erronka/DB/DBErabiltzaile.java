@@ -17,15 +17,15 @@ import java.sql.SQLException;
 
 import erronka.DBmain;
 
-public class DBErabiltzaileak {
+public class DBErabiltzaile {
 
-    private List<Erabiltzaileak> erabiltzaileak;
+    private List<Erabiltzaile> erabiltzaileak;
 
-    public DBErabiltzaileak() {
+    public DBErabiltzaile() {
         this.erabiltzaileak = new ArrayList<>();
     }
 
-    public DBErabiltzaileak(List<Erabiltzaileak> erabiltzaileak) {
+    public DBErabiltzaile(List<Erabiltzaile> erabiltzaileak) {
         if (erabiltzaileak == null) {
             throw new IllegalArgumentException("Erabiltzaileak zerrenda ezin da nulua izan.");
         }
@@ -40,24 +40,26 @@ public class DBErabiltzaileak {
             conn = DBmain.konexioa();
             stmt = conn.createStatement();
             String sql = "SELECT E.ID, E.ERABILTZAILEA, E.PASAHITZA, E.MOTA, "
-					+ "L.IZENA AS LANGILE_IZENA, L.ABIZENA AS LANGILE_ABIZENA, L.EMAILA AS LANGILE_EMAILA, "
-					+ "B.IZENA AS BEZERO_IZENA, B.ABIZENA AS BEZERO_ABIZENA, B.EMAILA AS BEZERO_EMAILA "
-					+ "FROM ERABILTZAILEAK E " + "LEFT JOIN LANGILE L ON E.ID = L.ID AND E.MOTA = 'S' "
-					+ "LEFT JOIN BEZERO B ON E.ID = B.ID AND E.MOTA = 'B'";
+                    + "L.IZENA AS LANGILE_IZENA, L.ABIZENA AS LANGILE_ABIZENA, L.EMAILA AS LANGILE_EMAILA, "
+                    + "B.IZENA AS BEZERO_IZENA, B.ABIZENA AS BEZERO_ABIZENA, B.EMAILA AS BEZERO_EMAILA "
+                    + "FROM ERABILTZAILEAK E " + "LEFT JOIN LANGILE L ON E.ID = L.ID AND E.MOTA = 'S' "
+                    + "LEFT JOIN BEZERO B ON E.ID = B.ID AND E.MOTA = 'B'";
             rs = stmt.executeQuery(sql);
             erabiltzaileak.clear();
             while (rs.next()) {
-				String mota = rs.getString("MOTA");
-				String izena = mota.equals("S") ? rs.getString("LANGILE_IZENA") : rs.getString("BEZERO_IZENA");
-				String abizena = mota.equals("S") ? rs.getString("LANGILE_ABIZENA") : rs.getString("BEZERO_ABIZENA");
-				String emaila = mota.equals("S") ? rs.getString("LANGILE_EMAILA") : rs.getString("BEZERO_EMAILA");
-				String erabiltzailea = rs.getString("ERABILTZAILEA");
-				String pasahitza = rs.getString("PASAHITZA");
+                int id = rs.getInt("ID");
+                String mota = rs.getString("MOTA");
+                String izena = mota.equals("S") ? rs.getString("LANGILE_IZENA") : rs.getString("BEZERO_IZENA");
+                String abizena = mota.equals("S") ? rs.getString("LANGILE_ABIZENA") : rs.getString("BEZERO_ABIZENA");
+                String emaila = mota.equals("S") ? rs.getString("LANGILE_EMAILA") : rs.getString("BEZERO_EMAILA");
+                String erabiltzailea = rs.getString("ERABILTZAILEA");
+                String pasahitza = rs.getString("PASAHITZA");
 
-				Erabiltzaileak e = new Erabiltzaileak(rs.getInt("ID"), izena, abizena, emaila,
-						erabiltzailea, pasahitza, mota);
-				erabiltzaileak.add(e);
-			}
+                String kodea = id+mota;
+                Erabiltzaile e = new Erabiltzaile(kodea, izena, abizena, emaila,
+                        erabiltzailea, pasahitza, mota);
+                erabiltzaileak.add(e);
+            }
         } catch (SQLException e) {
             System.err.println("Errorea erabiltzaileak kargatzerakoan: " + e.getMessage());
         } finally {
@@ -71,73 +73,56 @@ public class DBErabiltzaileak {
         }
     }
     
-    public static void kargatuErabiltzaileak(JComboBox<String> comboBox, JTextField izena, JTextField abizena, JTextField mota) {
-	    DBErabiltzaileak dbErabiltzaileak = new DBErabiltzaileak();
-	    dbErabiltzaileak.erabiltzaileakKargatu();
+    public static void kargatuErabiltzaileak(JComboBox<Erabiltzaile> comboBox, JTextField izena, JTextField abizena, JTextField mota) {
+        DBErabiltzaile dbErabiltzaileak = new DBErabiltzaile();
+        dbErabiltzaileak.erabiltzaileakKargatu();
 
-	    // ComboBox-a garbitu elementuak gehitu baino lehen
-	    comboBox.removeAllItems();
+        comboBox.removeAllItems();
 
-	    // Erabiltzaileen lista rekorritu eta gehitu ComboBox-ean
-	    for (Erabiltzaileak erabiltzailea : dbErabiltzaileak.getErabiltzaileak()) {
-	        comboBox.addItem(erabiltzailea.toString());
-	    }
-
-	    // ComboBox-aren ActionListener-a definitu
-	    comboBox.addActionListener(new ActionListener() {
-	        @Override
-	        public void actionPerformed(ActionEvent e) {
-	            String aukeratutakoErabiltzailea = (String) comboBox.getSelectedItem();
-	            if (aukeratutakoErabiltzailea != null) {
-	                String erabiltzaileId = aukeratutakoErabiltzailea.split(" \\(")[0];
-	                kargatuErabiltzailearenInformazioa(erabiltzaileId, izena, abizena, mota, dbErabiltzaileak);
-	                
-	            }
-	        }
-	    });
-	}
-
-    private static void kargatuErabiltzailearenInformazioa(String erabiltzaileId, JTextField izena,  JTextField abizena, JTextField mota, DBErabiltzaileak dbErabiltzaileak) {
-        // Erabiltzailea kargatu erabiltzaile-zerrendan.
-        for (Erabiltzaileak erabiltzailea : dbErabiltzaileak.getErabiltzaileak()) {
-            if (erabiltzailea.getId() == Integer.parseInt(erabiltzaileId) && erabiltzailea.getMota().equals(mota.getText())) {
-            	izena.setText(erabiltzailea.getIzena());
-				abizena.setText(erabiltzailea.getAbizena());
-				mota.setText(erabiltzailea.getMota());
-				if (mota.getText().equals("S")) {
-					mota.setText("Saltzailea");
-				} else if (mota.getText().equals("B")) {
-					mota.setText("Bezeroa");
-				}
-                return;
-            }
+        for (Erabiltzaile erabiltzailea : dbErabiltzaileak.getErabiltzaileak()) {
+            comboBox.addItem(erabiltzailea);
+            
         }
-
-        // Ez bada aurkitzen, garbitu testu eremua.
-        izena.setText("");
-        abizena.setText("");
-        mota.setText("");
+        
+        List<Erabiltzaile> myErabiltzaileak = new ArrayList<>();
+		for (int i = 0; i < comboBox.getItemCount(); i++) {
+			myErabiltzaileak.add(comboBox.getItemAt(i));
+		}
+        
+        comboBox.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+//            	int myIndex = comboBox.getSelectedIndex();
+//            	Erabiltzaile selected = comboBox.getItemAt(myIndex);
+                Erabiltzaile selected = (Erabiltzaile) comboBox.getSelectedItem();
+                if (selected != null) {
+                    izena.setText(selected.getIzena());
+                    abizena.setText(selected.getAbizena());
+                    mota.setText(selected.getMota().equals("S") ? "Saltzailea" : "Bezeroa");
+                }
+            }
+        });
     }
 
-    public List<Erabiltzaileak> getErabiltzaileak() {
+    public List<Erabiltzaile> getErabiltzaileak() {
         return new ArrayList<>(erabiltzaileak);
     }
 
-    public void setErabiltzaileak(List<Erabiltzaileak> erabiltzaileak) {
+    public void setErabiltzaileak(List<Erabiltzaile> erabiltzaileak) {
         if (erabiltzaileak == null) {
             throw new IllegalArgumentException("Erabiltzaileen zerrenda ezin da nulua izan.");
         }
         this.erabiltzaileak = new ArrayList<>(erabiltzaileak);
     }
 
-    public void gehituErabiltzailea(Erabiltzaileak erabiltzailea) {
+    public void gehituErabiltzailea(Erabiltzaile erabiltzailea) {
         if (erabiltzailea == null) {
             throw new IllegalArgumentException("Erabiltzailea ezin da nulua izan.");
         }
         this.erabiltzaileak.add(erabiltzailea);
     }
 
-    public void ezabatuErabiltzailea(int id, String mota) {
+    public static void ezabatuErabiltzailea(int id, String mota) {
         Connection conn = null;
         PreparedStatement pstmt = null;
         boolean eginda = false;

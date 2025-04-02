@@ -241,5 +241,22 @@ public class Login {
         Login.pasahitza = null;
         Login.mota = null;
     }
+	
+	// Textfield-ak sortzeko metodoa.
+	public static JTextField sortuTextFieldEditatugabea(int columns) {
+	    JTextField eremua = new JTextField(columns);
+	    eremua.setEditable(false);
+	    return eremua;
+	}
+
+	// Konponenteak sortzeko metodoa, etiketarekin
+	public static void sortuKonponenteaEtiketarekin(JPanel panel, GridBagConstraints gbc, 
+	    String etiketa, JComponent konponentea, int x, int y) {
+	    gbc.gridx = 0;
+	    gbc.gridy = y;
+	    panel.add(new JLabel(etiketa), gbc);
+	    gbc.gridx = 1;
+	    panel.add(konponentea, gbc);
+	}
 
 }

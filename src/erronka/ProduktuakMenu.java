@@ -245,93 +245,76 @@ public class ProduktuakMenu {
         }
     }
 
-	public static JPanel produktuakEzabatu() {
-	    JPanel panel = new JPanel(new BorderLayout());
-	    JLabel label = new JLabel("Produktuak Ezabatu", SwingConstants.CENTER);
-	    label.setFont(new Font("Arial", Font.BOLD, 24));
-	    panel.add(label, BorderLayout.NORTH);
+    public static JPanel produktuakEzabatu() {
+        JPanel panel = new JPanel(new BorderLayout());
+        
+        // Título centrado
+        JLabel label = new JLabel("Produktuak Ezabatu", SwingConstants.CENTER);
+        label.setFont(new Font("Arial", Font.BOLD, 24));
+        panel.add(label, BorderLayout.NORTH);
 
-	    JPanel centerPanel = new JPanel(new GridBagLayout());
-	    GridBagConstraints gbc = new GridBagConstraints();
-	    gbc.insets = new Insets(10, 10, 10, 10);
-	    gbc.fill = GridBagConstraints.HORIZONTAL;
-	    gbc.anchor = GridBagConstraints.WEST;
+        // Panel central con GridBagLayout
+        JPanel centerPanel = new JPanel(new GridBagLayout());
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.insets = new Insets(10, 10, 10, 10);
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        gbc.anchor = GridBagConstraints.WEST;
 
-	    JComboBox<String> comboBoxProduktuak = new JComboBox<>();
+        // Componentes
+        JComboBox<String> comboBoxProduktuak = new JComboBox<>();
+        JTextField kategoriaField = Login.sortuTextFieldEditatugabea(10);
+        JTextArea deskribapenaArea = new JTextArea(3, 20);
+        deskribapenaArea.setEditable(false);
+        deskribapenaArea.setLineWrap(true);
+        deskribapenaArea.setWrapStyleWord(true);
+        JScrollPane deskribapenaScroll = new JScrollPane(deskribapenaArea);
+        JTextField salneurriaField = Login.sortuTextFieldEditatugabea(10);
+        JButton ezabatuButton = new JButton("Ezabatu");
 
-	    JLabel kategoriaLabel = new JLabel("Kategoria:");
-	    JTextField kategoriaField = new JTextField(10);
-	    kategoriaField.setEditable(false);
+        // Añadir componentes al panel usando el método auxiliar
+        Login.sortuKonponenteaEtiketarekin(centerPanel, gbc, "Aukeratu produktua:", comboBoxProduktuak, 0, 0);
+        Login.sortuKonponenteaEtiketarekin(centerPanel, gbc, "Kategoria:", kategoriaField, 0, 1);
+        
+        // Para el JScrollPane necesitamos un enfoque especial
+        gbc.gridx = 0;
+        gbc.gridy = 2;
+        centerPanel.add(new JLabel("Deskribapena:"), gbc);
+        gbc.gridx = 1;
+        centerPanel.add(deskribapenaScroll, gbc);
+        
+        Login.sortuKonponenteaEtiketarekin(centerPanel, gbc, "Balioa:", salneurriaField, 0, 3);
+        
+        // Botón de eliminar
+        gbc.gridx = 0;
+        gbc.gridy = 4;
+        gbc.gridwidth = 2;
+        gbc.anchor = GridBagConstraints.CENTER;
+        centerPanel.add(ezabatuButton, gbc);
 
-	    JLabel deskribapenaLabel = new JLabel("Deskribapena:");
-	    JTextArea deskribapenaArea = new JTextArea(3, 20);
-	    deskribapenaArea.setEditable(false);
-	    deskribapenaArea.setLineWrap(true);
-	    deskribapenaArea.setWrapStyleWord(true);
-	    JScrollPane deskribapenaScroll = new JScrollPane(deskribapenaArea);
+        // Cargar productos
+        DBProduktu.kargatuProduktuak(comboBoxProduktuak, kategoriaField, deskribapenaArea, salneurriaField);
 
-	    JLabel salneurriaLabel = new JLabel("Balioa:");
-	    JTextField salneurriaField = new JTextField(10);
-	    salneurriaField.setEditable(false);
+        // Acción del botón
+        ezabatuButton.addActionListener(e -> {
+            String aukeratutakoProduktua = (String) comboBoxProduktuak.getSelectedItem();
+            if (aukeratutakoProduktua != null) {
+                int produktuaID = Integer.parseInt(aukeratutakoProduktua.split("\\(")[0]);
+                String produktuaIzena = aukeratutakoProduktua.split(" \\(")[1];
+                
+                int erantzuna = JOptionPane.showConfirmDialog(panel, 
+                    "Ziur zaude " + produktuaIzena + " ezabatu nahi duzula?", 
+                    "Berretsi Ezabatzea", JOptionPane.YES_NO_OPTION);
 
-	    JButton ezabatuButton = new JButton("Ezabatu");
+                if (erantzuna == JOptionPane.YES_OPTION) {
+                    DBProduktu.ezabatuProduktua(produktuaID);
+                    DBProduktu.kargatuProduktuak(comboBoxProduktuak, kategoriaField, deskribapenaArea, salneurriaField);
+                }
+            }
+        });
 
-	    gbc.gridx = 0;
-	    gbc.gridy = 0;
-	    centerPanel.add(new JLabel("Aukeratu produktua:"), gbc);
-	    gbc.gridx = 1;
-	    centerPanel.add(comboBoxProduktuak, gbc);
-
-	    gbc.gridx = 0;
-	    gbc.gridy = 1;
-	    centerPanel.add(kategoriaLabel, gbc);
-	    gbc.gridx = 1;
-	    centerPanel.add(kategoriaField, gbc);
-
-	    gbc.gridx = 0;
-	    gbc.gridy = 2;
-	    centerPanel.add(deskribapenaLabel, gbc);
-	    gbc.gridx = 1;
-	    centerPanel.add(deskribapenaScroll, gbc);
-
-	    gbc.gridx = 0;
-	    gbc.gridy = 3;
-	    centerPanel.add(salneurriaLabel, gbc);
-	    gbc.gridx = 1;
-	    centerPanel.add(salneurriaField, gbc);
-
-	    gbc.gridx = 0;
-	    gbc.gridy = 4;
-	    gbc.gridwidth = 2;
-	    gbc.anchor = GridBagConstraints.CENTER;
-	    centerPanel.add(ezabatuButton, gbc);
-
-	    DBProduktu.kargatuProduktuak(comboBoxProduktuak, kategoriaField, deskribapenaArea, salneurriaField);
-
-	    // Acción del botón "Ezabatu"
-	    ezabatuButton.addActionListener(new ActionListener() {
-	        @Override
-	        public void actionPerformed(ActionEvent e) {
-	            String aukeratutakoProduktua = (String) comboBoxProduktuak.getSelectedItem();
-	            if (aukeratutakoProduktua != null) {
-	                String produktuaID = aukeratutakoProduktua.split(" \\(")[0];
-	                String produktuaIzena = aukeratutakoProduktua.split(" \\(")[1];
-
-	                int erantzuna = JOptionPane.showConfirmDialog(panel, 
-	                        "Ziur zaude " + produktuaIzena + " ezabatu nahi duzula?", 
-	                        "Berretsi Ezabatzea", JOptionPane.YES_NO_OPTION);
-
-	                if (erantzuna == JOptionPane.YES_OPTION) {
-	                    DBProduktu.ezabatuProduktua(produktuaID);
-	                    DBProduktu.kargatuProduktuak(comboBoxProduktuak, kategoriaField, deskribapenaArea, salneurriaField);
-	                }
-	            }
-	        }
-	    });
-
-	    panel.add(centerPanel, BorderLayout.CENTER);
-	    return panel;
-	}
+        panel.add(centerPanel, BorderLayout.CENTER);
+        return panel;
+    }
 
 	public static JPanel produktuakEditatu() {
 	    JPanel panel = new JPanel(new BorderLayout());

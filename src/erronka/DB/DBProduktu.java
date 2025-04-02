@@ -42,7 +42,7 @@ public class DBProduktu {
             stmt = conn.createStatement();
             String sql = "SELECT ID, IZENA, DESKRIBAPENA, BALIOA, SALNEURRIA, ID_KATEGORIA FROM PRODUKTU";
             rs = stmt.executeQuery(sql);
-            produktuak.clear(); // Zerrenda garbitu
+            produktuak.clear();
             while (rs.next()) {
                 int id = rs.getInt("ID");
                 String izena = rs.getString("IZENA");
@@ -51,7 +51,6 @@ public class DBProduktu {
                 double salneurria = rs.getDouble("SALNEURRIA");
                 int idKategoria = rs.getInt("ID_KATEGORIA");
                 
-                // Produktua sortu eta zerrendan gehitu
                 Produktu p = new Produktu(id, izena, deskribapena, balioa, salneurria, idKategoria);
                 produktuak.add(p);
             }
@@ -75,12 +74,11 @@ public class DBProduktu {
 	    // ComboBox-a garbitu elementuak gehitu baino lehen
 	    comboBox.removeAllItems();
 
-	    // Produktuen lista rekorrito eta gehitu comboBox-ean
+	    // Produktuen lista rekorritu eta gehitu comboBox-ean
 	    for (Produktu produktu : dbProduktu.getProduktuak()) {
 	        comboBox.addItem(produktu.getIzena() + " (" + produktu.getIdKategoria() + ")");
 	    }
 
-	    // Añadir ActionListener al ComboBox
 	    comboBox.addActionListener(new ActionListener() {
 	        @Override
 	        public void actionPerformed(ActionEvent e) {
@@ -94,21 +92,18 @@ public class DBProduktu {
 	}
 
     private static void kargatuProduktuarenInformazioa(String produktua, JTextField kategoria, JTextArea deskribapena, JTextField salneurria, DBProduktu dbProduktu) {
-        // Buscar el producto en la lista de productos
         for (Produktu produktu : dbProduktu.getProduktuak()) {
             if (produktu.getIzena().equals(produktua)) {
-                // Obtener el nombre de la categoría desde la base de datos
+
                 String kategoriaIzena = lortuKategoriaIzena(produktu.getIdKategoria());
                 
-                // Mostrar la información en los campos correspondientes
-                kategoria.setText(kategoriaIzena); // Mostrar el nombre de la categoría
+                kategoria.setText(kategoriaIzena);
                 deskribapena.setText(produktu.getDeskribapena());
                 salneurria.setText(produktu.getSalneurria() + " €");
                 return;
             }
         }
 
-        // Si no se encuentra el producto, limpiar los campos
         kategoria.setText("");
         deskribapena.setText("");
         salneurria.setText("");
@@ -196,15 +191,15 @@ public class DBProduktu {
         this.produktuak.add(produktua);
     }
 
-    public static void ezabatuProduktua(String id) {
+    public static void ezabatuProduktua(int id) {
         Connection conn = null;
         PreparedStatement pstmt = null;
 
         try {
             conn = DBmain.konexioa();
-            String sql = "DELETE FROM PRODUKTU WHERE IZENA = ?";
+            String sql = "DELETE FROM PRODUKTU WHERE ID = ?";
             pstmt = conn.prepareStatement(sql);
-            pstmt.setString(1, id);
+            pstmt.setInt(1, id);
 
             int deletedRows = pstmt.executeUpdate();
             if (deletedRows > 0) {
