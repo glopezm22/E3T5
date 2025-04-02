@@ -48,6 +48,10 @@ public class Erabiltzaile {
 		return emaila;
 	}
 	
+	public void setEmaila(String emaila) {
+		this.emaila = emaila;
+	}
+	
     public String getErabiltzailea() {
         return erabiltzailea;
     }

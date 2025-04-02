@@ -1,130 +1,166 @@
 package com.gamestop.app.auth;
 
 import com.gamestop.db.DatabaseManager;
-
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
-
-import javax.imageio.ImageIO;
-import javax.swing.*;
-
 import com.gamestop.app.main.MenuBezero;
 import com.gamestop.app.main.MenuSaltzaile;
 
+import javax.swing.*;
 import java.awt.*;
-import java.io.IOException;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.sql.*;
 import java.time.LocalDate;
+import javax.imageio.ImageIO;
+import java.io.IOException;
+import java.io.InputStream;
 
 /**
- * Login pantaila bistaratu eta erabiltzailea autentifikatzeko metodoa.
- *
- * @return Saiakera kopurua, 0 baldin eta autentifikazioa huts egiten badu.
+ * Saioa hasteko eta erabiltzailea autentifikatzeko klasea.
+ * Erabiltzailearen datuak egiaztatzen ditu datu-basearekin eta sesioa hasten du.
  */
-
 @SuppressWarnings("unused")
 public class Login {
 
-	public static final int MAX_SAIAKERAK = 3;
-	public static int id = 0;
-	public static String izena = null;
-	public static String abizena = null;
-	public static String helbidea = null;
-	public static String emaila = null;
-	public static String telefonoa = null;
-	public static LocalDate kontratazioData = null;
-	public static int idnagusi = 0;
+    /** Saioa hasteko gehienezko saiakerak */
+    public static final int MAX_SAIAKERAK = 3;
 
-	public static String erabiltzailea = null;
-	public static String pasahitza = null;
-	public static String mota = null;
+    // Erabiltzailearen datuak gordetzeko aldagaiak
+    public static int id = 0;
+    public static String izena = null;
+    public static String abizena = null;
+    public static String helbidea = null;
+    public static String emaila = null;
+    public static String telefonoa = null;
+    public static LocalDate kontratazioData = null;
+    public static int idnagusi = 0;
+    public static String erabiltzailea = null;
+    public static String pasahitza = null;
+    public static String mota = null;
 
-	public static void main(String[] args) {
+    /**
+     * Aplikazioa abiarazten duen metodoa. Login interfazea bistaratzen du.
+     * @param args Komando-lerroko argumentuak (ez dira erabiltzen)
+     */
+    public static void main(String[] args) {
+        JFrame frame = sortuFrameNagusia();
+        JPanel panel = sortuLoginPanela(frame);
+        frame.setVisible(true);
+    }
 
-		// Frame-a sortu eta parametroak ezarri.
-		JFrame frame = new JFrame("GameStop | Saioa hasi");
-		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		frame.setExtendedState(JFrame.MAXIMIZED_BOTH);
-		frame.setSize(1920, 1080);
-		frame.setLayout(new GridBagLayout());
+    /**
+     * Frame nagusia konfiguratzen du: tamaina, titulua eta leihoaren portaera.
+     * @return Konfiguratutako JFrame objektua
+     */
+    private static JFrame sortuFrameNagusia() {
+        JFrame frame = new JFrame("GameStop | Saioa hasi");
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		// frame.setExtendedState(JFrame.MAXIMIZED_BOTH);
+        frame.setResizable(false);
+        frame.setSize(450, 400);
+        frame.setLocationRelativeTo(null);
+        frame.setLayout(new GridBagLayout());
+        kargatuIkonoa(frame);
+        kargatuAtzekoIrudia(frame);
+        return frame;
+    }
 
-		// Login panela sortu eta elementuak gehitu
-		JPanel panel = new JPanel(new GridLayout(6, 1, 5, 5));
+    /**
+     * Login panela osatzen du, erabiltzailearen datuak jasotzeko.
+     * @param frame Leiho nagusia, non panela gehitu behar den
+     * @return Osatutako JPanel objektua
+     */
+    private static JPanel sortuLoginPanela(JFrame frame) {
+        // Crear panel principal transparente
+        JPanel panel = new JPanel(new GridLayout(6, 1, 5, 5));
+        panel.setOpaque(false); // Hacer el panel transparente
+        
+        // Configurar componentes
+        JLabel erabiltzaileLabel = new JLabel("Erabiltzailea:", SwingConstants.CENTER);
+        erabiltzaileLabel.setForeground(Color.WHITE);
+        erabiltzaileLabel.setFont(new Font("Arial", Font.BOLD, 14));
+        
+        JTextField erabiltzaileEremua = new JTextField(10);
+        estilizarTextField(erabiltzaileEremua);
+        
+        JLabel pasahitzaLabel = new JLabel("Pasahitza:", SwingConstants.CENTER);
+        pasahitzaLabel.setForeground(Color.WHITE);
+        pasahitzaLabel.setFont(new Font("Arial", Font.BOLD, 14));
+        
+        JPasswordField pasahitzaEremua = new JPasswordField(10);
+        estilizarTextField(pasahitzaEremua);
+        
+        JButton saioaHasiBotoia = new JButton("Saioa hasi");
+        estilizarBotoia(saioaHasiBotoia);
+        
+        JLabel mezua = new JLabel("", SwingConstants.CENTER);
+        mezua.setForeground(Color.WHITE);
+        
+        // Añadir componentes al panel
+        panel.add(erabiltzaileLabel);
+        panel.add(erabiltzaileEremua);
+        panel.add(pasahitzaLabel);
+        panel.add(pasahitzaEremua);
+        panel.add(saioaHasiBotoia);
+        panel.add(mezua);
 
-		JLabel erabiltzaileaLabel = new JLabel("Erabiltzailea:", SwingConstants.CENTER);
-		JTextField erabiltzailea = new JTextField(10);
+        int[] saiakerak = {0}; // Saiakera kopurua gordetzeko
 
-		JLabel pasahitzaLabel = new JLabel("Pasahitza:", SwingConstants.CENTER);
-		JPasswordField pasahitza = new JPasswordField(10);
+        saioaHasiBotoia.addActionListener(e -> {
+            String erabiltzailea = erabiltzaileEremua.getText().trim();
+            String pasahitza = new String(pasahitzaEremua.getPassword()).trim();
 
-		JButton botoia = new JButton("Saioa hasi");
-		JLabel mezua = new JLabel("", SwingConstants.CENTER);
+            if (autentifikatuErabiltzailea(frame, erabiltzailea, pasahitza, mezua, saiakerak)) {
+                kudeatuSesioa(frame);
+            }
+            erabiltzaileEremua.setText("");
+            pasahitzaEremua.setText("");
+        });
+        
+        // Añadir panel al frame con GridBagConstraints para centrarlo
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.gridx = gbc.gridy = 0;
+        gbc.anchor = GridBagConstraints.CENTER;
+        frame.getContentPane().add(panel, gbc);
+        
+        return panel;
+    }
 
-		panel.add(erabiltzaileaLabel);
-		panel.add(erabiltzailea);
-		panel.add(pasahitzaLabel);
-		panel.add(pasahitza);
-		panel.add(botoia);
-		panel.add(mezua);
-
-		// Saiakera kopurua kontrolatzeko array-a
-		int[] saiakerak = new int[1];
-
-		// Logeatzearen botoiaren akzioa
-		botoia.addActionListener(e -> {
-			try {
-				String erabiltzaileaText = erabiltzailea.getText().trim().toLowerCase();
-				String pasahitzaText = new String(pasahitza.getPassword()).trim();
-
-				String mota = loginSistema(erabiltzaileaText, pasahitzaText);
-				Login.mota = mota;
-				if (mota != null) {
-					mezua.setText("Sarbidea daukazu. Mota: " + mota);
-					logeatutakoProfila(id);
-					if (mota.equals("S")) {
-						MenuSaltzaile.main(null);
-						frame.dispose();
-					} else if (mota.equals("B")) {
-						MenuBezero.main(null);
-						frame.dispose();
-					}
-				} else {
-					saiakerak[0]++;
-					if (saiakerak[0] >= MAX_SAIAKERAK) {
-						JOptionPane.showMessageDialog(frame, "Saiakera kopurua gainditu duzu. Programa itxiko da.",
-								"Errorea", JOptionPane.ERROR_MESSAGE);
-						System.exit(0);
-					} else {
-						mezua.setText("Errorea logeatzeko orduan. Saiakera " + saiakerak[0] + "/" + MAX_SAIAKERAK);
-					}
-				}
-			} catch (Exception ex) {
-				JOptionPane.showMessageDialog(frame, "Errorea gertatu da: " + ex.getMessage(), "Errorea",
-						JOptionPane.ERROR_MESSAGE);
-				ex.printStackTrace();
-			}
-		});
-
-		GridBagConstraints gbc = new GridBagConstraints();
-		gbc.gridx = 0;
-		gbc.gridy = 0;
-		gbc.anchor = GridBagConstraints.CENTER;
-		frame.add(panel, gbc);
-
-		frame.setVisible(true);
-		
-		try {
-
-			Image icon = ImageIO.read(
-				    Login.class.getClassLoader().getResourceAsStream("images/GameStopIcon.png")
-				);
-            frame.setIconImage(icon);
-
-        } catch (IOException e) {
-            e.printStackTrace();
+    /**
+     * Erabiltzailea autentifikatzen du datu-basearekin.
+     * @return true saioa ondo hasi bada, false bestela
+     */
+    private static boolean autentifikatuErabiltzailea(JFrame frame, String erabiltzailea, String pasahitza, JLabel mezua, int[] saiakerak) {
+        try {
+            mota = loginSistema(erabiltzailea, pasahitza);
+            if (mota != null) {
+                logeatutakoProfila(id);
+                mezua.setText("Ongi etorri, " + izena + "!");
+                return true;
+            } else {
+                saiakerak[0]++;
+                if (saiakerak[0] >= MAX_SAIAKERAK) {
+                    JOptionPane.showMessageDialog(frame, "Saiakera kopurua gainditu duzu.", "Errorea", JOptionPane.ERROR_MESSAGE);
+                    System.exit(0);
+                }
+                mezua.setText("Saioa huts eginda. Saiakera " + saiakerak[0] + "/" + MAX_SAIAKERAK);
+            }
+        } catch (Exception ex) {
+            JOptionPane.showMessageDialog(frame, "Errorea: " + ex.getMessage(), "Errorea", JOptionPane.ERROR_MESSAGE);
         }
-	}
+        return false;
+    }
+
+    /**
+     * Erabiltzailearen motaren arabera menua kargatzen du.
+     */
+    private static void kudeatuSesioa(JFrame frame) {
+        if ("S".equals(mota)) {
+            MenuSaltzaile.main(null);
+        } else if ("B".equals(mota)) {
+            MenuBezero.main(null);
+        }
+        frame.dispose();
+    }
 
 	// Erabiltzailea eta pasahitza egiaztatzeko metodoa.
 	public static String loginSistema(String erabiltzailea, String pasahitza) {
@@ -263,6 +299,65 @@ public class Login {
         Login.mota = null;
     }
 	
+	/**
+	 * Aplikazioaren ikonoa kargatzen du leiho nagusirako.
+	 * @param frame Ikonoa gehitzeko JFrame objektua
+	 */
+	public static void kargatuIkonoa(JFrame frame) {
+	    try {
+	        // Ikonoa kargatu resources/images karpetatik
+	        Image ikonoa = ImageIO.read(
+	            Login.class.getClassLoader().getResourceAsStream("images/GameStopIcon.png")
+	        );
+	        frame.setIconImage(ikonoa);
+	    } catch (IOException e) {
+	        // Errorea gertatuz gero, mezu bat erakutsiko da
+	        JOptionPane.showMessageDialog(
+	            frame,
+	            "Ezin izan da aplikazioaren ikonoa kargatu: " + e.getMessage(),
+	            "Errorea",
+	            JOptionPane.ERROR_MESSAGE
+	        );
+	        System.err.println("[ERROR] Ikonoa ezin kargatu: " + e.getMessage());
+	    } catch (IllegalArgumentException e) {
+	        // Baliabidea ez bada aurkitzen
+	        System.err.println("[ERROR] Ikonoaren fitxategia ez da aurkitu: images/GameStopIcon.png");
+	    }
+	}
+	
+	private static void kargatuAtzekoIrudia(JFrame frame) {
+	    try (InputStream imgStream = Login.class.getResourceAsStream("/images/LoginBackground.jpg")) {
+	        if (imgStream != null) {
+	            Image originalImage = ImageIO.read(imgStream);
+	            
+	            @SuppressWarnings("serial")
+				JPanel backgroundPanel = new JPanel() {
+	                @Override
+	                protected void paintComponent(Graphics g) {
+	                    super.paintComponent(g);
+	                    Graphics2D g2d = (Graphics2D) g.create();
+	                    
+	                    // 1. Dibujar la imagen original
+	                    g2d.drawImage(originalImage, 0, 0, getWidth(), getHeight(), this);
+	                    
+	                    g2d.setColor(new Color(0, 0, 0, 165)); // Azkena opazitatea. 255 * nahi dugun portzentaia (0.65 = 65%)
+	                    g2d.fillRect(0, 0, getWidth(), getHeight());
+	                    
+	                    g2d.dispose();
+	                }
+	            };
+	            backgroundPanel.setLayout(new GridBagLayout());
+	            frame.setContentPane(backgroundPanel);
+	            
+	        } else {
+	            System.err.println("Errorea: Ez da irudia aurkitu /images/LoginBackground.jpg bidean");
+	        }
+	    } catch (IOException e) {
+	        System.err.println("Errorea irudia kargatzerakoan:");
+	        e.printStackTrace();
+	    }
+	}
+	
 	// Textfield-ak sortzeko metodoa.
 	public static JTextField sortuTextFieldEditatugabea(int columns) {
 	    JTextField eremua = new JTextField(columns);
@@ -278,6 +373,39 @@ public class Login {
 	    panel.add(new JLabel(etiketa), gbc);
 	    gbc.gridx = 1;
 	    panel.add(konponentea, gbc);
+	}
+	
+	private static void estilizarTextField(JTextField textField) {
+	    textField.setOpaque(true);
+	    textField.setBackground(new Color(255, 255, 255, 255));
+	    textField.setBorder(BorderFactory.createCompoundBorder(
+	        BorderFactory.createLineBorder(Color.BLACK, 1),
+	        BorderFactory.createEmptyBorder(5, 5, 5, 5)
+	    ));
+	    textField.setFont(new Font("Arial", Font.PLAIN, 14));
+	}
+
+	private static void estilizarBotoia(JButton button) {
+	    button.setOpaque(false);
+	    button.setContentAreaFilled(false);
+	    button.setBorderPainted(true);
+	    button.setBorder(BorderFactory.createLineBorder(Color.WHITE, 1));
+	    button.setForeground(Color.WHITE);
+	    button.setFont(new Font("Arial", Font.BOLD, 14));
+	    button.setBackground(new Color(255, 255, 255, 128)); // 50% opazitatea
+	    
+	    // Efecto hover
+	    button.addMouseListener(new MouseAdapter() {
+	        @Override
+	        public void mouseEntered(MouseEvent e) {
+	            button.setBackground(new Color(255, 255, 255, 255));
+	        }
+	        
+	        @Override
+	        public void mouseExited(MouseEvent e) {
+	            button.setBackground(new Color(255, 255, 255, 128));
+	        }
+	    });
 	}
 
 }

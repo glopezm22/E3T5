@@ -35,7 +35,7 @@ public class MenuSaltzaile {
 		// Menu barra sortu
 		JMenuBar menuBar = sortuMenuBarra(frame, cardLayout);
 
-		// Main Panela konfiguratu
+		// Main Panela konfiguratu (aukeratzeko saltzailea ala bezeroa sortu)
 		aukeratuErabiltzaileenPanela(frame, cardLayout);
 
 		frame.setJMenuBar(menuBar);
@@ -46,18 +46,11 @@ public class MenuSaltzaile {
 	private static JFrame sortuFrameNagusia() {
 		JFrame frame = new JFrame("GameStop | Saltzaileen menua");
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		frame.setExtendedState(JFrame.MAXIMIZED_BOTH);
-		frame.setSize(1920, 1080);
-		try {
-
-			Image icon = ImageIO.read(
-				    Login.class.getClassLoader().getResourceAsStream("images/GameStopIcon.png")
-				);
-            frame.setIconImage(icon);
-
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+		// frame.setExtendedState(JFrame.MAXIMIZED_BOTH);
+        frame.setResizable(false);
+		frame.setSize(1280, 720);
+        frame.setLocationRelativeTo(null);
+		Login.kargatuIkonoa(frame);
 		return frame;
 	}
 
@@ -124,10 +117,12 @@ public class MenuSaltzaile {
 		erabiltzaileak.add(ezabatu);
 
 		JMenuItem kontsultatu = new JMenuItem("Kontsultatu");
+		kontsultatu.addActionListener(e -> cardLayout.show(frame.getContentPane(), "ErabiltzaileakKontsultatu"));
 		erabiltzaileak.add(kontsultatu);
 
 		// Panelak gehitu framera
 		frame.add(ErabiltzaileakPanels.erabiltzaileaEzabatu(), "ErabiltzaileakEzabatu");
+		frame.add(ErabiltzaileakPanels.erabiltzaileakKontsultatu(), "ErabiltzaileakKontsultatu");
 
 		return erabiltzaileak;
 	}

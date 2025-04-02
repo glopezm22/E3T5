@@ -40,18 +40,11 @@ public class MenuBezero {
 	private static JFrame sortuFrameNagusia() {
 		JFrame frame = new JFrame("GameStop | Bezeroen menua");
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		frame.setExtendedState(JFrame.MAXIMIZED_BOTH);
-		frame.setSize(1920, 1080);
-		try {
-
-			Image icon = ImageIO.read(
-				    Login.class.getClassLoader().getResourceAsStream("images/GameStopIcon.png")
-				);
-            frame.setIconImage(icon);
-
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+		// frame.setExtendedState(JFrame.MAXIMIZED_BOTH);
+        frame.setResizable(false);
+		frame.setSize(1280, 720);
+        frame.setLocationRelativeTo(null);
+		Login.kargatuIkonoa(frame);
 		return frame;
 	}
 	
