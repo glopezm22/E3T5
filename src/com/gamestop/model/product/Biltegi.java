@@ -1,4 +1,4 @@
-package erronka.DB;
+package com.gamestop.model.product;
 
 /**
  * Biltegi klaseak biltegien informazioa gordetzen du, kokalekuekin erlazionatuz.

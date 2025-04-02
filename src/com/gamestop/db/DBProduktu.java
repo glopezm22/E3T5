@@ -1,4 +1,4 @@
-package erronka.DB;
+package com.gamestop.db;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -6,6 +6,9 @@ import java.util.List;
 import javax.swing.JComboBox;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
+
+import com.gamestop.model.product.Produktu;
+
 import javax.swing.JOptionPane;
 
 import java.awt.event.ActionEvent;
@@ -15,8 +18,6 @@ import java.sql.Statement;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-
-import erronka.DBmain;
 
 public class DBProduktu {
 
@@ -38,7 +39,7 @@ public class DBProduktu {
         Statement stmt = null;
         ResultSet rs = null;
         try {
-            conn = DBmain.konexioa();
+            conn = DatabaseManager.konexioa();
             stmt = conn.createStatement();
             String sql = "SELECT ID, IZENA, DESKRIBAPENA, BALIOA, SALNEURRIA, ID_KATEGORIA FROM PRODUKTU";
             rs = stmt.executeQuery(sql);
@@ -116,7 +117,7 @@ public class DBProduktu {
         String kategoriaIzena = "";
 
         try {
-            conn = DBmain.konexioa();
+            conn = DatabaseManager.konexioa();
             String sql = "SELECT IZENA FROM KATEGORIA WHERE ID = ?";
             pstmt = conn.prepareStatement(sql);
             pstmt.setInt(1, idKategoria);
@@ -147,7 +148,7 @@ public class DBProduktu {
         PreparedStatement pstmt = null;
 
         try {
-            conn = DBmain.konexioa();
+            conn = DatabaseManager.konexioa();
             String sql = "UPDATE PRODUKTU SET DESKRIBAPENA = ?, SALNEURRIA = ? WHERE IZENA = ?";
             pstmt = conn.prepareStatement(sql);
             pstmt.setString(1, deskribapena);
@@ -196,7 +197,7 @@ public class DBProduktu {
         PreparedStatement pstmt = null;
 
         try {
-            conn = DBmain.konexioa();
+            conn = DatabaseManager.konexioa();
             String sql = "DELETE FROM PRODUKTU WHERE ID = ?";
             pstmt = conn.prepareStatement(sql);
             pstmt.setInt(1, id);

@@ -1,4 +1,7 @@
-package erronka;
+package com.gamestop.app.panels;
+
+import com.gamestop.app.auth.Login;
+import com.gamestop.db.DatabaseManager;
 
 import java.awt.BorderLayout;
 import java.awt.Font;
@@ -18,7 +21,8 @@ import javax.swing.JPasswordField;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 
-public class NireKontuaMenu {
+@SuppressWarnings("unused")
+public class KontuaPanels {
 
 	// Saltzaileen datu pertsonalak bistaratzeko panel-a sortzeko metodoa.
 	public static JPanel saltzaileenDatuPertsonalak() {
@@ -71,7 +75,7 @@ public class NireKontuaMenu {
 			String telefonoa = textFields[3].getText();
 
 			try {
-				Connection conn = DBmain.konexioa();
+				Connection conn = DatabaseManager.konexioa();
 				Statement stmt = conn.createStatement();
 				String sql = "UPDATE LANGILE SET EMAILA = '" + emaila + "', TELEFONOA = '" + telefonoa
 						+ "' WHERE ID = '" + Login.id + "'";
@@ -137,7 +141,7 @@ public class NireKontuaMenu {
 			String helbidea = textFields[3].getText();
 
 			try {
-				Connection conn = DBmain.konexioa();
+				Connection conn = DatabaseManager.konexioa();
 				Statement stmt = conn.createStatement();
 				String sql = "UPDATE BEZERO SET EMAILA = '" + emaila + "', HELBIDEA = '" + helbidea + "' WHERE ID = '"
 						+ Login.id + "'";
@@ -214,7 +218,7 @@ public class NireKontuaMenu {
             }
 
             try {
-                Connection conn = DBmain.konexioa();
+                Connection conn = DatabaseManager.konexioa();
                 String sql = "{call PASAHITZA_EGUNERATU(?, ?, ?, ?, ?)}";
                 CallableStatement cstmt = conn.prepareCall(sql);
 

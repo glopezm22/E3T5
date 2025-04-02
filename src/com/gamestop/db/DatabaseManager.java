@@ -1,51 +1,55 @@
-package erronka;
+package com.gamestop.db;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.sql.Connection;
 import java.sql.DriverManager;
-//import java.sql.ResultSet;
-//import java.sql.Statement;
-//import java.sql.SQLException;
 import java.sql.SQLException;
+import java.util.Properties;
 import java.sql.Statement;
 import javax.swing.JOptionPane;
 
-/**
- * Datu base klasea konexioa eta kontsultak egiteko
- */
 
-// NO TOCAR NADA DE ESTE ARCHIVO // NO TOCAR NADA DE ESTE ARCHIVO // NO TOCAR NADA DE ESTE ARCHIVO // NO TOCAR NADA DE ESTE ARCHIVO // NO TOCAR NADA DE ESTE ARCHIVO
-// NO TOCAR NADA DE ESTE ARCHIVO // NO TOCAR NADA DE ESTE ARCHIVO // NO TOCAR NADA DE ESTE ARCHIVO // NO TOCAR NADA DE ESTE ARCHIVO // NO TOCAR NADA DE ESTE ARCHIVO
-// NO TOCAR NADA DE ESTE ARCHIVO // NO TOCAR NADA DE ESTE ARCHIVO // NO TOCAR NADA DE ESTE ARCHIVO // NO TOCAR NADA DE ESTE ARCHIVO // NO TOCAR NADA DE ESTE ARCHIVO
+public class DatabaseManager {
+    private static String url;
+    private static String user;
+    private static String pass;
 
-public class DBmain {
+    static {
+        try {
+            // SOLUCIÓN DEFINITIVA - Carga desde filesystem
+            InputStream input = Files.newInputStream(
+                Paths.get(System.getProperty("user.dir"), 
+                        "resources/config/database.properties"));
+            
+            Properties props = new Properties();
+            props.load(input);
+            url = props.getProperty("db.url");
+            user = props.getProperty("db.username");
+            pass = props.getProperty("db.password");
+            Class.forName(props.getProperty("db.driver"));
+            input.close();
+        } catch (Exception e) {
+            throw new RuntimeException("ERROR cargando configuración: " + e.getMessage(), e);
+        }
+    }
 
-	private static String url = "jdbc:oracle:thin:@//localhost:1521/xepdb1";
-	private static String user = "E3T5";
-	private static String pass = "ikasle123";
+    // Método original que necesitas mantener
+    public static Connection konexioa() {
+        try {
+            return DriverManager.getConnection(url, user, pass);
+        } catch (SQLException e) {
+            System.err.println("Error de conexión: " + e.getMessage());
+            return null;
+        }
+    }
 
-//	public DBmain() {
-//		this.url = "jdbc:oracle:thin:@//localhost:1521/xepdb1";
-//		this.user = "E3T5";
-//		this.pass = "ikasle123";
-//	}
-//
-//	public DBmain(String url, String user, String pass) {
-//		this.url = url;
-//		this.user = user;
-//		this.pass = pass;
-//	}
-
-	// Konexioa egiteko metodo generikoa.
-	public static Connection konexioa() {
-		Connection conn = null;
-		try {
-			conn = DriverManager.getConnection(url, user, pass);
-			return conn;
-		} catch (Exception e) {
-			System.out.println("Konexio errorea: " + e);
-		}
-		return conn;
-	}
+    // Método recomendado para nuevas implementaciones (opcional)
+    public static Connection getConnection() throws SQLException {
+        return DriverManager.getConnection(url, user, pass);
+    }
 
 	public void deleteUser(String tableName, String izena) {
 		try {

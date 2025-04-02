@@ -1,4 +1,4 @@
-package erronka.DB;
+package com.gamestop.model.user;
 
 /**
  * Bezero klaseak bezeroen informazioa gordetzen du.

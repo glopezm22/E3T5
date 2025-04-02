@@ -1,4 +1,4 @@
-package erronka.DB;
+package com.gamestop.model.product;
 
 /**
  * Inbentario klaseak inbentario osoaren informazioa gordetzen du.

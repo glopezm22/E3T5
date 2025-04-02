@@ -1,4 +1,4 @@
-package erronka.DB;
+package com.gamestop.model.location;
 
 /**
  * Herrialde klaseak herrialdeen informazioa gordetzen du.

@@ -1,4 +1,10 @@
-package erronka;
+package com.gamestop.app.main;
+
+import com.gamestop.app.auth.Login;
+import com.gamestop.app.panels.EskariakPanels;
+import com.gamestop.app.panels.KontuaPanels;
+import com.gamestop.app.panels.ProduktuakPanels;
+import com.gamestop.app.panels.ErabiltzaileakPanels;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
@@ -9,6 +15,7 @@ import javax.swing.JComboBox;
 import java.awt.CardLayout;
 import java.awt.BorderLayout;
 
+@SuppressWarnings("unused")
 public class MenuSaltzaile {
 
 	public static void main(String[] args) {
@@ -85,8 +92,8 @@ public class MenuSaltzaile {
 		nireKontua.add(irten);
 
 		// Panelak gehitu framera
-		frame.add(NireKontuaMenu.saltzaileenDatuPertsonalak(), "NireKontua");
-		frame.add(NireKontuaMenu.pasahitzaPanela(), "PasahitzaAldatu");
+		frame.add(KontuaPanels.saltzaileenDatuPertsonalak(), "NireKontua");
+		frame.add(KontuaPanels.pasahitzaPanela(), "PasahitzaAldatu");
 
 		return nireKontua;
 	}
@@ -107,7 +114,7 @@ public class MenuSaltzaile {
 		erabiltzaileak.add(kontsultatu);
 
 		// Panelak gehitu framera
-		frame.add(ErabiltzaileakMenu.erabiltzaileaEzabatu(), "ErabiltzaileakEzabatu");
+		frame.add(ErabiltzaileakPanels.erabiltzaileaEzabatu(), "ErabiltzaileakEzabatu");
 
 		return erabiltzaileak;
 	}
@@ -128,8 +135,8 @@ public class MenuSaltzaile {
 		erabiltzaileakGehituMainPanel.add(cardPanel, BorderLayout.CENTER);
 
 		// "Saltzailea" eta "Bezeroa" panelak gehitu CardLayout-ean
-		cardPanel.add(ErabiltzaileakMenu.saltzaileaGehitu(), "Saltzailea");
-		cardPanel.add(ErabiltzaileakMenu.bezeroaGehitu(), "Bezeroa");
+		cardPanel.add(ErabiltzaileakPanels.saltzaileaGehitu(), "Saltzailea");
+		cardPanel.add(ErabiltzaileakPanels.bezeroaGehitu(), "Bezeroa");
 
 		// ComboBox-aren akzioa konfiguratu
 		comboBox.addActionListener(e -> {
@@ -159,10 +166,10 @@ public class MenuSaltzaile {
 		produktuak.add(editatu);
 
 		// Panelak gehitu framera
-		frame.add(ProduktuakMenu.produktuakBistaratu(), "ProduktuakBistaratu");
-		frame.add(ProduktuakMenu.produktuakGehitu(), "ProduktuakGehitu");
-		frame.add(ProduktuakMenu.produktuakEzabatu(), "ProduktuakEzabatu");
-		frame.add(ProduktuakMenu.produktuakEditatu(), "ProduktuakEditatu");
+		frame.add(ProduktuakPanels.produktuakBistaratu(), "ProduktuakBistaratu");
+		frame.add(ProduktuakPanels.produktuakGehitu(), "ProduktuakGehitu");
+		frame.add(ProduktuakPanels.produktuakEzabatu(), "ProduktuakEzabatu");
+		frame.add(ProduktuakPanels.produktuakEditatu(), "ProduktuakEditatu");
 
 		return produktuak;
 	}
@@ -176,7 +183,7 @@ public class MenuSaltzaile {
 		eskariak.add(bistaratu);
 
 		// Panelak gehitu framera
-		frame.add(EskariakMenu.eskariakBistaratu(), "EskariakBistaratu");
+		frame.add(EskariakPanels.eskariakBistaratu(), "EskariakBistaratu");
 
 		return eskariak;
 	}	

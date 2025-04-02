@@ -1,4 +1,9 @@
-package erronka;
+package com.gamestop.app.panels;
+
+import com.gamestop.app.auth.Login;
+import com.gamestop.db.DBProduktu;
+import com.gamestop.db.DatabaseManager;
+import com.gamestop.model.product.Produktu;
 
 import java.awt.BorderLayout;
 import java.awt.Font;
@@ -23,10 +28,8 @@ import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 
-import erronka.DB.DBProduktu;
-import erronka.DB.Produktu;
-
-public class ProduktuakMenu {
+@SuppressWarnings("unused")
+public class ProduktuakPanels {
 	
 	public static JPanel produktuakBistaratu() {
 		JPanel panel = new JPanel(new BorderLayout());
@@ -169,7 +172,7 @@ public class ProduktuakMenu {
 	        // Obtener el ID de la categoría
 	        int id_kategoria = -1;
 	        try {
-	            Connection conn = DBmain.konexioa();
+	            Connection conn = DatabaseManager.konexioa();
 	            String sql = "SELECT ID FROM KATEGORIA WHERE IZENA = ?";
 	            PreparedStatement pstmt = conn.prepareStatement(sql);
 	            pstmt.setString(1, kategoria);
@@ -193,7 +196,7 @@ public class ProduktuakMenu {
 
 	        // Insertar el producto en la base de datos
 	        try {
-	            Connection conn = DBmain.konexioa();
+	            Connection conn = DatabaseManager.konexioa();
 	            String sql = "INSERT INTO PRODUKTU (ID, IZENA, DESKRIBAPENA, BALIOA, SALNEURRIA, ID_KATEGORIA) VALUES ((SELECT COALESCE(MAX(ID), 0) + 1 FROM PRODUKTU), ?, ?, ?, ?, ?)";
 	            PreparedStatement pstmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
 	            pstmt.setString(1, izena);
@@ -228,7 +231,7 @@ public class ProduktuakMenu {
 
     private static void kategoriakKargatuCOMBOBOX(JComboBox<String> comboBox) {
         try {
-            Connection conn = DBmain.konexioa();
+            Connection conn = DatabaseManager.konexioa();
             Statement stmt = conn.createStatement();
             ResultSet rs = stmt.executeQuery("SELECT IZENA FROM KATEGORIA");
 

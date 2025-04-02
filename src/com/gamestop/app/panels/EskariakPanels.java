@@ -1,4 +1,7 @@
-package erronka;
+package com.gamestop.app.panels;
+
+import com.gamestop.app.auth.Login;
+import com.gamestop.db.DatabaseManager;
 
 import java.awt.BorderLayout;
 import java.awt.Component;
@@ -22,7 +25,8 @@ import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 import java.text.SimpleDateFormat;
 
-public class EskariakMenu {
+@SuppressWarnings("unused")
+public class EskariakPanels {
 
 	// SALTZAILEAK - Eskariak bistaratzeko panela sortzeko metodoa.
 	public static JPanel eskariakBistaratu() {
@@ -90,7 +94,7 @@ public class EskariakMenu {
 	        return;
 	    }
 
-	    try (Connection conn = DBmain.konexioa();
+	    try (Connection conn = DatabaseManager.konexioa();
 	         PreparedStatement pstmt = conn.prepareStatement(
 	             "SELECT E.ID FROM ESKARI E WHERE E.ID_SALTZAILE = ?")) {
 	        
@@ -119,7 +123,7 @@ public class EskariakMenu {
 	        return;
 	    }
 
-	    try (Connection conn = DBmain.konexioa();
+	    try (Connection conn = DatabaseManager.konexioa();
 	         PreparedStatement pstmt = conn.prepareStatement(
 	             "SELECT E.ID, B.IZENA, B.ABIZENA, E.ESKAERA_DATA, EG.DESKRIBAPENA " +
 	             "FROM ESKARI E " +
@@ -200,7 +204,7 @@ public class EskariakMenu {
 		// Consultar los estados de los pedidos del usuario
 		int bezeroId = Login.id; // ID del usuario logueado
 		try {
-			Connection conn = DBmain.konexioa();
+			Connection conn = DatabaseManager.konexioa();
 			PreparedStatement pstmt = conn.prepareStatement("SELECT E.ID, EG.DESKRIBAPENA " + "FROM ESKARI E "
 					+ "JOIN ESKARI_EGOERA EG ON E.ID_EGOERA = EG.ID " + "WHERE E.ID_BEZERO = ?");
 			pstmt.setInt(1, bezeroId);
@@ -332,7 +336,7 @@ public class EskariakMenu {
 	        return;
 	    }
 
-	    try (Connection conn = DBmain.konexioa();
+	    try (Connection conn = DatabaseManager.konexioa();
 	         PreparedStatement pstmt = conn.prepareStatement(
 	             "SELECT E.ID FROM ESKARI E WHERE E.ID_BEZERO = ?")) {
 	        
@@ -361,7 +365,7 @@ public class EskariakMenu {
 	        return;
 	    }
 
-	    try (Connection conn = DBmain.konexioa();
+	    try (Connection conn = DatabaseManager.konexioa();
 	         PreparedStatement pstmt = conn.prepareStatement(
 	             "SELECT E.ID, L.IZENA, L.ABIZENA, E.ESKAERA_DATA, EG.DESKRIBAPENA " +
 	             "FROM ESKARI E " +

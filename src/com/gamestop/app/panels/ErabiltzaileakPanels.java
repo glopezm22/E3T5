@@ -1,6 +1,10 @@
-package erronka;
+package com.gamestop.app.panels;
 
-import java.awt.BorderLayout;
+import com.gamestop.app.auth.Login;
+import com.gamestop.db.DBErabiltzaile;
+import com.gamestop.db.DatabaseManager;
+import com.gamestop.model.user.Erabiltzaile;
+
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
@@ -16,10 +20,8 @@ import javax.swing.JPanel;
 import javax.swing.JSeparator;
 import javax.swing.JTextField;
 
-import erronka.DB.DBErabiltzaile;
-import erronka.DB.Erabiltzaile;
-
-public class ErabiltzaileakMenu {
+@SuppressWarnings("unused")
+public class ErabiltzaileakPanels {
 
     public static JPanel saltzaileaGehitu() {
         JPanel panel = new JPanel(new GridBagLayout());
@@ -47,21 +49,21 @@ public class ErabiltzaileakMenu {
 
         gehituSaltzailea.addActionListener(e -> {
             if (textFields[4].getText().isEmpty()) {
-                DBmain.saltzaileEdoBezeroSortu("LANGILE",
+                DatabaseManager.saltzaileEdoBezeroSortu("LANGILE",
                         "ID, IZENA, ABIZENA, EMAILA, TELEFONOA, KONTRATAZIO_DATA, ID_NAGUSI, SOLDATA",
                         "(SELECT NVL(MAX(ID), 0) + 1 FROM LANGILE), '" + textFields[0].getText() + "', '"
                                 + textFields[1].getText() + "', '" + textFields[2].getText() + "', '"
                                 + textFields[3].getText() + "', SYSDATE, NULL, 30000");
 
             } else {
-                DBmain.saltzaileEdoBezeroSortu("LANGILE",
+                DatabaseManager.saltzaileEdoBezeroSortu("LANGILE",
                         "ID, IZENA, ABIZENA, EMAILA, TELEFONOA, KONTRATAZIO_DATA, ID_NAGUSI, SOLDATA",
                         "(SELECT NVL(MAX(ID), 0) + 1 FROM LANGILE), '" + textFields[0].getText() + "', '"
                                 + textFields[1].getText() + "', '" + textFields[2].getText() + "', '"
                                 + textFields[3].getText() + "', SYSDATE, " + textFields[4].getText() + ", 30000");
 
             }
-            DBmain.erabiltzaileaSortu("ERABILTZAILEAK", "ID, ERABILTZAILEA, PASAHITZA, MOTA",
+            DatabaseManager.erabiltzaileaSortu("ERABILTZAILEAK", "ID, ERABILTZAILEA, PASAHITZA, MOTA",
                     "ID, LOWER(SUBSTR(IZENA, 1, 1)) || LOWER(ABIZENA) AS ERABILTZAILEA, LOWER(SUBSTR(IZENA, 1, 1)) || LOWER(ABIZENA) AS PASAHITZA, 'S' AS MOTA FROM LANGILE WHERE ID = (SELECT MAX(ID) FROM LANGILE)");
             for (int i = 0; i < labels.length; i++) {
                 textFields[i].setText("");
@@ -96,7 +98,7 @@ public class ErabiltzaileakMenu {
 
         gehituBezeroa.addActionListener(e -> {
             try {
-                Connection conn = DBmain.konexioa();
+                Connection conn = DatabaseManager.konexioa();
                 Statement stmt = conn.createStatement();
                 String sqlInsertBEZERO = "INSERT INTO BEZERO (ID, IZENA, ABIZENA, EMAILA, HELBIDEA) VALUES ((SELECT NVL(MAX(ID), 0) + 1 FROM BEZERO),'"
                         + textFields[0].getText() + "', '" + textFields[1].getText() + "', '" + textFields[2].getText()

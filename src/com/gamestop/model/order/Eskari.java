@@ -1,4 +1,4 @@
-package erronka.DB;
+package com.gamestop.model.order;
 
 import java.time.LocalDate;
 

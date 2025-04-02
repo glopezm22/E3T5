@@ -1,4 +1,4 @@
-package erronka.DB;
+package com.gamestop.model.location;
 
 /**
  * Kontinente klaseak kontinenteen informazioa gordetzen du.

@@ -1,4 +1,4 @@
-package erronka.DB;
+package com.gamestop.model.location;
 
 /**
  * Kokaleku klaseak kokalekuen informazioa gordetzen du.

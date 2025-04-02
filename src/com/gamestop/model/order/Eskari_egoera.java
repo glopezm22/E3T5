@@ -1,4 +1,4 @@
-package erronka.DB;
+package com.gamestop.model.order;
 
 /**
  * Eskari_egoera klaseak eskaeren egoera gordetzen du.

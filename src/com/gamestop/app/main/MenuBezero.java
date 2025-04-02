@@ -1,4 +1,9 @@
-package erronka;
+package com.gamestop.app.main;
+
+import com.gamestop.app.auth.Login;
+import com.gamestop.app.panels.EskariakPanels;
+import com.gamestop.app.panels.KontuaPanels;
+import com.gamestop.app.panels.ProduktuakPanels;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
@@ -7,6 +12,7 @@ import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import java.awt.CardLayout;
 
+@SuppressWarnings("unused")
 public class MenuBezero {
 
     public static void main(String[] args) {
@@ -56,7 +62,7 @@ public class MenuBezero {
     }
 
 	// "Nire kontua" menua sortu.
-    private static JMenu sortuKontuaMenua(JFrame frame, CardLayout cardLayout) {
+	private static JMenu sortuKontuaMenua(JFrame frame, CardLayout cardLayout) {
 		JMenu nireKontua = new JMenu("Nire kontua");
 
 		JMenuItem datuPertsonalak = new JMenuItem("Datu pertsonalak");
@@ -76,8 +82,8 @@ public class MenuBezero {
 		nireKontua.add(irten);
 
 		// Panelak gehitu framera
-		frame.add(NireKontuaMenu.bezeroenDatuPertsonalak(), "NireKontua");
-		frame.add(NireKontuaMenu.pasahitzaPanela(), "PasahitzaAldatu");
+		frame.add(KontuaPanels.bezeroenDatuPertsonalak(), "NireKontua");
+		frame.add(KontuaPanels.pasahitzaPanela(), "PasahitzaAldatu");
 
 		return nireKontua;
 	}
@@ -95,8 +101,8 @@ public class MenuBezero {
         eskariak.add(egoera);
 
 		// Panelak gehitu framera
-        frame.add(EskariakMenu.historialaikusiSortu(), "Historiala");
-        frame.add(EskariakMenu.egoeraikusiSortu(), "EgoeraBistaratu");
+        frame.add(EskariakPanels.historialaikusiSortu(), "Historiala");
+        frame.add(EskariakPanels.egoeraikusiSortu(), "EgoeraBistaratu");
 
         return eskariak;
     }
@@ -110,7 +116,7 @@ public class MenuBezero {
         productsMenu.add(bistaratu);
 
 		// Panelak gehitu framera
-        frame.add(ProduktuakMenu.produktuakBistaratu(), "ProduktuakBistaratu");
+        frame.add(ProduktuakPanels.produktuakBistaratu(), "ProduktuakBistaratu");
 
         return productsMenu;
     }

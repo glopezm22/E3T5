@@ -1,4 +1,4 @@
-package erronka.DB;
+package com.gamestop.model.user;
 
 /**
  * Erabiltzaile klaseak erabiltzaileen informazioa gordetzen du.

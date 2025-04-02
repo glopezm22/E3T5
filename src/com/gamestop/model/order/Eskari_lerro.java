@@ -1,4 +1,4 @@
-package erronka.DB;
+package com.gamestop.model.order;
 
 /**
  * Eskari_lerro klaseak eskaeren lerroen informazioa gordetzen du.

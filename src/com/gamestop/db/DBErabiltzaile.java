@@ -1,10 +1,13 @@
-package erronka.DB;
+package com.gamestop.db;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.JComboBox;
 import javax.swing.JTextField;
+
+import com.gamestop.model.user.Erabiltzaile;
+
 import javax.swing.JOptionPane;
 
 import java.awt.event.ActionEvent;
@@ -14,8 +17,6 @@ import java.sql.Statement;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-
-import erronka.DBmain;
 
 public class DBErabiltzaile {
 
@@ -37,7 +38,7 @@ public class DBErabiltzaile {
         Statement stmt = null;
         ResultSet rs = null;
         try {
-            conn = DBmain.konexioa();
+            conn = DatabaseManager.konexioa();
             stmt = conn.createStatement();
             String sql = "SELECT E.ID, E.ERABILTZAILEA, E.PASAHITZA, E.MOTA, "
                     + "L.IZENA AS LANGILE_IZENA, L.ABIZENA AS LANGILE_ABIZENA, L.EMAILA AS LANGILE_EMAILA, "
@@ -128,7 +129,7 @@ public class DBErabiltzaile {
         boolean eginda = false;
 
         try {
-            conn = DBmain.konexioa();
+            conn = DatabaseManager.konexioa();
             String sql = "DELETE FROM ERABILTZAILEAK WHERE ID = ? AND MOTA = ?";
             pstmt = conn.prepareStatement(sql);
             pstmt.setInt(1, id);

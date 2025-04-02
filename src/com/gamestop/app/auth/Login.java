@@ -1,10 +1,16 @@
-package erronka;
+package com.gamestop.app.auth;
+
+import com.gamestop.db.DatabaseManager;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import javax.swing.*;
+
+import com.gamestop.app.main.MenuBezero;
+import com.gamestop.app.main.MenuSaltzaile;
+
 import java.awt.*;
 import java.time.LocalDate;
 
@@ -13,6 +19,8 @@ import java.time.LocalDate;
  *
  * @return Saiakera kopurua, 0 baldin eta autentifikazioa huts egiten badu.
  */
+
+@SuppressWarnings("unused")
 public class Login {
 
 	public static final int MAX_SAIAKERAK = 3;
@@ -29,7 +37,6 @@ public class Login {
 	public static String pasahitza = null;
 	public static String mota = null;
 
-	// @SuppressWarnings("unused")
 	public static void main(String[] args) {
 
 		// Frame-a sortu eta parametroak ezarri.
@@ -110,7 +117,7 @@ public class Login {
 
 		try {
 			// Konexioa ezartzen da.
-			Connection con = DBmain.konexioa();
+			Connection con = DatabaseManager.konexioa();
 			Statement statement = con.createStatement();
 
 			// Kontsulta ezartzen da, non erabiltzaileak bilatuko diren.
@@ -141,7 +148,7 @@ public class Login {
 	public static void logeatutakoProfila(int id) {
 		try {
 			// Konexioa ezartzen da.
-			Connection con = DBmain.konexioa();
+			Connection con = DatabaseManager.konexioa();
 			Statement statement = con.createStatement();
 
 			if (mota.equals("S")) {

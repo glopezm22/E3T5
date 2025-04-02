@@ -1,4 +1,4 @@
-package erronka.DB;
+package com.gamestop.model.product;
 
 /**
  * Kategoria klaseak kategorien informazioa gordetzen du.
