@@ -1,14 +1,14 @@
 # 🎮 GameStop Kudeaketa Sistema
 
 **🏷️ Deskribapena:**
-Aplikazio hau GameStop dendarentzat garatutako saltzaile eta bezeroen kudeaketa sistema da. Erabiltzaileek saioa hasi dezakete bere kredentzialekin eta baimen mailaren arabera, hainbat funtzionalitate erabili.
+Aplikazio hau GameStop dendarentzat garatutako **saltzaile eta bezeroen kudeaketa sistema** da. Erabiltzaileek saioa hasi dezakete bere kredentzialekin eta baimen mailaren arabera, hainbat funtzionalitate erabili.
 
 ---
 
 ## ✨ Ezaugarriak
 
 ### 🔐 Saio-hasiera
-- Erabiltzaile motaren arabera baimenak (S saltzailea, B bezeroa)
+- Erabiltzaile motaren arabera baimenak
 - Pasahitz enkriptatua
 - Saiakera kopuru mugatua (3 saiakera)
 
@@ -26,17 +26,17 @@ Aplikazio hau GameStop dendarentzat garatutako saltzaile eta bezeroen kudeaketa 
 
 ## 🛠️ Instalazioa
 
-1. Datu-basea konfiguratu OracleDB erabiliz:
+1. **Datu-basea konfiguratu** OracleDB erabiliz:
    ```ALTER SESSION SET CONTAINER = XEPDB1;
    CREATE USER erabiltzailea IDENTIFIED BY pasahitza; -- erabiltzailea eta pasahitza database.properties fitxategian bat etorri behar dira.
    GRANT ALL PRIVILEGES TO erabiltzailea;
-   -- Exekutatu 'schema.sql' fitxategia taulak sortzeko behin conexioa ezarri dugunean erabiltzaile horrekin.´´´
+   -- Exekutatu 'schema.sql' fitxategia taulak sortzeko behin conexioa ezarri dugunean erabiltzaile horrekin.```
 
-2. Aplikazioa abiarazi:
+2. **Aplikazioa abiarazi**:
    ```git clone https://github.com/glopezm22/E3T5.git
    cd E3T5
    mvn clean install
-   java -jar target/E3T5.jar´´´
+   java -jar target/E3T5.jar```
 
 ---
 
@@ -85,14 +85,14 @@ E3T5/
 │   └── images/
 ├── lib/
 └── README.md
-´´´
+```
 
 ---
 
 ## 💡 Erabilera
 
-1. Saioa hasi erabiltzaile eta pasahitzarekin
-2. Aukeratu ekintza menuan:
+1. **Saioa hasi** erabiltzaile eta pasahitzarekin
+2. **Aukeratu ekintza** menuan:
    - Bezeroa bazaude: produktuak ikusi, eskaerak kontsultatu
    - Saltzailea bazaude: erabiltzaileak/produktuak kudeatu
 
@@ -100,18 +100,18 @@ E3T5/
 
 ## 🛑 Oharrak
 
-- ❗ Ez ahaztu schema.sql exekutatu datu-basea sortzeko
-- 🔄 Aplikazioa eguneratzeko: git pull && mvn clean install
+- ❗ **Ez ahaztu** schema.sql exekutatu datu-basea sortzeko
+- 🔄 **Aplikazioa eguneratzeko**: git pull && mvn clean install
 
 ---
 
 ## 📜 Lizentzia
-MIT Lizentzia
+Programak ez dauka lizentziarik
 
 ---
 
-🎯 Helburua: Dendako operazioak erraztu eta kudeaketa modernizatzea!
+🎯 **Helburua**: Dendako operazioak erraztu eta kudeaketa modernizatzea!
 
 <p align="center"> <img src="resources/images/GameStop.png" width="100" alt="GameStop Logo"> </p>
 
-✨ Eskerrik asko proiektua bisitatzeagatik! Laguntza behar baduzu, ireki issue bat.
+✨ **Eskerrik asko** proiektua bisitatzeagatik! Laguntza behar baduzu, bidali mezu bat glopezm22[mailto:glopezm22@fpsanturtzilh.eus] helbidera.
