@@ -11,8 +11,11 @@ import javax.swing.JPanel;
 import javax.swing.JMenuBar;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
+import javax.imageio.ImageIO;
 import javax.swing.JComboBox;
 import java.awt.CardLayout;
+import java.awt.Image;
+import java.io.IOException;
 import java.awt.BorderLayout;
 
 @SuppressWarnings("unused")
@@ -45,6 +48,16 @@ public class MenuSaltzaile {
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.setExtendedState(JFrame.MAXIMIZED_BOTH);
 		frame.setSize(1920, 1080);
+		try {
+
+			Image icon = ImageIO.read(
+				    Login.class.getClassLoader().getResourceAsStream("images/GameStopIcon.png")
+				);
+            frame.setIconImage(icon);
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 		return frame;
 	}
 

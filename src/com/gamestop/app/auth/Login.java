@@ -6,12 +6,15 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+
+import javax.imageio.ImageIO;
 import javax.swing.*;
 
 import com.gamestop.app.main.MenuBezero;
 import com.gamestop.app.main.MenuSaltzaile;
 
 import java.awt.*;
+import java.io.IOException;
 import java.time.LocalDate;
 
 /**
@@ -110,6 +113,17 @@ public class Login {
 		frame.add(panel, gbc);
 
 		frame.setVisible(true);
+		
+		try {
+
+			Image icon = ImageIO.read(
+				    Login.class.getClassLoader().getResourceAsStream("images/GameStopIcon.png")
+				);
+            frame.setIconImage(icon);
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 	}
 
 	// Erabiltzailea eta pasahitza egiaztatzeko metodoa.

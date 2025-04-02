@@ -5,12 +5,15 @@ import com.gamestop.app.panels.EskariakPanels;
 import com.gamestop.app.panels.KontuaPanels;
 import com.gamestop.app.panels.ProduktuakPanels;
 
+import javax.imageio.ImageIO;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JMenuBar;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import java.awt.CardLayout;
+import java.awt.Image;
+import java.io.IOException;
 
 @SuppressWarnings("unused")
 public class MenuBezero {
@@ -39,6 +42,16 @@ public class MenuBezero {
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.setExtendedState(JFrame.MAXIMIZED_BOTH);
 		frame.setSize(1920, 1080);
+		try {
+
+			Image icon = ImageIO.read(
+				    Login.class.getClassLoader().getResourceAsStream("images/GameStopIcon.png")
+				);
+            frame.setIconImage(icon);
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 		return frame;
 	}
 	

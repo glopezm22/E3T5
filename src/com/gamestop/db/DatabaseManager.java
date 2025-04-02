@@ -1,9 +1,6 @@
 package com.gamestop.db;
 
-import java.io.IOException;
 import java.io.InputStream;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
@@ -11,28 +8,29 @@ import java.util.Properties;
 import java.sql.Statement;
 import javax.swing.JOptionPane;
 
-
 public class DatabaseManager {
     private static String url;
     private static String user;
     private static String pass;
 
     static {
-        try {
-            // SOLUCIÓN DEFINITIVA - Carga desde filesystem
-            InputStream input = Files.newInputStream(
-                Paths.get(System.getProperty("user.dir"), 
-                        "resources/config/database.properties"));
+        try (InputStream input = DatabaseManager.class.getClassLoader()
+                .getResourceAsStream("config/database.properties")) {
             
+            if (input == null) {
+                throw new RuntimeException("¡Archivo database.properties no encontrado en el classpath!");
+            }
+
             Properties props = new Properties();
             props.load(input);
+            
             url = props.getProperty("db.url");
             user = props.getProperty("db.username");
             pass = props.getProperty("db.password");
             Class.forName(props.getProperty("db.driver"));
-            input.close();
+            
         } catch (Exception e) {
-            throw new RuntimeException("ERROR cargando configuración: " + e.getMessage(), e);
+            throw new RuntimeException("Errorea konfigurazioa kargatzean: " + e.getMessage(), e);
         }
     }
 
@@ -41,7 +39,7 @@ public class DatabaseManager {
         try {
             return DriverManager.getConnection(url, user, pass);
         } catch (SQLException e) {
-            System.err.println("Error de conexión: " + e.getMessage());
+            System.err.println("Konexio errorea: " + e.getMessage());
             return null;
         }
     }
@@ -101,6 +99,4 @@ public class DatabaseManager {
 			e.printStackTrace();
 		}
 	}
-
-
 }
