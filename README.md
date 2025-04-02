@@ -27,21 +27,22 @@ Aplikazio hau GameStop dendarentzat garatutako saltzaile eta bezeroen kudeaketa 
 ## 🛠️ Instalazioa
 
 1. Datu-basea konfiguratu OracleDB erabiliz:
-   ALTER SESSION SET CONTAINER = XEPDB1;
+   ```ALTER SESSION SET CONTAINER = XEPDB1;
    CREATE USER erabiltzailea IDENTIFIED BY pasahitza; -- erabiltzailea eta pasahitza database.properties fitxategian bat etorri behar dira.
    GRANT ALL PRIVILEGES TO erabiltzailea;
-   -- Exekutatu 'schema.sql' fitxategia taulak sortzeko behin conexioa ezarri dugunean erabiltzaile horrekin.
+   -- Exekutatu 'schema.sql' fitxategia taulak sortzeko behin conexioa ezarri dugunean erabiltzaile horrekin.´´´
 
 2. Aplikazioa abiarazi:
-   git clone https://github.com/glopezm22/E3T5.git
+   ```git clone https://github.com/glopezm22/E3T5.git
    cd E3T5
    mvn clean install
-   java -jar target/E3T5.jar
+   java -jar target/E3T5.jar´´´
 
 ---
 
 ## 📁 Fitxategi-egitura
 
+```
 E3T5/
 ├── src/
 │   └── com/gamestop/
@@ -84,6 +85,7 @@ E3T5/
 │   └── images/
 ├── lib/
 └── README.md
+´´´
 
 ---
 
@@ -110,6 +112,6 @@ MIT Lizentzia
 
 🎯 Helburua: Dendako operazioak erraztu eta kudeaketa modernizatzea!
 
-<p align="center"> <img src="resources/images/GameStopIcon.png" width="100" alt="GameStop Logo"> </p>
+<p align="center"> <img src="resources/images/GameStop.png" width="100" alt="GameStop Logo"> </p>
 
 ✨ Eskerrik asko proiektua bisitatzeagatik! Laguntza behar baduzu, ireki issue bat.
