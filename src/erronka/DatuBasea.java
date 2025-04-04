@@ -4,6 +4,7 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.Statement;
+import java.util.ArrayList;
 
 import Ariketak.Produktua;
 import Ariketak.Produktuak;
@@ -49,7 +50,7 @@ public class DatuBasea {
 		    try {
 		    	Connection conn = konexioa();
 		        Statement stmt = conn.createStatement();
-		        ResultSet rs = stmt.executeQuery("SELECT * FROM PRODUKTU WHERE ID_KATEGORIA =1");
+		        ResultSet rs = stmt.executeQuery("SELECT * FROM PRODUKTU WHERE ID_KATEGORIA = 1");
 
 		        while (rs.next()) {
 		            // Crear un objeto 'Produktu' con los datos de la base de datos
@@ -78,13 +79,13 @@ public class DatuBasea {
 	   
 	   
 	   
-	   public BDproduktu produktuakRAM() {
+	   public BDproduktu produktuakMotherBoard() {
 		    BDproduktu pDB = new BDproduktu();
 		   
 		    try {
 		    	Connection conn = konexioa();
 		        Statement stmt = conn.createStatement();
-		        ResultSet rs = stmt.executeQuery("SELECT * FROM PRODUKTU WHERE ID_KATEGORIA =3");
+		        ResultSet rs = stmt.executeQuery("SELECT * FROM PRODUKTU WHERE ID_KATEGORIA = 4");
 
 		        while (rs.next()) {
 		            // Crear un objeto 'Produktu' con los datos de la base de datos
@@ -117,7 +118,7 @@ public class DatuBasea {
 		    try {
 		    	Connection conn = konexioa();
 		        Statement stmt = conn.createStatement();
-		        ResultSet rs = stmt.executeQuery("SELECT * FROM PRODUKTU WHERE ID_KATEGORIA =2");
+		        ResultSet rs = stmt.executeQuery("SELECT * FROM PRODUKTU WHERE ID_KATEGORIA = 5");
 
 		        while (rs.next()) {
 		            // Crear un objeto 'Produktu' con los datos de la base de datos
@@ -143,4 +144,100 @@ public class DatuBasea {
 		    // Devolver la instancia de BDproduktu con los productos cargados
 		    return pDB;
 		}
+	   
+	   public BDproduktu produktuakStorage() {
+		    BDproduktu pDB = new BDproduktu();
+		   
+		    try {
+		    	Connection conn = konexioa();
+		        Statement stmt = conn.createStatement();
+		        ResultSet rs = stmt.executeQuery("SELECT * FROM PRODUKTU WHERE ID_KATEGORIA = 2");
+
+		        while (rs.next()) {
+		            // Crear un objeto 'Produktu' con los datos de la base de datos
+		        	int id = rs.getInt("ID");
+		            String izena = rs.getString("IZENA");
+		            String deskribapena = rs.getString("DESKRIBAPENA");
+		            double balioa = rs.getDouble("BALIOA");
+		            double salneurria = rs.getDouble("SALNEURRIA");
+		            int idKategoria = rs.getInt("ID_KATEGORIA");
+		           
+		            // Agregar el producto a la lista
+			        Produktu produktua = new Produktu(id, izena, deskribapena, balioa, salneurria, idKategoria);
+		            pDB.produktuGehitu(produktua);
+		            
+		        }
+		      
+		    }catch (SQLException e) {
+		        System.out.println("Error al conectar o ejecutar la consulta.");
+		        e.printStackTrace();
+		    }  
+		    
+		    
+		    // Devolver la instancia de BDproduktu con los productos cargados
+		    return pDB;
+		}
+	   
+	   
+	   public BDproduktu produktuak() {
+		    BDproduktu pDB = new BDproduktu();
+		   
+		    try {
+		    	Connection conn = konexioa();
+		        Statement stmt = conn.createStatement();
+		        ResultSet rs = stmt.executeQuery("SELECT * FROM PRODUKTU");
+
+		        while (rs.next()) {
+		            // Crear un objeto 'Produktu' con los datos de la base de datos
+		        	int id = rs.getInt("ID");
+		            String izena = rs.getString("IZENA");
+		            String deskribapena = rs.getString("DESKRIBAPENA");
+		            double balioa = rs.getDouble("BALIOA");
+		            double salneurria = rs.getDouble("SALNEURRIA");
+		            int idKategoria = rs.getInt("ID_KATEGORIA");
+		           
+		            // Agregar el producto a la lista
+			        Produktu produktua = new Produktu(id, izena, deskribapena, balioa, salneurria, idKategoria);
+		            pDB.produktuGehitu(produktua);
+		            
+		        }
+		      
+		    }catch (SQLException e) {
+		        System.out.println("Error al conectar o ejecutar la consulta.");
+		        e.printStackTrace();
+		    }  
+		    
+		    
+		    // Devolver la instancia de BDproduktu con los productos cargados
+		    return pDB;
+		}
+	   
+	   
+	   public BDeskariEgoera eskarienEgoerak() {
+		   BDeskariEgoera eskariEgoeraDB = new BDeskariEgoera();
+	      
+	        try {
+	        	Connection conn = konexioa();
+		        Statement stmt = conn.createStatement();
+		        ResultSet rs = stmt.executeQuery("SELECT * FROM ESKARI_EGOERA");
+
+	            // Agregar los resultados al ArrayList
+	            while (rs.next()) {
+	            	int id = rs.getInt("ID");
+	            	String deskribapena = rs.getString("DESKRIBAPENA");
+	            	EskariEgoera egoera = new EskariEgoera(id, deskribapena);
+	            	eskariEgoeraDB.eskariEgoeraGehitu(egoera);
+	            	
+	            } 
+	          }catch (SQLException e) {
+		        System.out.println("Error al conectar o ejecutar la consulta.");
+		        e.printStackTrace();
+		    }  
+		    
+	  
+	        return eskariEgoeraDB;
+	    }
+	
+	   
+	  
 }
