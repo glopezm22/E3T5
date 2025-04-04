@@ -82,7 +82,7 @@ public class ErabiltzaileakPanels {
             for (int i = 0; i < labels.length; i++) {
                 textFields[i].setText("");
             }
-            // Lista eguneratu
+
             DBErabiltzaile db = new DBErabiltzaile();
             db.erabiltzaileakKargatu();
         });
@@ -132,7 +132,7 @@ public class ErabiltzaileakPanels {
             for (int i = 0; i < labels.length; i++) {
                 textFields[i].setText("");
             }
-            // Lista eguneratu
+
             DBErabiltzaile db = new DBErabiltzaile();
             db.erabiltzaileakKargatu();
         });
@@ -197,7 +197,6 @@ public class ErabiltzaileakPanels {
         @SuppressWarnings("unchecked")
 		final List<Erabiltzaile>[] erabiltzaileakHolder = new List[]{null};
 
-        // Goiburua
         JLabel goiburukoa = new JLabel("Erabiltzaileen zerrenda", SwingConstants.CENTER);
         goiburukoa.setFont(new Font("Arial", Font.BOLD, 24));
         panel.add(goiburukoa, BorderLayout.NORTH);
@@ -216,6 +215,7 @@ public class ErabiltzaileakPanels {
         db.erabiltzaileakKargatu();
         List<Erabiltzaile> erabiltzaileak = db.getErabiltzaileak();
 
+        // Erabiltzaileak taulara gehitu, zutabez zutabe
         for (Erabiltzaile e : erabiltzaileak) {
             modeloa.addRow(new Object[]{
                 e.getId().replaceAll("[^0-9]", ""),
@@ -226,20 +226,20 @@ public class ErabiltzaileakPanels {
             });
         }
 
-        // Taula eta korritze-barra
+        // Taula eta scrolla
         JTable taula = new JTable(modeloa);
         taula.setAutoCreateRowSorter(true);
         JScrollPane scrollPane = new JScrollPane(taula);
         panel.add(scrollPane, BorderLayout.CENTER);
 
-        // Menú kontextuala sortu
+        // Menu kontextuala sortu
         JPopupMenu popupMenu = new JPopupMenu();
         JMenuItem editatuItem = new JMenuItem("Editatu");
         JMenuItem ezabatuItem = new JMenuItem("Ezabatu");
         popupMenu.add(editatuItem);
         popupMenu.add(ezabatuItem);
 
-        // Menú kontextuala gehitu taularako
+        // Menu kontextuala gehitu taulara
         taula.setComponentPopupMenu(popupMenu);
         taula.addMouseListener(new MouseAdapter() {
             @Override
@@ -253,16 +253,16 @@ public class ErabiltzaileakPanels {
             }
         });
 
-        // Editatu ekintza
+        // Menu kontextualaren "editatu" botoia
         editatuItem.addActionListener(e -> {
             int selectedRow = taula.getSelectedRow();
             if (selectedRow >= 0) {
-                // Convertir a modelo real ya que el orden puede estar afectado por el ordenamiento
+
                 int modelRow = taula.convertRowIndexToModel(selectedRow);
                 String id = modeloa.getValueAt(modelRow, 0).toString();
                 String mota = modeloa.getValueAt(modelRow, 4).toString().equals("Saltzailea") ? "S" : "B";
                 
-                // Actualizar la lista de usuarios antes de buscar
+                // Erabiltzaileen lista eguneratu
                 db.erabiltzaileakKargatu();
                 erabiltzaileakHolder[0] = db.getErabiltzaileak();
                 
@@ -290,7 +290,7 @@ public class ErabiltzaileakPanels {
             }
         });
 
-        // Ezabatu ekintza
+        // Menu kontextualaren "ezabatu" botoia
         ezabatuItem.addActionListener(e -> {
             int selectedRow = taula.getSelectedRow();
             if (selectedRow >= 0) {
