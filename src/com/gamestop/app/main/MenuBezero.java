@@ -25,9 +25,8 @@ public class MenuBezero {
         frame.setLayout(cardLayout);
 
 		// Defektuzko panela
-        JPanel defaultPanel = new JPanel();
-        frame.add(defaultPanel, "Default");
-        cardLayout.show(frame.getContentPane(), "Default");
+		frame.add(Login.ongietorria(), "OngiEtorria");
+        cardLayout.show(frame.getContentPane(), "OngiEtorria");
 
 		// Menu barra sortu
         JMenuBar menuBar = sortuMenuBarra(frame, cardLayout);
@@ -83,7 +82,7 @@ public class MenuBezero {
 		saioaItxi.addActionListener(e -> Login.saioaItxi(frame));
 		nireKontua.add(saioaItxi);
 
-		JMenuItem irten = new JMenuItem("Itxi programa");
+		JMenuItem irten = new JMenuItem("Programatik irten");
 		irten.addActionListener(e -> System.exit(0));
 		nireKontua.add(irten);
 
@@ -117,12 +116,12 @@ public class MenuBezero {
     private static JMenu sortuProduktuakMenua(JFrame frame, CardLayout cardLayout) {
         JMenu productsMenu = new JMenu("Produktuak");
 
-        JMenuItem bistaratu = new JMenuItem("Ikusi");
+        JMenuItem bistaratu = new JMenuItem("Katalogoa");
         bistaratu.addActionListener(e -> cardLayout.show(frame.getContentPane(), "ProduktuakBistaratu"));
         productsMenu.add(bistaratu);
 
 		// Panelak gehitu framera
-        frame.add(ProduktuakPanels.produktuakBistaratu(), "ProduktuakBistaratu");
+        frame.add(ProduktuakPanels.produktuakBistaratu(null), "ProduktuakBistaratu");
 
         return productsMenu;
     }

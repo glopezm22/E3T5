@@ -21,7 +21,9 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
@@ -43,14 +45,11 @@ import javax.swing.table.DefaultTableModel;
 public class ProduktuakPanels {
 	
 	@SuppressWarnings("serial")
-	public static JPanel produktuakBistaratu() {
+	public static JPanel produktuakBistaratu(Integer kargatuBeharrekoKategoria) {
 	    JPanel panel = new JPanel(new BorderLayout(10, 10));
 	    panel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 	    
-	    @SuppressWarnings("unchecked")
-	    final List<Produktu>[] produktuHolder = new List[]{null};
-
-	    JLabel goiburukoa = new JLabel("Produktuen zerrenda", SwingConstants.CENTER);
+	    JLabel goiburukoa = new JLabel("Produktuen katalogoa", SwingConstants.CENTER);
 	    goiburukoa.setFont(new Font("Arial", Font.BOLD, 24));
 	    panel.add(goiburukoa, BorderLayout.NORTH);
 
@@ -63,20 +62,30 @@ public class ProduktuakPanels {
 	        }
 	    };
 
-	    // Datu-baseko erabiltzaileak kargatu
+	    // Datu-baseko produktuak kargatu
 	    DBProduktu db = new DBProduktu();
 	    db.produktuakKargatu();
 	    List<Produktu> produktuak = db.getProduktuak();
 
+	    // Filtrado por categoría si se especifica
+	    List<Produktu> produktuakFiltratuak;
+	    if (kargatuBeharrekoKategoria != null) {
+	        produktuakFiltratuak = produktuak.stream()
+	            .filter(p -> p.getIdKategoria() == kargatuBeharrekoKategoria)
+	            .collect(Collectors.toList());
+	    } else {
+	        produktuakFiltratuak = new ArrayList<>(produktuak);
+	    }
+
 	    // Erabiltzaileak taulara gehitu, zutabez zutabe
-	    for (Produktu p : produktuak) {
+	    for (Produktu p : produktuakFiltratuak) {
 	        String kategoriaIzena = getKategoriaIzena(p.getIdKategoria());
 	        modeloa.addRow(new Object[]{
 	            p.getId(),
 	            p.getIzena(),
 	            p.getDeskribapena(),
-	            p.getBalioa(),
-	            p.getSalneurria(),
+	            p.getBalioa() + " €",
+	            p.getSalneurria() + " €",
 	            kategoriaIzena
 	        });
 	    }
@@ -92,14 +101,23 @@ public class ProduktuakPanels {
 	    eguneratuBotoia.addActionListener(e -> {
 	        modeloa.setRowCount(0);
 	        db.produktuakKargatu();
-	        for (Produktu p : db.getProduktuak()) {
+	        List<Produktu> produktuakEguneratuta = db.getProduktuak();
+	        
+	        // Aplicar el mismo filtro al actualizar
+	        if (kargatuBeharrekoKategoria != null) {
+	            produktuakEguneratuta = produktuakEguneratuta.stream()
+	                .filter(p -> p.getIdKategoria() == kargatuBeharrekoKategoria)
+	                .collect(Collectors.toList());
+	        }
+	        
+	        for (Produktu p : produktuakEguneratuta) {
 	            String kategoriaIzena = getKategoriaIzena(p.getIdKategoria());
 	            modeloa.addRow(new Object[]{
 	                p.getId(),
 	                p.getIzena(),
 	                p.getDeskribapena(),
-	                p.getBalioa(),
-	                p.getSalneurria(),
+	                p.getBalioa() + " €",
+	                p.getSalneurria() + " €",
 	                kategoriaIzena
 	            });
 	        }

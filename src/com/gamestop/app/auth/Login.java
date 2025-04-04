@@ -124,6 +124,50 @@ public class Login {
         
         return panel;
     }
+    
+    public static JPanel ongietorria() {
+        JPanel panel = new JPanel(new BorderLayout());
+        panel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
+
+        JPanel contentPanel = new JPanel();
+        contentPanel.setLayout(new BoxLayout(contentPanel, BoxLayout.Y_AXIS));
+        contentPanel.setAlignmentX(Component.CENTER_ALIGNMENT);
+        contentPanel.setAlignmentY(Component.CENTER_ALIGNMENT);
+
+        JLabel ongiEtorri = new JLabel("Ongi etorri, " + izena + "!", SwingConstants.CENTER);
+        ongiEtorri.setFont(new Font("Arial", Font.BOLD, 26));
+        ongiEtorri.setAlignmentX(Component.CENTER_ALIGNMENT);
+        ongiEtorri.setBorder(BorderFactory.createEmptyBorder(0, 0, 20, 0));
+
+        // Carga de imagen con manejo de errores
+        ImageIcon scaledIcon = null;
+        try {
+            ImageIcon originalIcon = new ImageIcon(Login.class.getResource("/images/GameStop.png"));
+            
+            if (originalIcon.getImageLoadStatus() == MediaTracker.COMPLETE) {
+                Image scaledImage = originalIcon.getImage().getScaledInstance(300, 57, Image.SCALE_SMOOTH);
+                scaledIcon = new ImageIcon(scaledImage);
+            } else {
+                System.err.println("No se pudo cargar la imagen desde: images/GameStop.png");
+            }
+        } catch (Exception e) {
+            System.err.println("Error cargando la imagen: " + e.getMessage());
+        }
+        
+        JLabel imageLabel = new JLabel(scaledIcon);
+        imageLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+        contentPanel.add(ongiEtorri);
+        contentPanel.add(imageLabel);
+        
+        JPanel centerWrapper = new JPanel(new GridBagLayout());
+        centerWrapper.add(contentPanel);
+        
+        panel.add(centerWrapper, BorderLayout.CENTER);
+        
+        return panel;
+    }
+
 
     /**
      * Erabiltzailea autentifikatzen du datu-basearekin.

@@ -28,9 +28,8 @@ public class MenuSaltzaile {
 		frame.setLayout(cardLayout);
 
 		// Defektuzko panela
-		JPanel defaultPanel = new JPanel();
-		frame.add(defaultPanel, "Default");
-		cardLayout.show(frame.getContentPane(), "Default");
+		frame.add(Login.ongietorria(), "OngiEtorria");
+        cardLayout.show(frame.getContentPane(), "OngiEtorria");
 
 		// Menu barra sortu
 		JMenuBar menuBar = sortuMenuBarra(frame, cardLayout);
@@ -93,7 +92,7 @@ public class MenuSaltzaile {
 		saioaItxi.addActionListener(e -> Login.saioaItxi(frame));
 		nireKontua.add(saioaItxi);
 
-		JMenuItem irten = new JMenuItem("Itxi programa");
+		JMenuItem irten = new JMenuItem("Programatik irten");
 		irten.addActionListener(e -> System.exit(0));
 		nireKontua.add(irten);
 
@@ -157,7 +156,7 @@ public class MenuSaltzaile {
 	private static JMenu sortuProduktuakMenua(JFrame frame, CardLayout cardLayout) {
 		JMenu produktuak = new JMenu("Produktuak");
 
-		JMenuItem bistaratu = new JMenuItem("Bistaratu");
+		JMenuItem bistaratu = new JMenuItem("Katalogoa");
 		bistaratu.addActionListener(e -> cardLayout.show(frame.getContentPane(), "ProduktuakBistaratu"));
 		produktuak.add(bistaratu);
 
@@ -174,7 +173,7 @@ public class MenuSaltzaile {
 		produktuak.add(editatu);
 
 		// Panelak gehitu framera
-		frame.add(ProduktuakPanels.produktuakBistaratu(), "ProduktuakBistaratu");
+		frame.add(ProduktuakPanels.produktuakBistaratu(null), "ProduktuakBistaratu");
 		frame.add(ProduktuakPanels.produktuakGehitu(), "ProduktuakGehitu");
 		frame.add(ProduktuakPanels.produktuakEzabatu(), "ProduktuakEzabatu");
 		frame.add(ProduktuakPanels.produktuakEditatu(), "ProduktuakEditatu");
