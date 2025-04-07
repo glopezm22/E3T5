@@ -25,7 +25,6 @@ import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 import java.text.SimpleDateFormat;
 
-@SuppressWarnings("unused")
 public class EskariakPanels {
 
 	// SALTZAILEAK - Eskariak bistaratzeko panela sortzeko metodoa.

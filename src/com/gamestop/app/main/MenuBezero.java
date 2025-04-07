@@ -5,41 +5,37 @@ import com.gamestop.app.panels.EskariakPanels;
 import com.gamestop.app.panels.KontuaPanels;
 import com.gamestop.app.panels.ProduktuakPanels;
 
-import javax.imageio.ImageIO;
-import javax.swing.JFrame;
-import javax.swing.JPanel;
-import javax.swing.JMenuBar;
-import javax.swing.JMenu;
-import javax.swing.JMenuItem;
-import java.awt.CardLayout;
-import java.awt.Image;
-import java.io.IOException;
+import javax.swing.*;
+import java.awt.*;
 
-@SuppressWarnings("unused")
+/**
+ * Bezeroen interfaze nagusia kudeatzeko klasea.
+ * Menua eta panelak kudeatzen ditu CardLayout erabiliz.
+ */
 public class MenuBezero {
 
+	/**
+     * Aplikazioa (frame-a soilik) abiarazten duen metodoa.
+     * @param args Komando-lerroko argumentuak (ez dira erabiltzen)
+     */
     public static void main(String[] args) {
-		// Frame nagusia eta CardLayout-a sortu
         JFrame frame = sortuFrameNagusia();
         CardLayout cardLayout = new CardLayout();
         frame.setLayout(cardLayout);
 
-		// Defektuzko panela
-		frame.add(Login.ongietorria(), "OngiEtorria");
-        cardLayout.show(frame.getContentPane(), "OngiEtorria");
+        gehituPanelak(frame, cardLayout);
 
-		// Menu barra sortu
-        JMenuBar menuBar = sortuMenuBarra(frame, cardLayout);
-
-        frame.setJMenuBar(menuBar);
+        frame.setJMenuBar(sortuMenuBarra(frame, cardLayout));
         frame.setVisible(true);
     }
 
-	// Frame nagusia sortzen da, titulua eta tamaina ezarrita.
+    /**
+     * Frame nagusia sortu eta konfiguratzen du.
+     * @return Konfiguratutako JFrame objektua
+     */
 	private static JFrame sortuFrameNagusia() {
 		JFrame frame = new JFrame("GameStop | Bezeroen menua");
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		// frame.setExtendedState(JFrame.MAXIMIZED_BOTH);
         frame.setResizable(false);
 		frame.setSize(1280, 720);
         frame.setLocationRelativeTo(null);
@@ -47,7 +43,12 @@ public class MenuBezero {
 		return frame;
 	}
 	
-	// Menu barra sortzen da, non menuaren submenuak eta aukerak definitzen diren.
+    /**
+     * Menu barra nagusia sortzen du.
+     * @param frame Menu barra gehitzeko frame-a
+     * @param cardLayout Panelak aldatzeko layout-a
+     * @return Osatutako JMenuBar objektua
+     */
     private static JMenuBar sortuMenuBarra(JFrame frame, CardLayout cardLayout) {
         JMenuBar menuBar = new JMenuBar();
 
@@ -66,7 +67,12 @@ public class MenuBezero {
         return menuBar;
     }
 
-	// "Nire kontua" menua sortu.
+    /**
+     * Nire kontua menua sortzen du.
+     * @param frame Menu barra gehitzeko frame-a
+     * @param cardLayout Panelak aldatzeko layout-a
+     * @return Osatutako JMenu objektua
+     */
 	private static JMenu sortuKontuaMenua(JFrame frame, CardLayout cardLayout) {
 		JMenu nireKontua = new JMenu("Nire kontua");
 
@@ -93,7 +99,12 @@ public class MenuBezero {
 		return nireKontua;
 	}
 	
-	// "Eskariak" menua sortu.
+	/**
+     * Eskariak menua sortzen du.
+     * @param frame Menu barra gehitzeko frame-a
+     * @param cardLayout Panelak aldatzeko layout-a
+     * @return Osatutako JMenu objektua
+     */
     private static JMenu sortuEskariakMenua(JFrame frame, CardLayout cardLayout) {
         JMenu eskariak = new JMenu("Nire eskariak");
 
@@ -112,7 +123,12 @@ public class MenuBezero {
         return eskariak;
     }
 
-    // "Produktuak" menua sortu.
+    /**
+     * Produktuak menua sortzen du.
+     * @param frame Menu barra gehitzeko frame-a
+     * @param cardLayout Panelak aldatzeko layout-a
+     * @return Osatutako JMenu objektua
+     */
     private static JMenu sortuProduktuakMenua(JFrame frame, CardLayout cardLayout) {
         JMenu productsMenu = new JMenu("Produktuak");
 
@@ -124,5 +140,21 @@ public class MenuBezero {
         frame.add(ProduktuakPanels.produktuakBistaratu(null), "ProduktuakBistaratu");
 
         return productsMenu;
+    }
+    
+    /**
+     * Frame-an erabili behar diren panelak gehitzen ditu.
+     * @param frame Panelak gehitzeko frame-a
+     * @param cardLayout Panelak aldatzeko layout-a
+     */
+    private static void gehituPanelak(JFrame frame, CardLayout cardLayout) {
+        frame.add(Login.ongietorria(), "OngiEtorria");
+        frame.add(KontuaPanels.bezeroenDatuPertsonalak(), "NireKontua");
+        frame.add(KontuaPanels.pasahitzaPanela(), "PasahitzaAldatu");
+        frame.add(EskariakPanels.historialaikusiSortu(), "Historiala");
+        frame.add(EskariakPanels.egoeraikusiSortu(), "EgoeraBistaratu");
+        frame.add(ProduktuakPanels.produktuakBistaratu(null), "ProduktuakBistaratu");
+
+        cardLayout.show(frame.getContentPane(), "OngiEtorria");
     }
 }

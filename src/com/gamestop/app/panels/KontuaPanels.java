@@ -21,7 +21,6 @@ import javax.swing.JPasswordField;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 
-@SuppressWarnings("unused")
 public class KontuaPanels {
 
 	// Saltzaileen datu pertsonalak bistaratzeko panel-a sortzeko metodoa.

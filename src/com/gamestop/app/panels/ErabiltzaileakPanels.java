@@ -34,7 +34,6 @@ import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 import javax.swing.table.DefaultTableModel;
 
-@SuppressWarnings("unused")
 public class ErabiltzaileakPanels {
 
     public static JPanel saltzaileaGehitu() {

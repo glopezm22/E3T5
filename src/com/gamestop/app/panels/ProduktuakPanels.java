@@ -1,11 +1,9 @@
 package com.gamestop.app.panels;
 
 import com.gamestop.app.auth.Login;
-import com.gamestop.db.DBErabiltzaile;
 import com.gamestop.db.DBProduktu;
 import com.gamestop.db.DatabaseManager;
 import com.gamestop.model.product.Produktu;
-import com.gamestop.model.user.Erabiltzaile;
 
 import java.awt.BorderLayout;
 import java.awt.Font;
@@ -14,8 +12,6 @@ import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -29,19 +25,15 @@ import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
-import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
-import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
-import javax.swing.SwingUtilities;
 import javax.swing.table.DefaultTableModel;
 
-@SuppressWarnings("unused")
 public class ProduktuakPanels {
 	
 	@SuppressWarnings("serial")

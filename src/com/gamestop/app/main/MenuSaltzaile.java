@@ -6,46 +6,38 @@ import com.gamestop.app.panels.KontuaPanels;
 import com.gamestop.app.panels.ProduktuakPanels;
 import com.gamestop.app.panels.ErabiltzaileakPanels;
 
-import javax.swing.JFrame;
-import javax.swing.JPanel;
-import javax.swing.JMenuBar;
-import javax.swing.JMenu;
-import javax.swing.JMenuItem;
-import javax.imageio.ImageIO;
-import javax.swing.JComboBox;
-import java.awt.CardLayout;
-import java.awt.Image;
-import java.io.IOException;
-import java.awt.BorderLayout;
+import javax.swing.*;
+import java.awt.*;
 
-@SuppressWarnings("unused")
+/**
+ * Saltzaileen interfaze nagusia kudeatzeko klasea.
+ * Menua eta panelak kudeatzen ditu CardLayout erabiliz, bezeroen menua baino aukera gehiagorekin.
+ */
 public class MenuSaltzaile {
 
+	/**
+     * Aplikazioa (frame-a soilik) abiarazten duen metodoa.
+     * @param args Komando-lerroko argumentuak (ez dira erabiltzen)
+     */
 	public static void main(String[] args) {
 		// Frame nagusia eta CardLayout-a sortu
 		JFrame frame = sortuFrameNagusia();
 		CardLayout cardLayout = new CardLayout();
 		frame.setLayout(cardLayout);
 
-		// Defektuzko panela
-		frame.add(Login.ongietorria(), "OngiEtorria");
-        cardLayout.show(frame.getContentPane(), "OngiEtorria");
+		gehituPanelak(frame, cardLayout);
 
-		// Menu barra sortu
-		JMenuBar menuBar = sortuMenuBarra(frame, cardLayout);
-
-		// Main Panela konfiguratu (aukeratzeko saltzailea ala bezeroa sortu)
-		aukeratuErabiltzaileenPanela(frame, cardLayout);
-
-		frame.setJMenuBar(menuBar);
+		frame.setJMenuBar(sortuMenuBarra(frame, cardLayout));
 		frame.setVisible(true);
 	}
 
-	// Frame nagusia sortzen da, titulua eta tamaina ezarrita.
+	/**
+     * Frame nagusia sortu eta konfiguratzen du.
+     * @return Konfiguratutako JFrame objektua
+     */
 	private static JFrame sortuFrameNagusia() {
 		JFrame frame = new JFrame("GameStop | Saltzaileen menua");
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		// frame.setExtendedState(JFrame.MAXIMIZED_BOTH);
         frame.setResizable(false);
 		frame.setSize(1280, 720);
         frame.setLocationRelativeTo(null);
@@ -53,7 +45,12 @@ public class MenuSaltzaile {
 		return frame;
 	}
 
-	// Menu barra sortzen da, non menuaren submenuak eta aukerak definitzen diren.
+	/**
+     * Menu barra nagusia sortzen du.
+     * @param frame Menu barra gehitzeko frame-a
+     * @param cardLayout Panelak aldatzeko layout-a
+     * @return Osatutako JMenuBar objektua
+     */
 	private static JMenuBar sortuMenuBarra(JFrame frame, CardLayout cardLayout) {
 		JMenuBar menuBar = new JMenuBar();
 
@@ -76,7 +73,12 @@ public class MenuSaltzaile {
 		return menuBar;
 	}
 
-	// "Nire kontua" menua sortu.
+	/**
+     * Nire kontua menua sortzen du.
+     * @param frame Menu barra gehitzeko frame-a
+     * @param cardLayout Panelak aldatzeko layout-a
+     * @return Osatutako JMenu objektua
+     */
 	private static JMenu sortuKontuaMenua(JFrame frame, CardLayout cardLayout) {
 		JMenu nireKontua = new JMenu("Nire kontua");
 
@@ -103,7 +105,12 @@ public class MenuSaltzaile {
 		return nireKontua;
 	}
 
-	// "Erabiltzaileak" menua sortu.
+	/**
+     * Erabiltzaileak menua sortzen du.
+     * @param frame Menu barra gehitzeko frame-a
+     * @param cardLayout Panelak aldatzeko layout-a
+     * @return Osatutako JMenu objektua
+     */
 	private static JMenu sortuErabiltzaileakMenua(JFrame frame, CardLayout cardLayout) {
 		JMenu erabiltzaileak = new JMenu("Erabiltzaileak");
 
@@ -126,33 +133,13 @@ public class MenuSaltzaile {
 		return erabiltzaileak;
 	}
 	
-	// Erabiltzaile panela bistaratzeko aukeratuko da "Saltzailea" edo "Bezeroa" aukeren artean.
-	private static void aukeratuErabiltzaileenPanela(JFrame frame, CardLayout cardLayout) {
-		JPanel erabiltzaileakGehituMainPanel = new JPanel(new BorderLayout());
-		frame.add(erabiltzaileakGehituMainPanel, "ErabiltzaileakGehitu");
 
-		// ComboBox-aren panela, aukeratzeko Saltzailea ala Bezeroa gehituko dugun.
-		JPanel comboBoxPanel = new JPanel();
-		JComboBox<String> comboBox = new JComboBox<>(new String[] { "Saltzailea", "Bezeroa" });
-		comboBoxPanel.add(comboBox);
-		erabiltzaileakGehituMainPanel.add(comboBoxPanel, BorderLayout.NORTH);
-
-		// CardLayout-aren panela, Saltzailea edo Bezeroa aukeratzeko.
-		JPanel cardPanel = new JPanel(new CardLayout());
-		erabiltzaileakGehituMainPanel.add(cardPanel, BorderLayout.CENTER);
-
-		// "Saltzailea" eta "Bezeroa" panelak gehitu CardLayout-ean
-		cardPanel.add(ErabiltzaileakPanels.saltzaileaGehitu(), "Saltzailea");
-		cardPanel.add(ErabiltzaileakPanels.bezeroaGehitu(), "Bezeroa");
-
-		// ComboBox-aren akzioa konfiguratu
-		comboBox.addActionListener(e -> {
-			CardLayout cl = (CardLayout) (cardPanel.getLayout());
-			cl.show(cardPanel, (String) comboBox.getSelectedItem());
-		});
-	}
-
-	// "Produktuak" menua sortu.
+	/**
+     * Produktuak menua sortzen du.
+     * @param frame Menu barra gehitzeko frame-a
+     * @param cardLayout Panelak aldatzeko layout-a
+     * @return Osatutako JMenu objektua
+     */
 	private static JMenu sortuProduktuakMenua(JFrame frame, CardLayout cardLayout) {
 		JMenu produktuak = new JMenu("Produktuak");
 
@@ -181,7 +168,12 @@ public class MenuSaltzaile {
 		return produktuak;
 	}
 	
-	// "Eskariak" menua sortu.
+	/**
+     * Eskariak menua sortzen du.
+     * @param frame Menu barra gehitzeko frame-a
+     * @param cardLayout Panelak aldatzeko layout-a
+     * @return Osatutako JMenu objektua
+     */
 	private static JMenu sortuEskariakMenua(JFrame frame, CardLayout cardLayout) {
 		JMenu eskariak = new JMenu("Eskariak");
 
@@ -194,4 +186,58 @@ public class MenuSaltzaile {
 
 		return eskariak;
 	}	
+	
+	/**
+     * Frame-an erabili behar diren panelak gehitzen ditu.
+     * @param frame Panelak gehitzeko frame-a
+     * @param cardLayout Panelak aldatzeko layout-a
+     */
+    private static void gehituPanelak(JFrame frame, CardLayout cardLayout) {
+        // Panel komunak
+        frame.add(Login.ongietorria(), "OngiEtorria");
+        frame.add(KontuaPanels.saltzaileenDatuPertsonalak(), "NireKontua");
+        frame.add(KontuaPanels.pasahitzaPanela(), "PasahitzaAldatu");
+        frame.add(ProduktuakPanels.produktuakBistaratu(null), "ProduktuakBistaratu");
+        frame.add(ProduktuakPanels.produktuakGehitu(), "ProduktuakGehitu");
+        frame.add(ProduktuakPanels.produktuakEzabatu(), "ProduktuakEzabatu");
+        frame.add(ProduktuakPanels.produktuakEditatu(), "ProduktuakEditatu");
+        frame.add(EskariakPanels.eskariakBistaratu(), "EskariakBistaratu");
+        frame.add(ErabiltzaileakPanels.erabiltzaileaEzabatu(), "ErabiltzaileakEzabatu");
+        frame.add(ErabiltzaileakPanels.erabiltzaileakKontsultatu(), "ErabiltzaileakKontsultatu");
+
+        // Erabiltzaileak gehitzeko panela konfiguratu
+        konfiguratuErabiltzaileakGehituPanela(frame, cardLayout);
+
+        cardLayout.show(frame.getContentPane(), "OngiEtorria");
+    }
+
+    /**
+     * Erabiltzaileak gehitzeko panela konfiguratzen du.
+     * @param frame Panelak gehitzeko frame-a
+     * @param cardLayout Panelak aldatzeko layout-a
+     */
+    private static void konfiguratuErabiltzaileakGehituPanela(JFrame frame, CardLayout cardLayout) {
+        JPanel erabiltzaileakGehituMainPanel = new JPanel(new BorderLayout());
+        frame.add(erabiltzaileakGehituMainPanel, "ErabiltzaileakGehitu");
+
+        // Aukeraketa-panela
+        JPanel comboBoxPanel = new JPanel();
+        JComboBox<String> comboBox = new JComboBox<>(new String[] { "Saltzailea", "Bezeroa" });
+        comboBoxPanel.add(comboBox);
+        erabiltzaileakGehituMainPanel.add(comboBoxPanel, BorderLayout.NORTH);
+
+        // CardLayout-aren panela
+        JPanel cardPanel = new JPanel(new CardLayout());
+        erabiltzaileakGehituMainPanel.add(cardPanel, BorderLayout.CENTER);
+
+        // Panelak gehitu
+        cardPanel.add(ErabiltzaileakPanels.saltzaileaGehitu(), "Saltzailea");
+        cardPanel.add(ErabiltzaileakPanels.bezeroaGehitu(), "Bezeroa");
+
+        // ComboBox-aren akzioa konfiguratu
+        comboBox.addActionListener(e -> {
+            CardLayout cl = (CardLayout) (cardPanel.getLayout());
+            cl.show(cardPanel, (String) comboBox.getSelectedItem());
+        });
+    }
 }
