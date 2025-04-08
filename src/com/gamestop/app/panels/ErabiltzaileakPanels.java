@@ -5,45 +5,31 @@ import com.gamestop.db.DBErabiltzaile;
 import com.gamestop.db.DatabaseManager;
 import com.gamestop.model.user.Erabiltzaile;
 
-import java.awt.BorderLayout;
-import java.awt.Font;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
-import java.awt.Insets;
+import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
-import java.sql.Statement;
-import java.util.List;
-
-import javax.swing.BorderFactory;
-import javax.swing.JButton;
-import javax.swing.JComboBox;
-import javax.swing.JLabel;
-import javax.swing.JMenuItem;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JPopupMenu;
-import javax.swing.JScrollPane;
-import javax.swing.JSeparator;
-import javax.swing.JTable;
-import javax.swing.JTextField;
-import javax.swing.SwingConstants;
-import javax.swing.SwingUtilities;
+import java.sql.*;
+import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
-
+/**
+ * Erabiltzaileak kudeatzeko panelak sortzen dituen klasea.
+ * Saltzaileak eta bezeroak gehitu, ezabatu eta editatzeko aukerak eskaintzen ditu.
+ */
 public class ErabiltzaileakPanels {
 
+    /**
+     * Saltzailea gehitzeko panela sortzen du.
+     * @return Saltzailea gehitzeko JPanel objektua
+     */
     public static JPanel saltzaileaGehitu() {
         JPanel panel = new JPanel(new GridBagLayout());
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.insets = new Insets(10, 10, 10, 10);
 
-        String[] labels = { "Izena:", "Abizena:", "Emaila:", "Telefonoa:", "ID Nagusia:" };
+        String[] labels = {"Izena:", "Abizena:", "Emaila:", "Telefonoa:", "ID Nagusia:"};
         JTextField[] textFields = new JTextField[labels.length];
 
+        // Etiketak eta testu-eremuak sortu
         for (int i = 0; i < labels.length; i++) {
             gbc.gridx = 0;
             gbc.gridy = i;
@@ -54,46 +40,64 @@ public class ErabiltzaileakPanels {
             panel.add(textFields[i], gbc);
         }
 
-        JButton gehituSaltzailea = new JButton("Gehitu");
+        JButton gehituBotoia = new JButton("Gehitu");
         gbc.gridx = 0;
         gbc.gridy = labels.length;
         gbc.gridwidth = 2;
-        panel.add(gehituSaltzailea, gbc);
+        panel.add(gehituBotoia, gbc);
 
-        gehituSaltzailea.addActionListener(e -> {
-            if (textFields[4].getText().isEmpty()) {
-                DatabaseManager.saltzaileEdoBezeroSortu("LANGILE",
-                        "ID, IZENA, ABIZENA, EMAILA, TELEFONOA, KONTRATAZIO_DATA, ID_NAGUSI, SOLDATA",
-                        "(SELECT NVL(MAX(ID), 0) + 1 FROM LANGILE), '" + textFields[0].getText() + "', '"
-                                + textFields[1].getText() + "', '" + textFields[2].getText() + "', '"
-                                + textFields[3].getText() + "', SYSDATE, NULL, 30000");
+        gehituBotoia.addActionListener(e -> gehituSaltzailea(textFields));
 
-            } else {
-                DatabaseManager.saltzaileEdoBezeroSortu("LANGILE",
-                        "ID, IZENA, ABIZENA, EMAILA, TELEFONOA, KONTRATAZIO_DATA, ID_NAGUSI, SOLDATA",
-                        "(SELECT NVL(MAX(ID), 0) + 1 FROM LANGILE), '" + textFields[0].getText() + "', '"
-                                + textFields[1].getText() + "', '" + textFields[2].getText() + "', '"
-                                + textFields[3].getText() + "', SYSDATE, " + textFields[4].getText() + ", 30000");
-
-            }
-            DatabaseManager.erabiltzaileaSortu("ERABILTZAILEAK", "ID, ERABILTZAILEA, PASAHITZA, MOTA",
-                    "ID, LOWER(SUBSTR(IZENA, 1, 1)) || LOWER(ABIZENA) AS ERABILTZAILEA, LOWER(SUBSTR(IZENA, 1, 1)) || LOWER(ABIZENA) AS PASAHITZA, 'S' AS MOTA FROM LANGILE WHERE ID = (SELECT MAX(ID) FROM LANGILE)");
-            for (int i = 0; i < labels.length; i++) {
-                textFields[i].setText("");
-            }
-
-            DBErabiltzaile db = new DBErabiltzaile();
-            db.erabiltzaileakKargatu();
-        });
         return panel;
     }
 
+    /**
+     * Saltzailea datu-basean gordetzen du.
+     * @param textFields Datuak dituen testu-eremu array-a
+     */
+    private static void gehituSaltzailea(JTextField[] textFields) {
+        try {
+            String idNagusia = textFields[4].getText().isEmpty() ? "NULL" : textFields[4].getText();
+            
+            String sql = "INSERT INTO LANGILE (ID, IZENA, ABIZENA, EMAILA, TELEFONOA, KONTRATAZIO_DATA, ID_NAGUSI, SOLDATA) " +
+                         "VALUES ((SELECT NVL(MAX(ID), 0) + 1 FROM LANGILE), ?, ?, ?, ?, SYSDATE, ?, 30000)";
+            
+            try (Connection conn = DatabaseManager.konexioa();
+                 PreparedStatement pstmt = conn.prepareStatement(sql)) {
+                
+                pstmt.setString(1, textFields[0].getText());
+                pstmt.setString(2, textFields[1].getText());
+                pstmt.setString(3, textFields[2].getText());
+                pstmt.setString(4, textFields[3].getText());
+                pstmt.setString(5, idNagusia.equals("NULL") ? null : idNagusia);
+                
+                pstmt.executeUpdate();
+                
+                // Erabiltzailea sortu
+                DatabaseManager.erabiltzaileaSortu("ERABILTZAILEAK", "ID, ERABILTZAILEA, PASAHITZA, MOTA",
+                    "ID, LOWER(SUBSTR(IZENA, 1, 1)) || LOWER(ABIZENA) AS ERABILTZAILEA, " +
+                    "LOWER(SUBSTR(IZENA, 1, 1)) || LOWER(ABIZENA) AS PASAHITZA, 'S' AS MOTA " +
+                    "FROM LANGILE WHERE ID = (SELECT MAX(ID) FROM LANGILE)");
+                
+                JOptionPane.showMessageDialog(null, "Saltzailea ondo gehitu da.");
+                garbituEremuak(textFields);
+            }
+        } catch (SQLException ex) {
+            JOptionPane.showMessageDialog(null, "Errorea saltzailea gehitzean: " + ex.getMessage());
+            ex.printStackTrace();
+        }
+    }
+
+    /**
+     * Bezeroa gehitzeko panela sortzen du.
+     * @return Bezeroa gehitzeko JPanel objektua
+     */
     public static JPanel bezeroaGehitu() {
         JPanel panel = new JPanel(new GridBagLayout());
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.insets = new Insets(10, 10, 10, 10);
 
-        String[] labels = { "Izena:", "Abizena:", "Emaila:", "Helbidea:" };
+        String[] labels = {"Izena:", "Abizena:", "Emaila:", "Helbidea:"};
         JTextField[] textFields = new JTextField[labels.length];
 
         for (int i = 0; i < labels.length; i++) {
@@ -106,81 +110,100 @@ public class ErabiltzaileakPanels {
             panel.add(textFields[i], gbc);
         }
 
-        JButton gehituBezeroa = new JButton("Gehitu");
+        JButton gehituBotoia = new JButton("Gehitu");
         gbc.gridx = 0;
         gbc.gridy = labels.length;
         gbc.gridwidth = 2;
-        panel.add(gehituBezeroa, gbc);
+        panel.add(gehituBotoia, gbc);
 
-        gehituBezeroa.addActionListener(e -> {
-            try {
-                Connection conn = DatabaseManager.konexioa();
-                Statement stmt = conn.createStatement();
-                String sqlInsertBEZERO = "INSERT INTO BEZERO (ID, IZENA, ABIZENA, EMAILA, HELBIDEA) VALUES ((SELECT NVL(MAX(ID), 0) + 1 FROM BEZERO),'"
-                        + textFields[0].getText() + "', '" + textFields[1].getText() + "', '" + textFields[2].getText()
-                        + "', '" + textFields[3].getText() + "')";
-                stmt.executeUpdate(sqlInsertBEZERO);
-                String sqlInsertERABILTZAILEAK = "INSERT INTO ERABILTZAILEAK (ID, ERABILTZAILEA, PASAHITZA, MOTA) SELECT ID, LOWER(SUBSTR(IZENA, 1, 1)) || LOWER(ABIZENA) AS ERABILTZAILEA, LOWER(SUBSTR(IZENA, 1, 1)) || LOWER(ABIZENA) AS PASAHITZA, 'B' AS MOTA FROM BEZERO WHERE ID = (SELECT MAX(ID) FROM BEZERO)";
-                stmt.executeUpdate(sqlInsertERABILTZAILEAK);
-                conn.close();
-                JOptionPane.showMessageDialog(null, "Bezeroa gehitu da.");
-            } catch (SQLException ex) {
-                JOptionPane.showMessageDialog(null, "Errorea: bezeroa ezin da gehitu.");
-                ex.printStackTrace();
-            }
-            for (int i = 0; i < labels.length; i++) {
-                textFields[i].setText("");
-            }
+        gehituBotoia.addActionListener(e -> gehituBezeroa(textFields));
 
-            DBErabiltzaile db = new DBErabiltzaile();
-            db.erabiltzaileakKargatu();
-        });
         return panel;
     }
 
+    /**
+     * Bezeroa datu-basean gordetzen du.
+     * @param textFields Datuak dituen testu-eremu array-a
+     */
+    private static void gehituBezeroa(JTextField[] textFields) {
+        try (Connection conn = DatabaseManager.konexioa()) {
+            // Bezeroa gehitu
+            String sqlBezero = "INSERT INTO BEZERO (ID, IZENA, ABIZENA, EMAILA, HELBIDEA) " +
+                               "VALUES ((SELECT NVL(MAX(ID), 0) + 1 FROM BEZERO), ?, ?, ?, ?)";
+            
+            try (PreparedStatement pstmtBezero = conn.prepareStatement(sqlBezero)) {
+                pstmtBezero.setString(1, textFields[0].getText());
+                pstmtBezero.setString(2, textFields[1].getText());
+                pstmtBezero.setString(3, textFields[2].getText());
+                pstmtBezero.setString(4, textFields[3].getText());
+                pstmtBezero.executeUpdate();
+            }
+
+            // Erabiltzailea sortu
+            String sqlErabiltzaile = "INSERT INTO ERABILTZAILEAK (ID, ERABILTZAILEA, PASAHITZA, MOTA) " +
+                                     "SELECT ID, LOWER(SUBSTR(IZENA, 1, 1)) || LOWER(ABIZENA), " +
+                                     "LOWER(SUBSTR(IZENA, 1, 1)) || LOWER(ABIZENA), 'B' " +
+                                     "FROM BEZERO WHERE ID = (SELECT MAX(ID) FROM BEZERO)";
+            
+            try (Statement stmtErabiltzaile = conn.createStatement()) {
+                stmtErabiltzaile.executeUpdate(sqlErabiltzaile);
+            }
+
+            JOptionPane.showMessageDialog(null, "Bezeroa ondo gehitu da.");
+            garbituEremuak(textFields);
+        } catch (SQLException ex) {
+            JOptionPane.showMessageDialog(null, "Errorea bezeroa gehitzean: " + ex.getMessage());
+            ex.printStackTrace();
+        }
+    }
+
+    /**
+     * Erabiltzailea ezabatzeko panela sortzen du.
+     * @return Erabiltzailea ezabatzeko JPanel objektua
+     */
     public static JPanel erabiltzaileaEzabatu() {
         JPanel panel = new JPanel(new GridBagLayout());
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.insets = new Insets(10, 10, 10, 10);
 
-        JComboBox<Erabiltzaile> comboBoxErabiltzaileak = new JComboBox<>();
+        JComboBox<Erabiltzaile> comboBox = new JComboBox<>();
         JTextField izenaField = Login.sortuTextFieldEditatugabea(20);
         JTextField abizenaField = Login.sortuTextFieldEditatugabea(20);
         JTextField motaField = Login.sortuTextFieldEditatugabea(20);
-        JButton ezabatuButton = new JButton("Ezabatu");
+        JButton ezabatuBotoia = new JButton("Ezabatu");
 
-        Login.sortuKonponenteaEtiketarekin(panel, gbc, "Aukeratu erabiltzailea:", comboBoxErabiltzaileak, 0, 0);
-        
+        // UI konfigurazioa
+        Login.sortuKonponenteaEtiketarekin(panel, gbc, "Aukeratu erabiltzailea:", comboBox, 0, 0);
         gbc.gridx = 0;
         gbc.gridy = 1;
         gbc.gridwidth = 2;
-        gbc.fill = GridBagConstraints.HORIZONTAL;
         panel.add(new JSeparator(), gbc);
         gbc.gridwidth = 1;
-        gbc.fill = GridBagConstraints.NONE;
         
         Login.sortuKonponenteaEtiketarekin(panel, gbc, "Izena:", izenaField, 0, 2);
         Login.sortuKonponenteaEtiketarekin(panel, gbc, "Abizena:", abizenaField, 0, 4);
         Login.sortuKonponenteaEtiketarekin(panel, gbc, "Mota:", motaField, 0, 6);
-            
+        
         gbc.gridx = 0;
         gbc.gridy = 8;
         gbc.gridwidth = 2;
-        panel.add(ezabatuButton, gbc);
-        
-        DBErabiltzaile.kargatuErabiltzaileak(comboBoxErabiltzaileak, izenaField, abizenaField, motaField);
+        panel.add(ezabatuBotoia, gbc);
 
-        ezabatuButton.addActionListener(e -> {
-            Erabiltzaile selected = (Erabiltzaile) comboBoxErabiltzaileak.getSelectedItem();
-            if (selected != null) {
+        // Datuak kargatu
+        DBErabiltzaile.kargatuErabiltzaileak(comboBox, izenaField, abizenaField, motaField);
+
+        // Ezabatzeko ekintza
+        ezabatuBotoia.addActionListener(e -> {
+            Erabiltzaile hautatua = (Erabiltzaile) comboBox.getSelectedItem();
+            if (hautatua != null) {
                 int erantzuna = JOptionPane.showConfirmDialog(panel, 
-                    "Ziur zaude " + selected.getIzena() + " " + selected.getAbizena() + " ezabatu nahi duzula?", 
+                    "Ziur zaude " + hautatua.getIzena() + " " + hautatua.getAbizena() + " ezabatu nahi duzula?", 
                     "Berretsi Ezabatzea", JOptionPane.YES_NO_OPTION);
 
                 if (erantzuna == JOptionPane.YES_OPTION) {
-                	int idDB = Integer.parseInt(selected.getId().substring(0, selected.getId().length() - 1));
-                    DBErabiltzaile.ezabatuErabiltzailea(idDB, selected.getMota());
-                    DBErabiltzaile.kargatuErabiltzaileak(comboBoxErabiltzaileak, izenaField, abizenaField, motaField);
+                    int id = Integer.parseInt(hautatua.getId().replaceAll("[^0-9]", ""));
+                    DBErabiltzaile.ezabatuErabiltzailea(id, hautatua.getMota());
+                    DBErabiltzaile.kargatuErabiltzaileak(comboBox, izenaField, abizenaField, motaField);
                 }
             }
         });
@@ -188,13 +211,15 @@ public class ErabiltzaileakPanels {
         return panel;
     }
 
-    @SuppressWarnings("serial")
+    /**
+     * Erabiltzaileak kontsultatzeko panela sortzen du.
+     * @return Erabiltzaileen zerrenda erakusten duen JPanel objektua
+     */
     public static JPanel erabiltzaileakKontsultatu() {
         JPanel panel = new JPanel(new BorderLayout(10, 10));
         panel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
         
-        @SuppressWarnings("unchecked")
-		final List<Erabiltzaile>[] erabiltzaileakHolder = new List[]{null};
+
 
         JLabel goiburukoa = new JLabel("Erabiltzaileen zerrenda", SwingConstants.CENTER);
         goiburukoa.setFont(new Font("Arial", Font.BOLD, 24));
@@ -202,29 +227,17 @@ public class ErabiltzaileakPanels {
 
         // Taularen modeloaren definizioa
         String[] zutabeIzenak = {"ID", "Izena", "Abizena", "Emaila", "Mota"};
-        DefaultTableModel modeloa = new DefaultTableModel(zutabeIzenak, 0) {
+        @SuppressWarnings("serial")
+		DefaultTableModel modeloa = new DefaultTableModel(zutabeIzenak, 0) {
             @Override
             public boolean isCellEditable(int row, int column) {
                 return false;
             }
         };
 
-        // Datu-baseko erabiltzaileak kargatu
-        DBErabiltzaile db = new DBErabiltzaile();
-        db.erabiltzaileakKargatu();
-        List<Erabiltzaile> erabiltzaileak = db.getErabiltzaileak();
-
-        // Erabiltzaileak taulara gehitu, zutabez zutabe
-        for (Erabiltzaile e : erabiltzaileak) {
-            modeloa.addRow(new Object[]{
-                e.getId().replaceAll("[^0-9]", ""),
-                e.getIzena(),
-                e.getAbizena(),
-                e.getEmaila(),
-                e.getMota().equals("S") ? "Saltzailea" : "Bezeroa"
-            });
-        }
-
+        // Datu-baseko erabiltzaileak kargatu eta taulara gehitu, zutabez zutabe
+        kargatuErabiltzaileak(modeloa);
+        
         // Taula eta scrolla
         JTable taula = new JTable(modeloa);
         taula.setAutoCreateRowSorter(true);
@@ -261,19 +274,13 @@ public class ErabiltzaileakPanels {
                 String id = modeloa.getValueAt(modelRow, 0).toString();
                 String mota = modeloa.getValueAt(modelRow, 4).toString().equals("Saltzailea") ? "S" : "B";
                 
-                // Erabiltzaileen lista eguneratu
+                DBErabiltzaile db = new DBErabiltzaile();
                 db.erabiltzaileakKargatu();
-                erabiltzaileakHolder[0] = db.getErabiltzaileak();
                 
-                // Aurkitutako erabiltzailea bilatu
-                Erabiltzaile erabiltzailea = null;
-                for (Erabiltzaile erab : erabiltzaileak) {
-                    if (erab.getId().replaceAll("[^0-9]", "").equals(id) && 
-                        erab.getMota().equals(mota)) {
-                        erabiltzailea = erab;
-                        break;
-                    }
-                }
+                Erabiltzaile erabiltzailea = db.getErabiltzaileak().stream()
+                    .filter(erab -> erab.getId().replaceAll("[^0-9]", "").equals(id) && erab.getMota().equals(mota))
+                    .findFirst()
+                    .orElse(null);
                 
                 if (erabiltzailea != null) {
                     JPanel editPanel = sortuEditatuPanela(erabiltzailea);
@@ -311,16 +318,7 @@ public class ErabiltzaileakPanels {
         JButton eguneratuBotoia = new JButton("Eguneratu zerrenda");
         eguneratuBotoia.addActionListener(e -> {
             modeloa.setRowCount(0);
-            db.erabiltzaileakKargatu();
-            for (Erabiltzaile ee : db.getErabiltzaileak()) {
-                modeloa.addRow(new Object[]{
-                    ee.getId().replaceAll("[^0-9]", ""),
-                    ee.getIzena(),
-                    ee.getAbizena(),
-                    ee.getEmaila(),
-                    ee.getMota().equals("S") ? "Saltzailea" : "Bezeroa"
-                });
-            }
+            kargatuErabiltzaileak(modeloa);
         });
 
         JPanel botoiPanela = new JPanel();
@@ -328,6 +326,35 @@ public class ErabiltzaileakPanels {
         panel.add(botoiPanela, BorderLayout.SOUTH);
 
         return panel;
+    }
+    
+    /**
+     * Testu-eremuak garbitzen ditu.
+     * @param eremuak Garbitu beharreko testu-eremu array-a
+     */
+    private static void garbituEremuak(JTextField[] eremuak) {
+        for (JTextField eremua : eremuak) {
+            eremua.setText("");
+        }
+    }
+
+    /**
+     * Erabiltzaileak kargatzen ditu taula modelo batean.
+     * @param modeloa Datuak gehitzeko taula modelo
+     */
+    private static void kargatuErabiltzaileak(DefaultTableModel modeloa) {
+        DBErabiltzaile db = new DBErabiltzaile();
+        db.erabiltzaileakKargatu();
+        
+        for (Erabiltzaile e : db.getErabiltzaileak()) {
+            modeloa.addRow(new Object[]{
+                e.getId().replaceAll("[^0-9]", ""),
+                e.getIzena(),
+                e.getAbizena(),
+                e.getEmaila(),
+                e.getMota().equals("S") ? "Saltzailea" : "Bezeroa"
+            });
+        }
     }
 
     /**
@@ -349,7 +376,7 @@ public class ErabiltzaileakPanels {
         gbc.gridy++;
         panel.add(new JLabel("Emaila:"), gbc);
 
-        // Datuak erakusteko testu-eremuak (editaezinak)
+        // Datuak erakusteko testu-eremuak
         gbc.gridx = 1; gbc.gridy = 0;
         JTextField izenaField = new JTextField(erabiltzailea.getIzena(), 20);
         izenaField.setEditable(false);

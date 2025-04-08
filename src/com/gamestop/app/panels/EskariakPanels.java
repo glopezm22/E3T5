@@ -3,39 +3,28 @@ package com.gamestop.app.panels;
 import com.gamestop.app.auth.Login;
 import com.gamestop.db.DatabaseManager;
 
-import java.awt.BorderLayout;
-import java.awt.Component;
-import java.awt.Font;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
-import java.awt.GridLayout;
-import java.awt.Insets;
-import java.sql.Timestamp;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import javax.swing.BoxLayout;
-import javax.swing.DefaultListModel;
-import javax.swing.JComboBox;
-import javax.swing.JLabel;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JTextField;
-import javax.swing.SwingConstants;
+import javax.swing.*;
+import java.awt.*;
+import java.sql.*;
 import java.text.SimpleDateFormat;
 
+/**
+ * Eskariak kudeatzeko panelak sortzen dituen klasea.
+ * Bezeroen eta saltzaileen eskariak kontsultatzeko aukerak eskaintzen ditu.
+ */
 public class EskariakPanels {
 
-	// SALTZAILEAK - Eskariak bistaratzeko panela sortzeko metodoa.
+	/**
+     * Saltzaileen eskariak bistaratzeko panela sortzen du.
+     * @return Eskarien historiala erakusten duen JPanel objektua
+     */
 	public static JPanel eskariakBistaratu() {
 	    JPanel panel = new JPanel(new BorderLayout());
-	    JLabel label = new JLabel("Historiala", SwingConstants.CENTER);
-	    label.setFont(new Font("Arial", Font.BOLD, 24));
-	    panel.add(label, BorderLayout.NORTH);
+	    JLabel goiburua = new JLabel("Historiala", SwingConstants.CENTER);
+	    goiburua.setFont(new Font("Arial", Font.BOLD, 24));
+	    panel.add(goiburua, BorderLayout.NORTH);
 
-	    // Panel nagusia
-	    JPanel centerPanel = new JPanel(new GridBagLayout());
+	    JPanel erdikoPanela = new JPanel(new GridBagLayout());
 	    GridBagConstraints gbc = new GridBagConstraints();
 	    gbc.insets = new Insets(10, 10, 10, 10);
 	    gbc.fill = GridBagConstraints.HORIZONTAL;
@@ -69,19 +58,23 @@ public class EskariakPanels {
 	    });
 
 	    // Konponente guztiak panelera gehitu
-	    Login.sortuKonponenteaEtiketarekin(centerPanel, gbc, "Aukeratu eskaria:", comboBoxHistoriala, 0, 0);
-	    Login.sortuKonponenteaEtiketarekin(centerPanel, gbc, "Eskari ID:", txtEskariId, 0, 1);
-	    Login.sortuKonponenteaEtiketarekin(centerPanel, gbc, "Bezeroa:", txtBezeroa, 0, 2);
-	    Login.sortuKonponenteaEtiketarekin(centerPanel, gbc, "Data:", txtData, 0, 3);
-	    Login.sortuKonponenteaEtiketarekin(centerPanel, gbc, "Egoera:", txtEgoera, 0, 4);
+	    Login.sortuKonponenteaEtiketarekin(erdikoPanela, gbc, "Aukeratu eskaria:", comboBoxHistoriala, 0, 0);
+	    Login.sortuKonponenteaEtiketarekin(erdikoPanela, gbc, "Eskari ID:", txtEskariId, 0, 1);
+	    Login.sortuKonponenteaEtiketarekin(erdikoPanela, gbc, "Bezeroa:", txtBezeroa, 0, 2);
+	    Login.sortuKonponenteaEtiketarekin(erdikoPanela, gbc, "Data:", txtData, 0, 3);
+	    Login.sortuKonponenteaEtiketarekin(erdikoPanela, gbc, "Egoera:", txtEgoera, 0, 4);
 
-	    panel.add(centerPanel, BorderLayout.CENTER);
+	    panel.add(erdikoPanela, BorderLayout.CENTER);
 	    return panel;
 	}
 
 
 	
-	// SALTZAILEAK - Eskariak ComboBox-ean kargatzeko metodoa.
+	/**
+     * Saltzaileen eskariak kargatzen ditu ComboBox batean.
+     * @param comboBox Datuak kargatzeko ComboBox
+     * @param saltzaileId Saltzailearen ID-a
+     */
 	private static void kargatuSaltzaileenEskariak(JComboBox<String> comboBox, int saltzaileId) {
 	    if (comboBox == null) {
 	        JOptionPane.showMessageDialog(null, "Errorea: ComboBox ezin da null izan.");
@@ -266,6 +259,10 @@ public class EskariakPanels {
 		return columnPanel;
 	}
 
+	/**
+     * Bezeroen eskariak bistaratzeko panela sortzen du.
+     * @return Eskarien historiala erakusten duen JPanel objektua
+     */
 	public static JPanel historialaikusiSortu() {
 	    // Panel principal
 	    JPanel panel = new JPanel(new BorderLayout());
@@ -323,7 +320,11 @@ public class EskariakPanels {
 	    return panel;
 	}
 
-	// BEZEROAK - Eskariak ComboBox-ean kargatzeko metodoa optimizado
+	/**
+     * Bezeroen eskariak kargatzen ditu ComboBox batean.
+     * @param comboBox Datuak kargatzeko ComboBox
+     * @param bezeroId Bezeroaren ID-a
+     */
 	private static void kargatuBezeroenEskariak(JComboBox<String> comboBox, int bezeroId) {
 	    if (comboBox == null) {
 	        JOptionPane.showMessageDialog(null, "Errorea: ComboBox ezin da null izan");

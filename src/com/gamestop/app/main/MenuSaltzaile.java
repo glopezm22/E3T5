@@ -133,7 +133,6 @@ public class MenuSaltzaile {
 		return erabiltzaileak;
 	}
 	
-
 	/**
      * Produktuak menua sortzen du.
      * @param frame Menu barra gehitzeko frame-a
@@ -193,7 +192,6 @@ public class MenuSaltzaile {
      * @param cardLayout Panelak aldatzeko layout-a
      */
     private static void gehituPanelak(JFrame frame, CardLayout cardLayout) {
-        // Panel komunak
         frame.add(Login.ongietorria(), "OngiEtorria");
         frame.add(KontuaPanels.saltzaileenDatuPertsonalak(), "NireKontua");
         frame.add(KontuaPanels.pasahitzaPanela(), "PasahitzaAldatu");
