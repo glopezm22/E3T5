@@ -1,18 +1,21 @@
 package com.gamestop.model.location;
 
 /**
- * Kontinente klaseak kontinenteen informazioa gordetzen du.
+ * Kontinente baten informazioa gordetzeko klasea.
  */
 public class Kontinente {
 
     private int id;
     private String izena;
 
+    /**
+     * Kontinente klasearen konstruktore lehenetsia.
+     */
     public Kontinente() {
     }
     
     /**
-     * Kontinente klasearen konstruktorea.
+     * Kontinente klasearen konstruktorea parametroekin.
      *
      * @param id    Kontinentearen IDa
      * @param izena Kontinentearen izena
@@ -23,9 +26,9 @@ public class Kontinente {
     }
 
     /**
-     * Kontinentearen informazioa testu moduan itzultzen du.
+     * Kontinentearen informazio laburra testu formatuan itzultzen du.
      *
-     * @return Kontinentearen informazioa
+     * @return Kontinentearen oinarrizko informazioa
      */
     @Override
     public String toString() {

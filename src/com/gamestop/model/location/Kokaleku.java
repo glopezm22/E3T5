@@ -1,7 +1,7 @@
 package com.gamestop.model.location;
 
 /**
- * Kokaleku klaseak kokalekuen informazioa gordetzen du.
+ * Kokaleku baten informazioa gordetzeko klasea (helbidea, udalerria, probintzia...).
  */
 public class Kokaleku {
 
@@ -12,18 +12,21 @@ public class Kokaleku {
     private String probintzia;
     private String id_herrialde;
 
-	public Kokaleku() {
-	}
-	
     /**
-     * Kokaleku klasearen konstruktorea.
+     * Kokaleku klasearen konstruktore lehenetsia.
+     */
+    public Kokaleku() {
+    }
+    
+    /**
+     * Kokaleku klasearen konstruktorea parametroekin.
      *
      * @param id           Kokalekuaren IDa
      * @param helbidea     Kokalekuaren helbidea
-     * @param postakodea   Kokalekuaren postakodea
-     * @param udalerria     Kokalekuaren udalerria
-     * @param probintzia   Kokalekuaren probintzia
-     * @param id_herrialde Kokalekuaren herrialdearen IDa
+     * @param postakodea   Kokalekuaren posta kodea
+     * @param udalerria    Kokalekua dagoen udalerriaren izena
+     * @param probintzia   Kokalekua dagoen probintziaren izena
+     * @param id_herrialde Kokalekua dagoen herrialdearen identifikadorea
      */
     public Kokaleku(int id, String helbidea, String postakodea, String udalerria, String probintzia,
             String id_herrialde) {
@@ -36,9 +39,9 @@ public class Kokaleku {
     }
 
     /**
-     * Kokalekuaren informazioa testu moduan itzultzen du.
+     * Kokalekuaren informazio osoa testu formatuan itzultzen du.
      *
-     * @return Kokalekuaren informazioa
+     * @return Kokalekuaren informazioa, atal guztiekin batera
      */
     @Override
     public String toString() {

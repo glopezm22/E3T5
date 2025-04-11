@@ -1,7 +1,7 @@
 package com.gamestop.model.location;
 
 /**
- * Herrialde klaseak herrialdeen informazioa gordetzen du.
+ * Herrialde baten informazioa gordetzeko klasea.
  */
 public class Herrialde {
 
@@ -9,15 +9,18 @@ public class Herrialde {
     private String izena;
     private int id_kontinente;
 
-	public Herrialde() {
-	}
-	
     /**
-     * Herrialde klasearen konstruktorea.
+     * Herrialde klasearen konstruktore lehenetsia.
+     */
+    public Herrialde() {
+    }
+    
+    /**
+     * Herrialde klasearen konstruktorea parametroekin.
      *
      * @param id            Herrialdearen IDa
      * @param izena         Herrialdearen izena
-     * @param id_kontinente Herrialdearen kontinentearen IDa
+     * @param id_kontinente Herrialdea dagoen kontinentearen identifikadorea
      */
     public Herrialde(String id, String izena, int id_kontinente) {
         this.id = id;
@@ -26,9 +29,9 @@ public class Herrialde {
     }
 
     /**
-     * Herrialdearen informazioa testu moduan itzultzen du.
+     * Herrialdearen informazioa testu formatuan itzultzen du.
      *
-     * @return Herrialdearen informazioa
+     * @return Herrialdearen informazioa testu kate gisa
      */
     @Override
     public String toString() {

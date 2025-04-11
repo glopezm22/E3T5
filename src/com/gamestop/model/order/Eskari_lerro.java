@@ -1,7 +1,7 @@
 package com.gamestop.model.order;
 
 /**
- * Eskari_lerro klaseak eskaeren lerroen informazioa gordetzen du.
+ * Eskari baten lerro bakoitzaren informazioa gordetzeko klasea (produktuak, kopuruak eta prezioak barne).
  */
 public class Eskari_lerro {
 
@@ -11,11 +11,14 @@ public class Eskari_lerro {
     private int kopurua;
     private double salneurria;
     
+    /**
+     * Eskari_lerro klasearen konstruktore lehenetsia.
+     */
     public Eskari_lerro() {
     }
 
     /**
-     * Eskari_lerro klasearen konstruktorea.
+     * Eskari_lerro klasearen konstruktorea parametroekin.
      *
      * @param id_eskari    Eskariaren IDa
      * @param id_lerro     Lerroaren IDa
