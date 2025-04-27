@@ -12,6 +12,7 @@ import java.awt.*;
  * Bezeroen interfaze nagusia kudeatzeko klasea.
  * Menua eta panelak kudeatzen ditu CardLayout erabiliz.
  */
+@SuppressWarnings("unused")
 public class MenuBezero {
 
 	/**
@@ -112,13 +113,8 @@ public class MenuBezero {
         historiala.addActionListener(e -> cardLayout.show(frame.getContentPane(), "Historiala"));
         eskariak.add(historiala);
 
-        JMenuItem egoera = new JMenuItem("Egoera");
-        egoera.addActionListener(e -> cardLayout.show(frame.getContentPane(), "EgoeraBistaratu"));
-        eskariak.add(egoera);
-
 		// Panelak gehitu framera
         frame.add(EskariakPanels.historialaikusiSortu(), "Historiala");
-        frame.add(EskariakPanels.egoeraikusiSortu(), "EgoeraBistaratu");
 
         return eskariak;
     }
@@ -152,7 +148,6 @@ public class MenuBezero {
         frame.add(KontuaPanels.bezeroenDatuPertsonalak(), "NireKontua");
         frame.add(KontuaPanels.pasahitzaPanela(), "PasahitzaAldatu");
         frame.add(EskariakPanels.historialaikusiSortu(), "Historiala");
-        frame.add(EskariakPanels.egoeraikusiSortu(), "EgoeraBistaratu");
         frame.add(ProduktuakPanels.produktuakBistaratu(), "ProduktuakBistaratu");
 
         cardLayout.show(frame.getContentPane(), "OngiEtorria");

@@ -18,6 +18,7 @@ import java.io.InputStream;
  * Saioa hasteko eta erabiltzailea autentifikatzeko klasea.
  * Erabiltzailearen datuak egiaztatzen ditu datu-basearekin eta sesioa hasten du.
  */
+@SuppressWarnings("unused")
 public class Login {
 
     // Saioa hasteko gehienezko saiakerak

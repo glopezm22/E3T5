@@ -18,14 +18,26 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
+/**
+ * Erabiltzaileak datubasean kudeatzeko klasea.
+ */
 public class DBErabiltzaile {
 
     private List<Erabiltzaile> erabiltzaileak;
 
+    /**
+     * DBErabiltzaile klasearen eraikitzailea.
+     */
     public DBErabiltzaile() {
         this.erabiltzaileak = new ArrayList<>();
     }
 
+    /**
+     * DBErabiltzaile klasearen eraikitzailea.
+     * 
+     * @param erabiltzaileak erabiltzaileen zerrenda
+     * @throws IllegalArgumentException erabiltzaileak nulua bada
+     */
     public DBErabiltzaile(List<Erabiltzaile> erabiltzaileak) {
         if (erabiltzaileak == null) {
             throw new IllegalArgumentException("Erabiltzaileak zerrenda ezin da nulua izan.");
@@ -33,6 +45,9 @@ public class DBErabiltzaile {
         this.erabiltzaileak = new ArrayList<>(erabiltzaileak);
     }
 
+    /**
+     * Datubasetik erabiltzaileak kargatzen ditu.
+     */
     public void erabiltzaileakKargatu() {
         Connection conn = null;
         Statement stmt = null;
@@ -74,6 +89,14 @@ public class DBErabiltzaile {
         }
     }
     
+    /**
+     * Erabiltzaileak kargatzen ditu JComboBox batean eta informazioa erakusten du testu-eremuetan.
+     * 
+     * @param comboBox erabiltzaileak erakusteko JComboBox
+     * @param izena erabiltzailearen izena erakusteko testu-eremua
+     * @param abizena erabiltzailearen abizena erakusteko testu-eremua
+     * @param mota erabiltzailearen mota erakusteko testu-eremua
+     */
     public static void kargatuErabiltzaileak(JComboBox<Erabiltzaile> comboBox, JTextField izena, JTextField abizena, JTextField mota) {
         DBErabiltzaile dbErabiltzaileak = new DBErabiltzaile();
         dbErabiltzaileak.erabiltzaileakKargatu();
@@ -86,15 +109,13 @@ public class DBErabiltzaile {
         }
         
         List<Erabiltzaile> myErabiltzaileak = new ArrayList<>();
-		for (int i = 0; i < comboBox.getItemCount(); i++) {
-			myErabiltzaileak.add(comboBox.getItemAt(i));
-		}
+        for (int i = 0; i < comboBox.getItemCount(); i++) {
+            myErabiltzaileak.add(comboBox.getItemAt(i));
+        }
         
         comboBox.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-//            	int myIndex = comboBox.getSelectedIndex();
-//            	Erabiltzaile selected = comboBox.getItemAt(myIndex);
                 Erabiltzaile selected = (Erabiltzaile) comboBox.getSelectedItem();
                 if (selected != null) {
                     izena.setText(selected.getIzena());
@@ -105,10 +126,21 @@ public class DBErabiltzaile {
         });
     }
 
+    /**
+     * Erabiltzaileen zerrenda itzultzen du.
+     * 
+     * @return erabiltzaileen zerrenda
+     */
     public List<Erabiltzaile> getErabiltzaileak() {
         return new ArrayList<>(erabiltzaileak);
     }
 
+    /**
+     * Erabiltzaileen zerrenda ezartzen du.
+     * 
+     * @param erabiltzaileak erabiltzaileen zerrenda
+     * @throws IllegalArgumentException erabiltzaileak nulua bada
+     */
     public void setErabiltzaileak(List<Erabiltzaile> erabiltzaileak) {
         if (erabiltzaileak == null) {
             throw new IllegalArgumentException("Erabiltzaileen zerrenda ezin da nulua izan.");
@@ -116,6 +148,12 @@ public class DBErabiltzaile {
         this.erabiltzaileak = new ArrayList<>(erabiltzaileak);
     }
 
+    /**
+     * Erabiltzaile bat gehitzen du zerrendara.
+     * 
+     * @param erabiltzailea gehituko den erabiltzailea
+     * @throws IllegalArgumentException erabiltzailea nulua bada
+     */
     public void gehituErabiltzailea(Erabiltzaile erabiltzailea) {
         if (erabiltzailea == null) {
             throw new IllegalArgumentException("Erabiltzailea ezin da nulua izan.");
@@ -123,6 +161,12 @@ public class DBErabiltzaile {
         this.erabiltzaileak.add(erabiltzailea);
     }
 
+    /**
+     * Erabiltzaile bat ezabatzen du datubasetik.
+     * 
+     * @param id ezabatzeko erabiltzailearen IDa
+     * @param mota erabiltzailearen mota ('S' saltzailea edo 'B' bezeroa)
+     */
     public static void ezabatuErabiltzailea(int id, String mota) {
         Connection conn = null;
         PreparedStatement pstmt = null;

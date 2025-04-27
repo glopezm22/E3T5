@@ -19,14 +19,26 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
+/**
+ * Produktuak datubasean kudeatzeko klasea.
+ */
 public class DBProduktu {
 
     private List<Produktu> produktuak;
 
+    /**
+     * DBProduktu klasearen eraikitzailea.
+     */
     public DBProduktu() {
         this.produktuak = new ArrayList<>();
     }
 
+    /**
+     * DBProduktu klasearen eraikitzailea.
+     * 
+     * @param produktuak produktuen zerrenda
+     * @throws IllegalArgumentException produktuak nulua bada
+     */
     public DBProduktu(List<Produktu> produktuak) {
         if (produktuak == null) {
             throw new IllegalArgumentException("Produktuak zerrenda ezin da nulua izan.");
@@ -34,6 +46,9 @@ public class DBProduktu {
         this.produktuak = new ArrayList<>(produktuak);
     }
 
+    /**
+     * Datubasetik produktuak kargatzen ditu.
+     */
     public void produktuakKargatu() {
         Connection conn = null;
         Statement stmt = null;
@@ -68,34 +83,48 @@ public class DBProduktu {
         }
     }
     
+    /**
+     * Produktuak kargatzen ditu JComboBox batean eta informazioa erakusten du testu-eremuetan.
+     * 
+     * @param comboBox produktuak erakusteko JComboBox
+     * @param kategoria produktuaren kategoria erakusteko testu-eremua
+     * @param deskribapena produktuaren deskribapena erakusteko testu-eremua
+     * @param salneurria produktuaren salneurria erakusteko testu-eremua
+     */
     public static void kargatuProduktuak(JComboBox<String> comboBox, JTextField kategoria, JTextArea deskribapena, JTextField salneurria) {
-	    DBProduktu dbProduktu = new DBProduktu();
-	    dbProduktu.produktuakKargatu();
+        DBProduktu dbProduktu = new DBProduktu();
+        dbProduktu.produktuakKargatu();
 
-	    // ComboBox-a garbitu elementuak gehitu baino lehen
-	    comboBox.removeAllItems();
+        comboBox.removeAllItems();
 
-	    // Produktuen lista rekorritu eta gehitu comboBox-ean
-	    for (Produktu produktu : dbProduktu.getProduktuak()) {
-	        comboBox.addItem(produktu.getIzena() + " (" + produktu.getIdKategoria() + ")");
-	    }
+        for (Produktu produktu : dbProduktu.getProduktuak()) {
+            comboBox.addItem(produktu.getIzena() + " (" + produktu.getIdKategoria() + ")");
+        }
 
-	    comboBox.addActionListener(new ActionListener() {
-	        @Override
-	        public void actionPerformed(ActionEvent e) {
-	            String aukeratutakoProduktua = (String) comboBox.getSelectedItem();
-	            if (aukeratutakoProduktua != null) {
-	                String produktuaIzena = aukeratutakoProduktua.split(" \\(")[0];
-	                kargatuProduktuarenInformazioa(produktuaIzena, kategoria, deskribapena, salneurria, dbProduktu);
-	            }
-	        }
-	    });
-	}
+        comboBox.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                String aukeratutakoProduktua = (String) comboBox.getSelectedItem();
+                if (aukeratutakoProduktua != null) {
+                    String produktuaIzena = aukeratutakoProduktua.split(" \\(")[0];
+                    kargatuProduktuarenInformazioa(produktuaIzena, kategoria, deskribapena, salneurria, dbProduktu);
+                }
+            }
+        });
+    }
 
+    /**
+     * Produktu baten informazioa kargatzen du testu-eremuetan.
+     * 
+     * @param produktua produktuaren izena
+     * @param kategoria kategoria erakusteko testu-eremua
+     * @param deskribapena deskribapena erakusteko testu-eremua
+     * @param salneurria salneurria erakusteko testu-eremua
+     * @param dbProduktu DBProduktu instantzia
+     */
     private static void kargatuProduktuarenInformazioa(String produktua, JTextField kategoria, JTextArea deskribapena, JTextField salneurria, DBProduktu dbProduktu) {
         for (Produktu produktu : dbProduktu.getProduktuak()) {
             if (produktu.getIzena().equals(produktua)) {
-
                 String kategoriaIzena = lortuKategoriaIzena(produktu.getIdKategoria());
                 
                 kategoria.setText(kategoriaIzena);
@@ -110,6 +139,12 @@ public class DBProduktu {
         salneurria.setText("");
     }
 
+    /**
+     * Kategoria baten izena lortzen du IDaren arabera.
+     * 
+     * @param idKategoria kategoriaren IDa
+     * @return kategoriaren izena
+     */
     private static String lortuKategoriaIzena(int idKategoria) {
         Connection conn = null;
         PreparedStatement pstmt = null;
@@ -130,7 +165,6 @@ public class DBProduktu {
             JOptionPane.showMessageDialog(null, "Errorea kategoria izena lortzean.");
             ex.printStackTrace();
         } finally {
-            // Cerrar recursos
             try {
                 if (rs != null) rs.close();
                 if (pstmt != null) pstmt.close();
@@ -143,6 +177,13 @@ public class DBProduktu {
         return kategoriaIzena;
     }
 
+    /**
+     * Produktu bat eguneratzen du datubasean.
+     * 
+     * @param izena produktuaren izena
+     * @param deskribapena produktuaren deskribapena
+     * @param salneurria produktuaren salneurria
+     */
     public static void eguneratuProduktua(String izena, String deskribapena, double salneurria) {
         Connection conn = null;
         PreparedStatement pstmt = null;
@@ -174,10 +215,21 @@ public class DBProduktu {
         }
     }
 
+    /**
+     * Produktuen zerrenda itzultzen du.
+     * 
+     * @return produktuen zerrenda
+     */
     public List<Produktu> getProduktuak() {
         return new ArrayList<>(produktuak);
     }
 
+    /**
+     * Produktuen zerrenda ezartzen du.
+     * 
+     * @param produktuak produktuen zerrenda
+     * @throws IllegalArgumentException produktuak nulua bada
+     */
     public void setProduktuak(List<Produktu> produktuak) {
         if (produktuak == null) {
             throw new IllegalArgumentException("Produktuak zerrenda ezin da nulua izan.");
@@ -185,6 +237,12 @@ public class DBProduktu {
         this.produktuak = new ArrayList<>(produktuak);
     }
 
+    /**
+     * Produktu bat gehitzen du zerrendara.
+     * 
+     * @param produktua gehituko den produktua
+     * @throws IllegalArgumentException produktua nulua bada
+     */
     public void gehituProduktua(Produktu produktua) {
         if (produktua == null) {
             throw new IllegalArgumentException("Produktua ezin da nulua izan.");
@@ -192,6 +250,11 @@ public class DBProduktu {
         this.produktuak.add(produktua);
     }
 
+    /**
+     * Produktu bat ezabatzen du datubasetik.
+     * 
+     * @param id ezabatzeko produktuaren IDa
+     */
     public static void ezabatuProduktua(int id) {
         Connection conn = null;
         PreparedStatement pstmt = null;
@@ -220,5 +283,4 @@ public class DBProduktu {
             }
         }
     }
-
 }

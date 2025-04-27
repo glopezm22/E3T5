@@ -11,14 +11,17 @@ import java.awt.event.MouseEvent;
 import java.sql.*;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
+
 /**
  * Erabiltzaileak kudeatzeko panelak sortzen dituen klasea.
- * Saltzaileak eta bezeroak gehitu, ezabatu eta editatzeko aukerak eskaintzen ditu.
+ * Klase honek saltzaileak eta bezeroak gehitzeko, ezabatzeko eta editatzeko aukerak eskaintzen ditu.
  */
+@SuppressWarnings("unused")
 public class ErabiltzaileakPanels {
 
     /**
      * Saltzailea gehitzeko panela sortzen du.
+     * 
      * @return Saltzailea gehitzeko JPanel objektua
      */
     public static JPanel saltzaileaGehitu() {
@@ -53,6 +56,7 @@ public class ErabiltzaileakPanels {
 
     /**
      * Saltzailea datu-basean gordetzen du.
+     * 
      * @param textFields Datuak dituen testu-eremu array-a
      */
     private static void gehituSaltzailea(JTextField[] textFields) {
@@ -90,6 +94,7 @@ public class ErabiltzaileakPanels {
 
     /**
      * Bezeroa gehitzeko panela sortzen du.
+     * 
      * @return Bezeroa gehitzeko JPanel objektua
      */
     public static JPanel bezeroaGehitu() {
@@ -123,6 +128,7 @@ public class ErabiltzaileakPanels {
 
     /**
      * Bezeroa datu-basean gordetzen du.
+     * 
      * @param textFields Datuak dituen testu-eremu array-a
      */
     private static void gehituBezeroa(JTextField[] textFields) {
@@ -159,6 +165,7 @@ public class ErabiltzaileakPanels {
 
     /**
      * Erabiltzailea ezabatzeko panela sortzen du.
+     * 
      * @return Erabiltzailea ezabatzeko JPanel objektua
      */
     public static JPanel erabiltzaileaEzabatu() {
@@ -213,13 +220,12 @@ public class ErabiltzaileakPanels {
 
     /**
      * Erabiltzaileak kontsultatzeko panela sortzen du.
+     * 
      * @return Erabiltzaileen zerrenda erakusten duen JPanel objektua
      */
     public static JPanel erabiltzaileakKontsultatu() {
         JPanel panel = new JPanel(new BorderLayout(10, 10));
         panel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
-        
-
 
         JLabel goiburukoa = new JLabel("Erabiltzaileen zerrenda", SwingConstants.CENTER);
         goiburukoa.setFont(new Font("Arial", Font.BOLD, 24));
@@ -228,7 +234,7 @@ public class ErabiltzaileakPanels {
         // Taularen modeloaren definizioa
         String[] zutabeIzenak = {"ID", "Izena", "Abizena", "Emaila", "Mota"};
         @SuppressWarnings("serial")
-		DefaultTableModel modeloa = new DefaultTableModel(zutabeIzenak, 0) {
+        DefaultTableModel modeloa = new DefaultTableModel(zutabeIzenak, 0) {
             @Override
             public boolean isCellEditable(int row, int column) {
                 return false;
@@ -269,7 +275,6 @@ public class ErabiltzaileakPanels {
         editatuItem.addActionListener(e -> {
             int selectedRow = taula.getSelectedRow();
             if (selectedRow >= 0) {
-
                 int modelRow = taula.convertRowIndexToModel(selectedRow);
                 String id = modeloa.getValueAt(modelRow, 0).toString();
                 String mota = modeloa.getValueAt(modelRow, 4).toString().equals("Saltzailea") ? "S" : "B";
@@ -330,6 +335,7 @@ public class ErabiltzaileakPanels {
     
     /**
      * Testu-eremuak garbitzen ditu.
+     * 
      * @param eremuak Garbitu beharreko testu-eremu array-a
      */
     private static void garbituEremuak(JTextField[] eremuak) {
@@ -340,6 +346,7 @@ public class ErabiltzaileakPanels {
 
     /**
      * Erabiltzaileak kargatzen ditu taula modelo batean.
+     * 
      * @param modeloa Datuak gehitzeko taula modelo
      */
     private static void kargatuErabiltzaileak(DefaultTableModel modeloa) {
@@ -358,7 +365,8 @@ public class ErabiltzaileakPanels {
     }
 
     /**
-     * Erabiltzailea editatzeko panela sortzen du
+     * Erabiltzailea editatzeko panela sortzen du.
+     * 
      * @param erabiltzailea Editatu beharreko erabiltzailea
      * @return Editatzeko panela
      */

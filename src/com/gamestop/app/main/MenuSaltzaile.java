@@ -13,6 +13,7 @@ import java.awt.*;
  * Saltzaileen interfaze nagusia kudeatzeko klasea.
  * Menua eta panelak kudeatzen ditu CardLayout erabiliz, bezeroen menua baino aukera gehiagorekin.
  */
+@SuppressWarnings("unused")
 public class MenuSaltzaile {
 
 	/**
@@ -69,6 +70,10 @@ public class MenuSaltzaile {
 		// "Eskariak" menua
 		JMenu eskariak = sortuEskariakMenua(frame, cardLayout);
 		menuBar.add(eskariak);
+		
+		// "Informeak" menua
+		JMenu informeak = sortuInformeakMenua(frame, cardLayout);
+		menuBar.add(informeak);
 
 		return menuBar;
 	}
@@ -157,12 +162,17 @@ public class MenuSaltzaile {
 		JMenuItem editatu = new JMenuItem("Editatu");
 		editatu.addActionListener(e -> cardLayout.show(frame.getContentPane(), "ProduktuakEditatu"));
 		produktuak.add(editatu);
+		
+		JMenuItem gehiago = new JMenuItem("Ekintza gehiago");
+		gehiago.addActionListener(e -> cardLayout.show(frame.getContentPane(), "EkinzaGehiago"));
+		produktuak.add(gehiago);
 
 		// Panelak gehitu framera
 		frame.add(ProduktuakPanels.produktuakBistaratu(), "ProduktuakBistaratu");
 		frame.add(ProduktuakPanels.produktuakGehitu(), "ProduktuakGehitu");
 		frame.add(ProduktuakPanels.produktuakEzabatu(), "ProduktuakEzabatu");
 		frame.add(ProduktuakPanels.produktuakEditatu(), "ProduktuakEditatu");
+		frame.add(ProduktuakPanels.ekintzaGehiago(), "EkinzaGehiago");
 
 		return produktuak;
 	}
@@ -184,7 +194,23 @@ public class MenuSaltzaile {
 		frame.add(EskariakPanels.eskariakBistaratu(), "EskariakBistaratu");
 
 		return eskariak;
-	}	
+	}
+
+	/**
+     * Eskariak menua sortzen du.
+     * @param frame Menu barra gehitzeko frame-a
+     * @param cardLayout Panelak aldatzeko layout-a
+     * @return Osatutako JMenu objektua
+     */
+	private static JMenu sortuInformeakMenua(JFrame frame, CardLayout cardLayout) {
+		JMenu informeak = new JMenu("Informeak");
+
+		JMenuItem bistaratu = new JMenuItem("Sortu");
+		bistaratu.addActionListener(e -> cardLayout.show(frame.getContentPane(), "InformeakSortu"));
+		informeak.add(bistaratu);
+
+		return informeak;
+	}
 	
 	/**
      * Frame-an erabili behar diren panelak gehitzen ditu.
@@ -202,6 +228,7 @@ public class MenuSaltzaile {
         frame.add(EskariakPanels.eskariakBistaratu(), "EskariakBistaratu");
         frame.add(ErabiltzaileakPanels.erabiltzaileaEzabatu(), "ErabiltzaileakEzabatu");
         frame.add(ErabiltzaileakPanels.erabiltzaileakKontsultatu(), "ErabiltzaileakKontsultatu");
+        frame.add(KontuaPanels.informeakSortu(), "InformeakSortu");
 
         // Erabiltzaileak gehitzeko panela konfiguratu
         konfiguratuErabiltzaileakGehituPanela(frame, cardLayout);
