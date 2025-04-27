@@ -159,7 +159,7 @@ public class MenuSaltzaile {
 		produktuak.add(editatu);
 
 		// Panelak gehitu framera
-		frame.add(ProduktuakPanels.produktuakBistaratu(null), "ProduktuakBistaratu");
+		frame.add(ProduktuakPanels.produktuakBistaratu(), "ProduktuakBistaratu");
 		frame.add(ProduktuakPanels.produktuakGehitu(), "ProduktuakGehitu");
 		frame.add(ProduktuakPanels.produktuakEzabatu(), "ProduktuakEzabatu");
 		frame.add(ProduktuakPanels.produktuakEditatu(), "ProduktuakEditatu");
@@ -195,7 +195,7 @@ public class MenuSaltzaile {
         frame.add(Login.ongietorria(), "OngiEtorria");
         frame.add(KontuaPanels.saltzaileenDatuPertsonalak(), "NireKontua");
         frame.add(KontuaPanels.pasahitzaPanela(), "PasahitzaAldatu");
-        frame.add(ProduktuakPanels.produktuakBistaratu(null), "ProduktuakBistaratu");
+        frame.add(ProduktuakPanels.produktuakBistaratu(), "ProduktuakBistaratu");
         frame.add(ProduktuakPanels.produktuakGehitu(), "ProduktuakGehitu");
         frame.add(ProduktuakPanels.produktuakEzabatu(), "ProduktuakEzabatu");
         frame.add(ProduktuakPanels.produktuakEditatu(), "ProduktuakEditatu");

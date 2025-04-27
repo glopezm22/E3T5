@@ -137,7 +137,7 @@ public class MenuBezero {
         productsMenu.add(bistaratu);
 
 		// Panelak gehitu framera
-        frame.add(ProduktuakPanels.produktuakBistaratu(null), "ProduktuakBistaratu");
+        frame.add(ProduktuakPanels.produktuakBistaratu(), "ProduktuakBistaratu");
 
         return productsMenu;
     }
@@ -153,7 +153,7 @@ public class MenuBezero {
         frame.add(KontuaPanels.pasahitzaPanela(), "PasahitzaAldatu");
         frame.add(EskariakPanels.historialaikusiSortu(), "Historiala");
         frame.add(EskariakPanels.egoeraikusiSortu(), "EgoeraBistaratu");
-        frame.add(ProduktuakPanels.produktuakBistaratu(null), "ProduktuakBistaratu");
+        frame.add(ProduktuakPanels.produktuakBistaratu(), "ProduktuakBistaratu");
 
         cardLayout.show(frame.getContentPane(), "OngiEtorria");
     }

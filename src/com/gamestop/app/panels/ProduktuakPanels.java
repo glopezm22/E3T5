@@ -37,15 +37,16 @@ import javax.swing.table.DefaultTableModel;
 public class ProduktuakPanels {
 	
 	@SuppressWarnings("serial")
-	public static JPanel produktuakBistaratu(Integer kargatuBeharrekoKategoria) {
+	public static JPanel produktuakBistaratu() {
 	    JPanel panel = new JPanel(new BorderLayout(10, 10));
 	    panel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 	    
+	    // Título
 	    JLabel goiburukoa = new JLabel("Produktuen katalogoa", SwingConstants.CENTER);
 	    goiburukoa.setFont(new Font("Arial", Font.BOLD, 24));
 	    panel.add(goiburukoa, BorderLayout.NORTH);
 
-	    // Taularen modeloaren definizioa
+	    // Modelo de tabla
 	    String[] zutabeIzenak = {"ID", "Izena", "Deskribapena", "Balioa", "Salneurria", "Kategoria"};
 	    DefaultTableModel modeloa = new DefaultTableModel(zutabeIzenak, 0) {
 	        @Override
@@ -54,70 +55,73 @@ public class ProduktuakPanels {
 	        }
 	    };
 
-	    // Datu-baseko produktuak kargatu
-	    DBProduktu db = new DBProduktu();
-	    db.produktuakKargatu();
-	    List<Produktu> produktuak = db.getProduktuak();
-
-	    // Filtrado por categoría si se especifica
-	    List<Produktu> produktuakFiltratuak;
-	    if (kargatuBeharrekoKategoria != null) {
-	        produktuakFiltratuak = produktuak.stream()
-	            .filter(p -> p.getIdKategoria() == kargatuBeharrekoKategoria)
-	            .collect(Collectors.toList());
-	    } else {
-	        produktuakFiltratuak = new ArrayList<>(produktuak);
-	    }
-
-	    // Erabiltzaileak taulara gehitu, zutabez zutabe
-	    for (Produktu p : produktuakFiltratuak) {
-	        String kategoriaIzena = getKategoriaIzena(p.getIdKategoria());
-	        modeloa.addRow(new Object[]{
-	            p.getId(),
-	            p.getIzena(),
-	            p.getDeskribapena(),
-	            p.getBalioa() + " €",
-	            p.getSalneurria() + " €",
-	            kategoriaIzena
-	        });
-	    }
-
-	    // Taula eta scrolla
+	    // Componentes
 	    JTable taula = new JTable(modeloa);
 	    taula.setAutoCreateRowSorter(true);
 	    JScrollPane scrollPane = new JScrollPane(taula);
 	    panel.add(scrollPane, BorderLayout.CENTER);
+
+	    // ComboBox para categorías
+	    JComboBox<String> kategoriaComboBox = new JComboBox<>();
+	    kategoriaComboBox.addItem("Guztiak");
+	    kategoriakKargatuCOMBOBOX(kategoriaComboBox);
 	    
-	    // Eguneratzeko botoia
+	    // Botón de actualización
 	    JButton eguneratuBotoia = new JButton("Eguneratu zerrenda");
-	    eguneratuBotoia.addActionListener(e -> {
+	    
+	    // Panel inferior
+	    JPanel botoiPanela = new JPanel();
+	    botoiPanela.add(kategoriaComboBox);
+	    botoiPanela.add(eguneratuBotoia);
+	    panel.add(botoiPanela, BorderLayout.SOUTH);
+
+	    // Cargar datos iniciales
+	    DBProduktu db = new DBProduktu();
+	    Runnable kargatuDatuak = () -> {
 	        modeloa.setRowCount(0);
 	        db.produktuakKargatu();
-	        List<Produktu> produktuakEguneratuta = db.getProduktuak();
-	        
-	        // Aplicar el mismo filtro al actualizar
-	        if (kargatuBeharrekoKategoria != null) {
-	            produktuakEguneratuta = produktuakEguneratuta.stream()
-	                .filter(p -> p.getIdKategoria() == kargatuBeharrekoKategoria)
-	                .collect(Collectors.toList());
+	        List<Produktu> produktuak = db.getProduktuak();
+
+	        // Aplicar filtro si hay categoría seleccionada
+	        String aukeratutakoKategoria = (String) kategoriaComboBox.getSelectedItem();
+	        if (!"Guztiak".equals(aukeratutakoKategoria)) {
+	            try (Connection conn = DatabaseManager.konexioa();
+	                 PreparedStatement pstmt = conn.prepareStatement("SELECT ID FROM KATEGORIA WHERE IZENA = ?")) {
+	                
+	                pstmt.setString(1, aukeratutakoKategoria);
+	                ResultSet rs = pstmt.executeQuery();
+
+	                if (rs.next()) {
+	                    int idKategoria = rs.getInt("ID");
+	                    produktuak = produktuak.stream()
+	                        .filter(p -> p.getIdKategoria() == idKategoria)
+	                        .collect(Collectors.toList());
+	                }
+	            } catch (SQLException ex) {
+	                JOptionPane.showMessageDialog(panel, "Errorea kategoria IDa lortzean.");
+	                ex.printStackTrace();
+	            }
 	        }
-	        
-	        for (Produktu p : produktuakEguneratuta) {
-	            String kategoriaIzena = getKategoriaIzena(p.getIdKategoria());
+
+	        // Llenar la tabla
+	        for (Produktu p : produktuak) {
 	            modeloa.addRow(new Object[]{
 	                p.getId(),
 	                p.getIzena(),
 	                p.getDeskribapena(),
 	                p.getBalioa() + " €",
 	                p.getSalneurria() + " €",
-	                kategoriaIzena
+	                getKategoriaIzena(p.getIdKategoria())
 	            });
 	        }
-	    });
+	    };
 
-	    JPanel botoiPanela = new JPanel();
-	    botoiPanela.add(eguneratuBotoia);
-	    panel.add(botoiPanela, BorderLayout.SOUTH);
+	    // Listeners
+	    kategoriaComboBox.addActionListener(e -> kargatuDatuak.run());
+	    eguneratuBotoia.addActionListener(e -> kargatuDatuak.run());
+
+	    // Cargar datos por primera vez
+	    kargatuDatuak.run();
 
 	    return panel;
 	}
