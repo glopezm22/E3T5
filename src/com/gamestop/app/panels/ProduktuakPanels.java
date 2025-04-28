@@ -361,12 +361,27 @@ public class ProduktuakPanels {
 		ezabatuBotoia.addActionListener(e -> {
 			String aukeratutakoProduktua = (String) produktuComboBox.getSelectedItem();
 			if (aukeratutakoProduktua != null) {
-				int produktuaID = Integer.parseInt(aukeratutakoProduktua.split("\\(")[0]);
-				String produktuaIzena = aukeratutakoProduktua.split(" \\(")[1];
+				// Primero necesitamos obtener la lista de productos
+				DBProduktu dbProduktu = new DBProduktu();
+				dbProduktu.produktuakKargatu(); // Cargamos los productos
 
-				int erantzuna = JOptionPane.showConfirmDialog(panel,
-						"Ziur zaude " + produktuaIzena + " ezabatu nahi duzula?", "Berretsi Ezabatzea",
-						JOptionPane.YES_NO_OPTION);
+				// Buscar el producto correspondiente en la lista para obtener su ID real
+				int produktuaID = -1;
+				for (Produktu p : dbProduktu.getProduktuak()) {
+					if ((p.getIzena() + " (" + p.getIdKategoria() + ")").equals(aukeratutakoProduktua)) {
+						produktuaID = p.getId();
+						break;
+					}
+				}
+
+				if (produktuaID == -1) {
+					JOptionPane.showMessageDialog(panel, "Ezin da produktuaren IDa aurkitu", "Errorea",
+							JOptionPane.ERROR_MESSAGE);
+					return;
+				}
+
+				int erantzuna = JOptionPane.showConfirmDialog(panel, "Ziur zaude produktua ezabatu nahi duzula?",
+						"Berretsi Ezabatzea", JOptionPane.YES_NO_OPTION);
 
 				if (erantzuna == JOptionPane.YES_OPTION) {
 					DBProduktu.ezabatuProduktua(produktuaID);
@@ -432,7 +447,7 @@ public class ProduktuakPanels {
 
 		gbc.gridx = 0;
 		gbc.gridy = 3;
-		erdikoPanela.add(new JLabel("Salneurria:"), gbc);
+		erdikoPanela.add(new JLabel("Salneurria (€):"), gbc);
 		gbc.gridx = 1;
 		erdikoPanela.add(salneurriaEremua, gbc);
 
@@ -462,7 +477,6 @@ public class ProduktuakPanels {
 				}
 
 				DBProduktu.eguneratuProduktua(produktuaIzena, deskribapena, salneurria);
-				JOptionPane.showMessageDialog(panel, "Produktua eguneratu da.");
 			}
 		});
 
@@ -471,88 +485,78 @@ public class ProduktuakPanels {
 	}
 
 	public static JPanel ekintzaGehiago() {
-	    JPanel panel = new JPanel(new BorderLayout());
-	    panel.setLayout(new GridLayout(2, 1, 10, 10));
+		JPanel panel = new JPanel(new BorderLayout());
+		panel.setLayout(new GridLayout(2, 1, 10, 10));
 
-	    // Goiburukoa
-	    JLabel titulua = new JLabel("Ekintza gehiago", SwingConstants.CENTER);
-	    titulua.setFont(new Font("Arial", Font.BOLD, 24));
-	    panel.add(titulua, BorderLayout.NORTH);
+		// Goiburukoa
+		JLabel titulua = new JLabel("Ekintza gehiago", SwingConstants.CENTER);
+		titulua.setFont(new Font("Arial", Font.BOLD, 24));
+		panel.add(titulua, BorderLayout.NORTH);
 
-	    // Panela
-	    JPanel botonPanel = new JPanel(new GridLayout(2, 1, 10, 10));
-	    panel.add(botonPanel, BorderLayout.CENTER);
+		// Panela
+		JPanel botonPanel = new JPanel(new GridLayout(2, 1, 10, 10));
+		panel.add(botonPanel, BorderLayout.CENTER);
 
-	    // Reestock botoia
-	    JButton reestockBotoia = new JButton("Reestock egin");
-	    botonPanel.add(reestockBotoia);
+		// Reestock botoia
+		JButton reestockBotoia = new JButton("Reestock egin");
+		botonPanel.add(reestockBotoia);
 
-	    // Prezioa eguneratzeko botoia
-	    JButton prezioaEguneratuBotoia = new JButton("Prezioak eguneratu (azken hilabetekoa)");
-	    botonPanel.add(prezioaEguneratuBotoia);
+		// Prezioa eguneratzeko botoia
+		JButton prezioaEguneratuBotoia = new JButton("Prezioak eguneratu (azken hilabetekoa)");
+		botonPanel.add(prezioaEguneratuBotoia);
 
-	    // Reestock botoiaren ekintza
-	    reestockBotoia.addActionListener(e -> {
-	        try (Connection conn = DatabaseManager.getConnection();
-	             CallableStatement cstmt = conn.prepareCall("{call P_REESTOCK()}")) {
-	            
-	            cstmt.execute();
-	            JOptionPane.showMessageDialog(panel, 
-	                "Reestock prozesua ondo burutu da.", 
-	                "Arrakasta", 
-	                JOptionPane.INFORMATION_MESSAGE);
-	                
-	        } catch (SQLException ex) {
-	            String errorMsg = "Errorea reestock prozesuan: ";
-	            if (ex.getErrorCode() == 20001) {
-	                errorMsg += ex.getMessage();
-	            } else {
-	                errorMsg += "Errore ezezaguna datu-basean.";
-	            }
-	            JOptionPane.showMessageDialog(panel, 
-	                errorMsg, 
-	                "Errorea", 
-	                JOptionPane.ERROR_MESSAGE);
-	            ex.printStackTrace();
-	        }
-	    });
+		// Reestock botoiaren ekintza
+		reestockBotoia.addActionListener(e -> {
+			try (Connection conn = DatabaseManager.getConnection();
+					CallableStatement cstmt = conn.prepareCall("{call P_REESTOCK()}")) {
 
-	    // Prezioa eguneratzeko botoiaren ekintza
-	    prezioaEguneratuBotoia.addActionListener(e -> {
-	        try (Connection conn = DatabaseManager.getConnection();
-	             CallableStatement cstmt = conn.prepareCall("{call P_PRODUKTU_PREZIOA_EGUNERATU()}")) {
-	            
-	            cstmt.execute();
-	            JOptionPane.showMessageDialog(panel, 
-	                "Produktuen prezioak ondo eguneratu dira.", 
-	                "Arrakasta", 
-	                JOptionPane.INFORMATION_MESSAGE);
-	                
-	        } catch (SQLException ex) {
-	            String errorMsg;
-	            switch (ex.getErrorCode()) {
-	                case 20010:  // "EZ DIRA PRODUKTUAK SALDU"
-	                    errorMsg = "Ezin izan dira produktuen prezioak eguneratu: ez dira produkturik saldu hilabete honetan.";
-	                    break;
-	                case 20011:  // "DATUREN BAT FALTA DA"
-	                    errorMsg = "Ezin izan dira produktuen prezioak eguneratu: datuen bat falta da.";
-	                    break;
-	                case 20001:  // Errore ezezaguna prozeduran
-	                    errorMsg = "Errorea datu-basean: " + ex.getMessage().replace("ORA-20001: ", "");
-	                    break;
-	                default:
-	                    errorMsg = "Errore ezezaguna prezioak eguneratzean. Error code: " + ex.getErrorCode();
-	                    break;
-	            }
-	            
-	            JOptionPane.showMessageDialog(panel, 
-	                errorMsg, 
-	                "Errorea", 
-	                JOptionPane.ERROR_MESSAGE);
-	        }
-	    });
+				cstmt.execute();
+				JOptionPane.showMessageDialog(panel, "Reestock prozesua ondo burutu da.", "Arrakasta",
+						JOptionPane.INFORMATION_MESSAGE);
 
-	    return panel;
+			} catch (SQLException ex) {
+				String errorMsg = "Errorea reestock prozesuan: ";
+				if (ex.getErrorCode() == 20001) {
+					errorMsg += ex.getMessage();
+				} else {
+					errorMsg += "Errore ezezaguna datu-basean.";
+				}
+				JOptionPane.showMessageDialog(panel, errorMsg, "Errorea", JOptionPane.ERROR_MESSAGE);
+				ex.printStackTrace();
+			}
+		});
+
+		// Prezioa eguneratzeko botoiaren ekintza
+		prezioaEguneratuBotoia.addActionListener(e -> {
+			try (Connection conn = DatabaseManager.getConnection();
+					CallableStatement cstmt = conn.prepareCall("{call P_PRODUKTU_PREZIOA_EGUNERATU()}")) {
+
+				cstmt.execute();
+				JOptionPane.showMessageDialog(panel, "Produktuen prezioak ondo eguneratu dira.", "Arrakasta",
+						JOptionPane.INFORMATION_MESSAGE);
+
+			} catch (SQLException ex) {
+				String errorMsg;
+				switch (ex.getErrorCode()) {
+				case 20010: // "EZ DIRA PRODUKTUAK SALDU"
+					errorMsg = "Ezin izan dira produktuen prezioak eguneratu: ez dira produkturik saldu hilabete honetan.";
+					break;
+				case 20011: // "DATUREN BAT FALTA DA"
+					errorMsg = "Ezin izan dira produktuen prezioak eguneratu: datuen bat falta da.";
+					break;
+				case 20001: // Errore ezezaguna prozeduran
+					errorMsg = "Errorea datu-basean: " + ex.getMessage().replace("ORA-20001: ", "");
+					break;
+				default:
+					errorMsg = "Errore ezezaguna prezioak eguneratzean. Error code: " + ex.getErrorCode();
+					break;
+				}
+
+				JOptionPane.showMessageDialog(panel, errorMsg, "Errorea", JOptionPane.ERROR_MESSAGE);
+			}
+		});
+
+		return panel;
 	}
 
 }

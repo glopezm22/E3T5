@@ -1,0 +1,8 @@
+com.gamestop.app.auth
+com.gamestop.app.main
+com.gamestop.app.panels
+com.gamestop.db
+com.gamestop.model.location
+com.gamestop.model.order
+com.gamestop.model.product
+com.gamestop.model.user

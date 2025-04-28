@@ -103,10 +103,6 @@ public class MenuSaltzaile {
 		irten.addActionListener(e -> System.exit(0));
 		nireKontua.add(irten);
 
-		// Panelak gehitu framera
-		frame.add(KontuaPanels.saltzaileenDatuPertsonalak(), "NireKontua");
-		frame.add(KontuaPanels.pasahitzaPanela(), "PasahitzaAldatu");
-
 		return nireKontua;
 	}
 
@@ -130,10 +126,6 @@ public class MenuSaltzaile {
 		JMenuItem kontsultatu = new JMenuItem("Kontsultatu");
 		kontsultatu.addActionListener(e -> cardLayout.show(frame.getContentPane(), "ErabiltzaileakKontsultatu"));
 		erabiltzaileak.add(kontsultatu);
-
-		// Panelak gehitu framera
-		frame.add(ErabiltzaileakPanels.erabiltzaileaEzabatu(), "ErabiltzaileakEzabatu");
-		frame.add(ErabiltzaileakPanels.erabiltzaileakKontsultatu(), "ErabiltzaileakKontsultatu");
 
 		return erabiltzaileak;
 	}
@@ -167,13 +159,6 @@ public class MenuSaltzaile {
 		gehiago.addActionListener(e -> cardLayout.show(frame.getContentPane(), "EkinzaGehiago"));
 		produktuak.add(gehiago);
 
-		// Panelak gehitu framera
-		frame.add(ProduktuakPanels.produktuakBistaratu(), "ProduktuakBistaratu");
-		frame.add(ProduktuakPanels.produktuakGehitu(), "ProduktuakGehitu");
-		frame.add(ProduktuakPanels.produktuakEzabatu(), "ProduktuakEzabatu");
-		frame.add(ProduktuakPanels.produktuakEditatu(), "ProduktuakEditatu");
-		frame.add(ProduktuakPanels.ekintzaGehiago(), "EkinzaGehiago");
-
 		return produktuak;
 	}
 	
@@ -189,9 +174,6 @@ public class MenuSaltzaile {
 		JMenuItem bistaratu = new JMenuItem("Bistaratu");
 		bistaratu.addActionListener(e -> cardLayout.show(frame.getContentPane(), "EskariakBistaratu"));
 		eskariak.add(bistaratu);
-
-		// Panelak gehitu framera
-		frame.add(EskariakPanels.eskariakBistaratu(), "EskariakBistaratu");
 
 		return eskariak;
 	}
@@ -225,6 +207,7 @@ public class MenuSaltzaile {
         frame.add(ProduktuakPanels.produktuakGehitu(), "ProduktuakGehitu");
         frame.add(ProduktuakPanels.produktuakEzabatu(), "ProduktuakEzabatu");
         frame.add(ProduktuakPanels.produktuakEditatu(), "ProduktuakEditatu");
+        frame.add(ProduktuakPanels.ekintzaGehiago(), "EkinzaGehiago");
         frame.add(EskariakPanels.eskariakBistaratu(), "EskariakBistaratu");
         frame.add(ErabiltzaileakPanels.erabiltzaileaEzabatu(), "ErabiltzaileakEzabatu");
         frame.add(ErabiltzaileakPanels.erabiltzaileakKontsultatu(), "ErabiltzaileakKontsultatu");

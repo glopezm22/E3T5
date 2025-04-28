@@ -129,7 +129,7 @@ public class DBProduktu {
                 
                 kategoria.setText(kategoriaIzena);
                 deskribapena.setText(produktu.getDeskribapena());
-                salneurria.setText(produktu.getSalneurria() + " €");
+                salneurria.setText(String.valueOf(produktu.getSalneurria()));
                 return;
             }
         }

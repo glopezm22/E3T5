@@ -93,10 +93,6 @@ public class MenuBezero {
 		irten.addActionListener(e -> System.exit(0));
 		nireKontua.add(irten);
 
-		// Panelak gehitu framera
-		frame.add(KontuaPanels.bezeroenDatuPertsonalak(), "NireKontua");
-		frame.add(KontuaPanels.pasahitzaPanela(), "PasahitzaAldatu");
-
 		return nireKontua;
 	}
 	
@@ -113,9 +109,6 @@ public class MenuBezero {
         historiala.addActionListener(e -> cardLayout.show(frame.getContentPane(), "Historiala"));
         eskariak.add(historiala);
 
-		// Panelak gehitu framera
-        frame.add(EskariakPanels.historialaikusiSortu(), "Historiala");
-
         return eskariak;
     }
 
@@ -131,9 +124,6 @@ public class MenuBezero {
         JMenuItem bistaratu = new JMenuItem("Katalogoa");
         bistaratu.addActionListener(e -> cardLayout.show(frame.getContentPane(), "ProduktuakBistaratu"));
         productsMenu.add(bistaratu);
-
-		// Panelak gehitu framera
-        frame.add(ProduktuakPanels.produktuakBistaratu(), "ProduktuakBistaratu");
 
         return productsMenu;
     }
