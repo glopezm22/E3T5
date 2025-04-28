@@ -13,9 +13,10 @@ Aplikazio hau GameStop dendarentzat garatutako **saltzaile eta bezeroen kudeaket
 - Saiakera kopuru mugatua (3 saiakera)
 
 ### 👨‍💼 Saltzaileen Interfazea
-- Erabiltzaileak kudeatu (gehitu, ezabatu, editatu)
+- Erabiltzaileak kudeatu (gehitu, ezabatu, editatu, kontsultatu)
 - Produktuak kudeatu
 - Eskariak ikusi
+- Informeak sortu
 
 ### 👤 Bezeroen Interfazea
 - Produktuak ikusi
@@ -27,16 +28,11 @@ Aplikazio hau GameStop dendarentzat garatutako **saltzaile eta bezeroen kudeaket
 ## 🛠️ Instalazioa
 
 1. **Datu-basea konfiguratu** OracleDB erabiliz:
-   ```ALTER SESSION SET CONTAINER = XEPDB1;
-   CREATE USER erabiltzailea IDENTIFIED BY pasahitza; -- erabiltzailea eta pasahitza database.properties fitxategian bat etorri behar dira.
-   GRANT ALL PRIVILEGES TO erabiltzailea;
-   -- Exekutatu 'schema.sql' fitxategia taulak sortzeko behin conexioa ezarri dugunean erabiltzaile horrekin.```
+   - Exekutatu "e3t5schema.sql" erabiltzailea eta taulak sortzeko.
+   - Logeatu E3T5 erabiltzailearekin eta ikasle123 pasahitzarekin.
+   - Behin logeatuta, exekutatu "e3t5schema2.sql".
 
-2. **Aplikazioa abiarazi**:
-   ```git clone https://github.com/glopezm22/E3T5.git
-   cd E3T5
-   mvn clean install
-   java -jar target/E3T5.jar```
+2. **Aplikazioa abiarazi**: exekutatu GameStopApp.exe fitxategia
 
 ---
 
@@ -81,9 +77,13 @@ E3T5/
 │               └── Langile.java
 ├── resources/
 │   ├── config/
-│   │   └── database.properties
+│   │   ├── database.properties
+│   │   ├── e3t5schema.sql
+│   │   └── e3t5schema2.sql
 │   └── images/
 ├── lib/
+├── .project
+├── .classpath
 └── README.md
 ```
 
@@ -93,14 +93,14 @@ E3T5/
 
 1. **Saioa hasi** erabiltzaile eta pasahitzarekin
 2. **Aukeratu ekintza** menuan:
-   - Bezeroa bazaude: produktuak ikusi, eskaerak kontsultatu
-   - Saltzailea bazaude: erabiltzaileak/produktuak kudeatu
+   - Bezeroa bazara: produktuak ikusi, eskaerak kontsultatu...
+   - Saltzailea bazara: erabiltzaileak/produktuak kudeatu...
 
 ---
 
 ## 🛑 Oharrak
 
-- ❗ **Ez ahaztu** schema.sql exekutatu datu-basea sortzeko
+- ❗ **Ez ahaztu** e3t5schema.sql eta e3t5schema2.sql exekutatzea datu-basea sortzeko
 - 🔄 **Aplikazioa eguneratzeko**: git pull && mvn clean install
 
 ---
@@ -114,4 +114,4 @@ Programak ez dauka lizentziarik
 
 <p align="center"> <img src="resources/images/GameStop.png" width="100" alt="GameStop Logo"> </p>
 
-✨ **Eskerrik asko** proiektua bisitatzeagatik! Laguntza behar baduzu, bidali mezu bat glopezm22[mailto:glopezm22@fpsanturtzilh.eus] helbidera.
+✨ **Eskerrik asko** proiektua bisitatzeagatik! Laguntza behar baduzu, bidali mezu bat [glopezm22](mailto:glopezm22@fpsanturtzilh.eus) helbidera.
