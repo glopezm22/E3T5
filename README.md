@@ -27,7 +27,7 @@ Aplikazio hau GameStop dendarentzat garatutako **saltzaile eta bezeroen kudeaket
 
 ## 🛠️ Instalazioa
 
-1. **Datu-basea konfiguratu** OracleDB erabiliz:
+1. **Datu-basea konfiguratu** OracleDB erabiliz SQL Developer herremintarekin:
    - Exekutatu "e3t5schema.sql" erabiltzailea eta taulak sortzeko.
    - Logeatu E3T5 erabiltzailearekin eta ikasle123 pasahitzarekin.
    - Behin logeatuta, exekutatu "e3t5schema2.sql".
